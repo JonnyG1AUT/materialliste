@@ -295,6 +295,9 @@
   }
   .cart-item.urgent { color:var(--urgent); }
   .cart-item small { color:var(--muted); font-weight:normal; }
+  .cart-item-date { grid-column:1 / -1; margin-top:2px; }
+  .cart-item-date label { display:block; font-size:10.5px; color:var(--muted); font-weight:700; margin-bottom:2px; }
+  .cart-item-date input { padding:6px 8px; font-size:13px; }
   .cart-actions { display:grid; gap:8px; padding:12px 16px 18px; border-top:1px solid var(--border); flex-shrink:0; }
 
   .site-card {
@@ -794,7 +797,7 @@ function ensureCartRow(id) {
   if (!cart[id]) {
     const item = itemById(id);
     const defaultUnit = (item && item.units[0]) || "Stk.";
-    cart[id] = {orderQty:"", orderUnit:defaultUnit, takeQty:"", takeUnit:defaultUnit, urgent:false};
+    cart[id] = {orderQty:"", orderUnit:defaultUnit, takeQty:"", takeUnit:defaultUnit, urgent:false, neededDate:""};
   }
   return cart[id];
 }
@@ -803,7 +806,15 @@ function getCartRow(id) {
   if (cart[id]) return cart[id];
   const item = itemById(id);
   const defaultUnit = (item && item.units[0]) || "Stk.";
-  return {orderQty:"", orderUnit:defaultUnit, takeQty:"", takeUnit:defaultUnit, urgent:false};
+  return {orderQty:"", orderUnit:defaultUnit, takeQty:"", takeUnit:defaultUnit, urgent:false, neededDate:""};
+}
+
+function setNeededDate(id, value) {
+  const o = ensureCartRow(id);
+  o.neededDate = value;
+  if (!rowHasQty(o) && !o.urgent && !o.neededDate) delete cart[id];
+  saveJSON(cartKey(activeSiteId), cart);
+  renderCart();
 }
 
 function numericQty(v) { return Number(String(v).replace(",", ".")); }
@@ -826,7 +837,7 @@ function toggleFavorite(id) {
 function toggleUrgentFlag(id) {
   const o = ensureCartRow(id);
   o.urgent = !o.urgent;
-  if (!rowHasQty(o) && !o.urgent) delete cart[id];
+  if (!rowHasQty(o) && !o.urgent && !o.neededDate) delete cart[id];
   saveJSON(cartKey(activeSiteId), cart);
 }
 
@@ -853,7 +864,7 @@ function saveRowState(id, row, immediate) {
   if (takeUnitEl) o.takeUnit = takeUnitEl.value;
 
   const hasQty = rowHasQty(o);
-  if (!hasQty && !o.urgent) delete cart[id];
+  if (!hasQty && !o.urgent && !o.neededDate) delete cart[id];
 
   row.classList.toggle("is-selected", hasQty);
   row.classList.toggle("is-urgent", hasQty && o.urgent);
@@ -1055,7 +1066,7 @@ function selectedItems() {
     const tq = numericQty(o.takeQty || "");
 
     if (o.orderQty !== "" && !Number.isNaN(oq) && oq > 0) {
-      result.push({type:"order", item, qty:o.orderQty, unit:o.orderUnit || item.units[0] || "Stk.", urgent:!!o.urgent});
+      result.push({type:"order", item, qty:o.orderQty, unit:o.orderUnit || item.units[0] || "Stk.", urgent:!!o.urgent, neededDate:o.neededDate || ""});
     }
     if (o.takeQty !== "" && !Number.isNaN(tq) && tq > 0) {
       result.push({type:"take", item, qty:o.takeQty, unit:o.takeUnit || item.units[0] || "Stk.", urgent:!!o.urgent});
@@ -1086,17 +1097,33 @@ function renderCart() {
     return;
   }
 
-  const rowsHTML = arr => arr.map(x => `
-    <div class="cart-item ${x.urgent ? "urgent" : ""}">
+  const rowsHTML = (arr, showDate) => arr.map(x => `
+    <div class="cart-item ${x.urgent ? "urgent" : ""}" data-id="${escAttr(x.item.id)}">
       <div><b>${x.urgent ? "❗ " : ""}${esc(x.item.name)}</b></div>
       <div><b>${esc(x.qty)} ${esc(x.unit)}</b></div>
+      ${showDate ? `
+      <div class="cart-item-date">
+        <label>Benötigt bis (leer = ${orderMeta.date ? esc(formatDateDE(orderMeta.date)) : "Standarddatum"})</label>
+        <input type="date" class="needed-date-input" value="${escAttr(x.neededDate || "")}">
+      </div>` : ""}
     </div>`
   ).join("");
 
   let html = "";
-  if (orderList.length) html += `<div class="cart-group-title">Bestellung</div>` + rowsHTML(orderList);
-  if (takeList.length) html += `<div class="cart-group-title">Mitnehmen</div>` + rowsHTML(takeList);
+  if (orderList.length) html += `<div class="cart-group-title">Bestellung</div>` + rowsHTML(orderList, true);
+  if (takeList.length) html += `<div class="cart-group-title">Mitnehmen</div>` + rowsHTML(takeList, false);
   box.innerHTML = html;
+
+  box.querySelectorAll(".cart-item[data-id]").forEach(row => {
+    const input = row.querySelector(".needed-date-input");
+    if (input) input.addEventListener("change", () => setNeededDate(row.dataset.id, input.value));
+  });
+}
+
+function formatDateDE(iso) {
+  const parts = String(iso).split("-");
+  if (parts.length !== 3) return iso;
+  return parts[2] + "." + parts[1] + "." + parts[0];
 }
 
 function saveOrderMetaSilent() {
@@ -1138,6 +1165,21 @@ function composeOrder() {
 
   addHistoryEntry(list, {date, project, note});
 
+  const groupByDate = arr => {
+    const map = new Map();
+    arr.forEach(x => {
+      const d = x.neededDate || date || "";
+      if (!map.has(d)) map.set(d, []);
+      map.get(d).push(x);
+    });
+    return [...map.entries()].sort((a, b) => {
+      if (!a[0] && !b[0]) return 0;
+      if (!a[0]) return 1;
+      if (!b[0]) return -1;
+      return a[0].localeCompare(b[0]);
+    });
+  };
+
   const makeRows = arr => arr.map(x => `
     <tr class="${x.urgent ? "urgent" : ""}">
       <td>${x.urgent ? "❗ " : ""}${esc(x.item.name)}</td>
@@ -1146,20 +1188,33 @@ function composeOrder() {
     </tr>`
   ).join("");
 
-  const orderRows = makeRows(orderList);
+  const orderGroups = groupByDate(orderList);
+  const orderRows = orderGroups.length > 1
+    ? orderGroups.map(([d, items]) => `
+        <tr class="date-group-row"><td colspan="3">${d ? "Benötigt bis " + esc(formatDateDE(d)) : "Ohne festes Datum"}</td></tr>
+        ${makeRows(items)}`
+      ).join("")
+    : makeRows(orderList);
   const takeRows = makeRows(takeList);
 
-  const textBlock = (title, arr) =>
-    `*${title}*\n` +
-    (siteName ? `*Baustelle:* ${siteName}\n` : "") +
-    (project ? `*Bauvorhaben:* ${project}\n` : "") +
-    (date ? `*Datum:* ${date}\n` : "") +
-    `\n` +
-    arr.map(x => `${x.urgent ? "❗️ " : ""}${x.item.name} – ${x.qty} ${x.unit}`).join("\n") +
-    (note ? `\n\n*Anmerkung:* ${note}` : "");
+  const textBlock = (title, arr, groups) => {
+    const body = groups && groups.length > 1
+      ? groups.map(([d, items]) =>
+          (d ? `*Benötigt bis ${formatDateDE(d)}:*` : "*Ohne festes Datum:*") + "\n" +
+          items.map(x => `${x.urgent ? "❗️ " : ""}${x.item.name} – ${x.qty} ${x.unit}`).join("\n")
+        ).join("\n\n")
+      : arr.map(x => `${x.urgent ? "❗️ " : ""}${x.item.name} – ${x.qty} ${x.unit}`).join("\n");
 
-  const orderText = textBlock("Bestellung", orderList);
-  const takeText = textBlock("Mitnehmen", takeList);
+    return `*${title}*\n` +
+      (siteName ? `*Baustelle:* ${siteName}\n` : "") +
+      (project ? `*Bauvorhaben:* ${project}\n` : "") +
+      (date ? `*Datum:* ${date}\n` : "") +
+      `\n` + body +
+      (note ? `\n\n*Anmerkung:* ${note}` : "");
+  };
+
+  const orderText = textBlock("Bestellung", orderList, orderGroups);
+  const takeText = textBlock("Mitnehmen", takeList, null);
 
   const section = (id, title, rows) => rows ? `
     <section id="${id}" class="print-section">
@@ -1187,6 +1242,7 @@ function composeOrder() {
       th,td{border:1px solid #aaa;padding:8px;text-align:left}
       th{background:#ddd}
       tr.urgent td{background:#fbe3e0;font-weight:700}
+      tr.date-group-row td{background:#e7ecf3;font-weight:700;border-top:2px solid #99a6b8}
       .note{margin-top:6px;padding:10px;background:#f3f3f3;border-radius:6px;white-space:pre-wrap}
       .actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
       button{padding:10px 14px}
@@ -1261,7 +1317,7 @@ function addHistoryEntry(list, meta) {
     date:meta.date,
     project:meta.project,
     note:meta.note,
-    items:list.map(x => ({id:x.item.id, name:x.item.name, qty:x.qty, unit:x.unit, type:x.type, urgent:!!x.urgent}))
+    items:list.map(x => ({id:x.item.id, name:x.item.name, qty:x.qty, unit:x.unit, type:x.type, urgent:!!x.urgent, neededDate:x.neededDate || ""}))
   });
   if (orderHistory.length > 50) orderHistory.length = 50;
   saveJSON(historyKey(activeSiteId), orderHistory);
@@ -1287,7 +1343,7 @@ function renderHistory() {
     const takeCount = h.items.filter(i => i.type === "take").length;
     const rows = h.items.map(i => `
       <div class="cart-item ${i.urgent ? "urgent" : ""}">
-        <div>${i.urgent ? "❗ " : ""}${esc(i.name)}${i.type === "take" ? ' <small>(Mitnehmen)</small>' : ""}</div>
+        <div>${i.urgent ? "❗ " : ""}${esc(i.name)}${i.type === "take" ? ' <small>(Mitnehmen)</small>' : ""}${i.neededDate ? ' <small>(bis ' + esc(formatDateDE(i.neededDate)) + ')</small>' : ""}</div>
         <div><b>${esc(i.qty)} ${esc(i.unit)}</b></div>
       </div>`
     ).join("");
@@ -1324,7 +1380,7 @@ function reloadHistoryEntry(id) {
   entry.items.forEach(it => {
     if (!itemById(it.id)) { missing++; return; }
     const o = ensureCartRow(it.id);
-    if (it.type === "order") { o.orderQty = it.qty; o.orderUnit = it.unit; }
+    if (it.type === "order") { o.orderQty = it.qty; o.orderUnit = it.unit; if (it.neededDate) o.neededDate = it.neededDate; }
     else { o.takeQty = it.qty; o.takeUnit = it.unit; }
     if (it.urgent) o.urgent = true;
   });
@@ -1458,7 +1514,7 @@ function saveAdminEdit() {
 
 function cleanCart(c) {
   const out = {};
-  Object.keys(c).forEach(id => { if (rowHasQty(c[id]) || c[id].urgent) out[id] = c[id]; });
+  Object.keys(c).forEach(id => { if (rowHasQty(c[id]) || c[id].urgent || c[id].neededDate) out[id] = c[id]; });
   return out;
 }
 
