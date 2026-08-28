@@ -3,654 +3,552 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Materialliste – überarbeitet</title>
+<title>Materialplaner</title>
 <style>
   :root {
-    --bg:#dfe3e8;
-    --card:#f8f9fa;
-    --line:#9aa4af;
-    --text:#111820;
-    --muted:#46525f;
-    --accent:#244584;
-    --accent-soft:#d8e3ff;
-    --ok:#d9efdf;
-    --danger:#a33;
+    --bg:#eef1f4;
+    --surface:#ffffff;
+    --surface-alt:#f6f7f9;
+    --border:#d7dbe0;
+    --text:#1b2430;
+    --muted:#5b6675;
+    --accent:#c8611f;
+    --accent-dark:#a64f18;
+    --accent-contrast:#ffffff;
+    --accent-soft:#fbe6d3;
+    --success:#2f8f5b;
+    --success-soft:#e3f5ea;
+    --urgent:#c0392b;
+    --urgent-soft:#fbe3e0;
+    --header-bg:#1e2733;
+    --header-text:#f4f6f8;
+    --header-muted:#aab4c0;
+    --radius:10px;
+    --shadow:0 2px 10px rgba(0,0,0,.08);
+    --header-h:112px;
   }
   * { box-sizing:border-box; }
+  html, body { height:100%; }
   body {
     margin:0;
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
     background:var(--bg);
     color:var(--text);
+    -webkit-tap-highlight-color:transparent;
   }
-  button,input,select { font:inherit; }
+  button, input, select, textarea { font:inherit; color:inherit; }
   button { cursor:pointer; }
-  .topbar {
-    position:sticky;
-    top:0;
-    z-index:30;
-    background:#fff;
-    border-bottom:1px solid var(--line);
-    padding:12px 16px;
-    box-shadow:0 2px 8px rgba(0,0,0,.05);
-  }
-  .toprow {
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
-  }
-  h1 {
-    margin:0 14px 0 0;
-    font-size:24px;
-    color:var(--accent);
-  }
-  #searchInput {
-    flex:1 1 360px;
-    min-width:220px;
-    padding:11px 12px;
-    border:1px solid #aeb7c2;
+  input, select, textarea {
+    background:var(--surface);
+    border:1px solid var(--border);
     border-radius:8px;
-    font-size:17px;
+    padding:9px 10px;
   }
-  .btn {
-    border:1px solid #aeb7c2;
-    background:#fff;
-    border-radius:8px;
-    padding:10px 12px;
-  }
-  .btn.primary {
-    background:var(--accent);
-    color:#fff;
+  input:focus, select:focus, textarea:focus {
+    outline:2px solid var(--accent);
+    outline-offset:1px;
     border-color:var(--accent);
   }
-  .btn.danger {
-    color:var(--danger);
+
+  .btn {
+    border:1px solid var(--border);
+    background:var(--surface);
+    border-radius:8px;
+    padding:10px 14px;
+    font-weight:600;
+    white-space:nowrap;
   }
-  .categorybar {
-    display:flex;
-    gap:7px;
-    overflow-x:auto;
-    padding-top:10px;
+  .btn:hover { border-color:#b7c0cb; }
+  .btn.primary { background:var(--accent); color:var(--accent-contrast); border-color:var(--accent-dark); }
+  .btn.primary:hover { background:var(--accent-dark); }
+  .btn.danger { color:var(--urgent); }
+  .btn.ghost { background:transparent; border-color:transparent; }
+  .btn.block { width:100%; }
+  .btn.small { padding:7px 10px; font-size:13px; }
+
+  .hint { color:var(--muted); font-size:13px; line-height:1.5; }
+  .empty { padding:20px; text-align:center; color:var(--muted); }
+
+  /* ---------- App shell / header ---------- */
+  .app-shell { min-height:100%; padding-bottom:78px; }
+
+  .app-header {
+    position:sticky; top:0; z-index:40;
+    background:var(--header-bg);
+    color:var(--header-text);
+    padding:10px 12px 0;
+    box-shadow:0 2px 10px rgba(0,0,0,.2);
+  }
+  .app-header-row {
+    display:flex; align-items:center; gap:10px;
+  }
+  .app-title {
+    flex:1;
+    font-size:17px; font-weight:800; letter-spacing:.2px;
+    text-align:center;
+  }
+  .icon-btn {
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.14);
+    color:var(--header-text);
+    border-radius:9px;
+    padding:8px 10px;
+    display:flex; align-items:center; gap:6px;
+    position:relative;
+  }
+  .icon-btn:hover { background:rgba(255,255,255,.15); }
+  .site-label { display:flex; flex-direction:column; align-items:flex-start; line-height:1.15; max-width:38vw; }
+  .site-label strong { font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+  .site-label small { color:var(--header-muted); font-size:10px; }
+  .badge {
+    display:inline-flex; min-width:18px; height:18px; padding:0 4px;
+    align-items:center; justify-content:center;
+    background:var(--accent); color:#fff;
+    border-radius:10px; font-size:11px; font-weight:800;
+    position:absolute; top:-6px; right:-6px;
+  }
+  .badge.zero { display:none; }
+
+  .search-row { padding:10px 0; }
+  #searchInput {
+    width:100%;
+    padding:12px 12px;
+    font-size:16px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.95);
+  }
+
+  .desktop-nav { display:none; }
+  .desktop-nav .btn {
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.2);
+    color:var(--header-text);
+  }
+  .desktop-nav .btn:hover { background:rgba(255,255,255,.16); }
+
+  .category-bar {
+    display:flex; gap:7px; overflow-x:auto;
+    padding:10px 0 12px;
     scrollbar-width:thin;
   }
   .catbtn {
     white-space:nowrap;
-    border:1px solid #bbc4ce;
-    background:#fff;
-    padding:8px 11px;
+    border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.06);
+    color:var(--header-text);
+    padding:8px 12px;
     border-radius:18px;
+    font-size:13px;
+    font-weight:600;
   }
-  .catbtn.active {
-    background:var(--accent);
-    color:#fff;
-    border-color:var(--accent);
-  }
+  .catbtn.fav { border-color:#e0a13a; color:#f3c46c; }
+  .catbtn.active { background:var(--accent); color:#fff; border-color:var(--accent-dark); }
 
+  /* ---------- Layout ---------- */
   .layout {
     display:grid;
-    grid-template-columns:minmax(0,1fr) 330px;
+    grid-template-columns:1fr;
     gap:16px;
-    max-width:1500px;
-    margin:16px auto;
-    padding:0 16px 30px;
+    max-width:1400px;
+    margin:14px auto;
+    padding:0 12px;
   }
   .panel {
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:10px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
     overflow:hidden;
+    box-shadow:var(--shadow);
   }
   .panel-title {
-    font-weight:bold;
-    font-size:18px;
+    font-weight:800;
+    font-size:16px;
     padding:13px 15px;
-    border-bottom:1px solid var(--line);
-    background:#fafbfc;
-  }
-  #searchResults {
-    display:none;
-    padding:8px;
-  }
-  .search-note {
-    padding:8px 6px 12px;
-    color:var(--muted);
-  }
-  .material-row {
-    display:grid;
-    grid-template-columns:minmax(220px,1fr) 95px 120px;
-    gap:8px;
-    align-items:center;
-    padding:9px 10px;
-    border-bottom:1px solid #edf0f2;
-  }
-  .material-row:last-child { border-bottom:none; }
-  .material-name { font-weight:600; }
-  .material-meta {
-    display:block;
-    margin-top:3px;
-    color:var(--muted);
-    font-size:12px;
-    font-weight:normal;
-  }
-  .qty {
-    width:100%;
-    min-width:70px;
-    padding:8px;
-    border:1px solid #b9c1ca;
-    border-radius:6px;
-  }
-  .unit {
-    width:100%;
-    padding:8px;
-    border:1px solid #b9c1ca;
-    border-radius:6px;
-    background:#fff;
-  }
-  .selected {
-    background:var(--ok);
+    border-bottom:1px solid var(--border);
+    background:var(--surface-alt);
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
   }
 
-  #categoryView { padding:12px; }
-  details {
-    border:1px solid var(--line);
-    border-radius:8px;
-    margin-bottom:10px;
+  #categoryView { padding:10px; }
+  #searchResults { padding:10px; }
+  .search-count { padding:4px 6px 12px; color:var(--muted); font-size:13px; }
+
+  details.subgroup {
+    border:1px solid var(--border);
+    border-radius:9px;
+    margin-bottom:9px;
     overflow:hidden;
-    background:#fff;
+    background:var(--surface);
   }
-  summary {
+  details.subgroup > summary {
     padding:11px 12px;
-    background:#f7f9fb;
-    font-weight:bold;
+    background:var(--surface-alt);
+    font-weight:700;
+    font-size:14px;
     cursor:pointer;
     user-select:none;
+    list-style:none;
   }
-  .subrows { padding:0; }
-
-  .cart {
-    position:sticky;
-    top:112px;
-    align-self:start;
-    max-height:calc(100vh - 130px);
-    display:flex;
-    flex-direction:column;
-  }
-  .cart-head {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
-  #cartCount {
-    display:inline-flex;
-    min-width:28px;
-    height:28px;
-    border-radius:14px;
-    align-items:center;
-    justify-content:center;
-    background:var(--accent);
-    color:#fff;
-    font-size:13px;
-  }
-  .order-meta {
-    display:grid;
-    gap:7px;
-    padding:10px 12px;
-    border-bottom:1px solid var(--line);
-  }
-  .order-meta input {
-    width:100%;
-    padding:8px;
-    border:1px solid #bbc4ce;
-    border-radius:6px;
-  }
-  #cartItems {
-    overflow:auto;
-    padding:8px;
-    min-height:80px;
-  }
-  .cart-item {
-    display:grid;
-    grid-template-columns:1fr auto;
-    gap:5px 8px;
-    padding:8px 4px;
-    border-bottom:1px solid #edf0f2;
-  }
-  .cart-item small { color:var(--muted); }
-  .cart-actions {
-    display:grid;
-    gap:8px;
-    padding:10px 12px 12px;
-    border-top:1px solid var(--line);
-  }
-
-  .manage {
-    display:none;
-    margin:0 16px 16px;
-    max-width:1468px;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:14px;
-  }
-  .manage.show { display:block; }
-  .formgrid {
-    display:grid;
-    grid-template-columns:2fr 1fr 1fr 1.2fr auto;
-    gap:8px;
-    align-items:end;
-  }
-  .field label {
-    display:block;
-    font-size:12px;
+  details.subgroup > summary::-webkit-details-marker { display:none; }
+  details.subgroup > summary::before {
+    content:"▸ ";
     color:var(--muted);
-    margin-bottom:4px;
   }
-  .field input,.field select {
-    width:100%;
-    padding:9px;
-    border:1px solid #bbc4ce;
-    border-radius:6px;
+  details.subgroup[open] > summary::before { content:"▾ "; }
+
+  /* ---------- Material row ---------- */
+  .mat-row {
+    padding:10px 10px;
+    border-bottom:1px solid var(--surface-alt);
+    border-left:3px solid transparent;
   }
-  .hint {
-    margin-top:8px;
+  .mat-row:last-child { border-bottom:none; }
+  .mat-row.is-selected { background:var(--success-soft); border-left-color:var(--success); }
+  .mat-row.is-urgent { background:var(--urgent-soft); border-left-color:var(--urgent); }
+  .mat-row.is-selected.is-urgent { background:linear-gradient(90deg, var(--urgent-soft), var(--success-soft)); }
+
+  .mat-row-top {
+    display:flex; align-items:center; gap:8px; margin-bottom:8px;
+  }
+  .mat-name { font-weight:700; font-size:14px; flex:1; }
+  .mat-meta { display:block; color:var(--muted); font-size:11.5px; font-weight:normal; margin-top:2px; }
+
+  .icon-toggle {
+    background:var(--surface-alt);
+    border:1px solid var(--border);
+    border-radius:7px;
+    width:32px; height:32px;
+    font-size:15px;
+    font-weight:800;
     color:var(--muted);
-    font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
   }
-  .empty {
-    padding:18px;
+  .fav-toggle.active { background:#fff3d6; border-color:#e0a13a; color:#b8791a; }
+  .urgent-toggle.active { background:var(--urgent-soft); border-color:var(--urgent); color:var(--urgent); }
+
+  .mat-row-qty { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .qty-field label {
+    display:block; font-size:10.5px; color:var(--muted); font-weight:700;
+    text-transform:uppercase; letter-spacing:.03em; margin-bottom:3px;
+  }
+  .qty-input-group { display:flex; gap:4px; }
+  .qty-input-group input {
+    width:0; flex:1 1 0;
+    min-width:0;
+    padding:8px 6px;
     text-align:center;
-    color:var(--muted);
+  }
+  .qty-input-group select {
+    flex:1 1 0; min-width:0;
+    padding:8px 4px;
+    font-size:12.5px;
   }
 
-  @media(max-width:900px) {
-    .layout { grid-template-columns:1fr; }
-    .cart {
-      position:relative;
-      top:auto;
-      max-height:none;
-      order:-1;
-    }
-    .formgrid { grid-template-columns:1fr 1fr; }
-    .material-row { grid-template-columns:minmax(0,1fr) 82px 105px; }
+  /* ---------- Cart / sheets ---------- */
+  .sheet {
+    position:fixed; left:0; right:0; bottom:0;
+    background:var(--surface);
+    border-radius:16px 16px 0 0;
+    max-height:85vh;
+    display:flex; flex-direction:column;
+    transform:translateY(115%);
+    transition:transform .25s ease;
+    z-index:60;
+    box-shadow:0 -6px 24px rgba(0,0,0,.22);
   }
-  @media(max-width:560px) {
-    h1 { width:100%; font-size:21px; }
-    .topbar { padding:10px; }
-    .layout { padding:0 8px 20px; margin-top:8px; gap:10px; }
-    .material-row {
-      grid-template-columns:1fr 76px 95px;
-      padding:9px 6px;
-      gap:5px;
-    }
-    .material-name { font-size:14px; }
-    .qty,.unit { font-size:14px; padding:7px 5px; }
-    .formgrid { grid-template-columns:1fr; }
+  .sheet.open { transform:translateY(0); }
+  .sheet-head {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 16px 10px; border-bottom:1px solid var(--border);
+    flex-shrink:0;
   }
+  .sheet-head h2 { margin:0; font-size:17px; }
+  .sheet-close {
+    background:var(--surface-alt); border:1px solid var(--border);
+    border-radius:50%; width:32px; height:32px; font-size:16px; line-height:1;
+  }
+  .sheet-body { padding:14px 16px 20px; overflow:auto; }
+
+  .sheet-backdrop {
+    position:fixed; inset:0; background:rgba(8,12,18,.5);
+    opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:55;
+  }
+  .sheet-backdrop.show { opacity:1; pointer-events:auto; }
+
+  .cart-summary { padding:10px 16px 0; display:grid; gap:8px; }
+  .cart-summary input, .cart-summary textarea { width:100%; }
+  .cart-summary textarea { resize:vertical; min-height:44px; }
+  #cartItems { padding:6px 16px; }
+  .cart-group-title { font-weight:800; padding:10px 2px 6px; font-size:13px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); }
+  .cart-item {
+    display:grid; grid-template-columns:1fr auto; gap:4px 8px;
+    padding:8px 2px; border-bottom:1px solid var(--surface-alt);
+  }
+  .cart-item.urgent { color:var(--urgent); }
+  .cart-item small { color:var(--muted); font-weight:normal; }
+  .cart-actions { display:grid; gap:8px; padding:12px 16px 18px; border-top:1px solid var(--border); flex-shrink:0; }
+
+  .site-card {
+    display:flex; align-items:center; gap:10px;
+    padding:12px; border:1px solid var(--border); border-radius:9px;
+    margin-bottom:8px; background:var(--surface-alt);
+  }
+  .site-card.active { border-color:var(--accent); background:var(--accent-soft); }
+  .site-card .site-card-main { flex:1; min-width:0; }
+  .site-card .site-card-main strong { display:block; font-size:14.5px; }
+  .site-card .site-card-main small { color:var(--muted); }
+  .site-card-actions { display:flex; gap:6px; flex-wrap:wrap; }
+
+  .more-list { display:grid; gap:8px; }
+  .more-list .btn { justify-content:flex-start; text-align:left; padding:14px 14px; font-size:15px; }
+
+  .field { margin-bottom:10px; }
+  .field label { display:block; font-size:12px; color:var(--muted); margin-bottom:4px; font-weight:600; }
+  .field input, .field select { width:100%; }
+  .formrow { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+  .backup-box {
+    border:1px dashed #c3ccd6; border-radius:9px; padding:12px; margin-bottom:16px;
+  }
+  .backup-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .backup-actions label.btn { display:inline-flex; align-items:center; margin:0; }
+
+  details.history-entry {
+    border:1px solid var(--border); border-radius:9px; margin-bottom:9px; overflow:hidden;
+  }
+  details.history-entry > summary {
+    padding:11px 12px; background:var(--surface-alt); font-weight:700; font-size:13.5px;
+    cursor:pointer; list-style:none;
+  }
+  details.history-entry > summary::-webkit-details-marker { display:none; }
+
+  /* ---------- Bottom navigation (mobile) ---------- */
+  .bottom-nav {
+    position:fixed; left:0; right:0; bottom:0; z-index:50;
+    background:var(--header-bg); color:var(--header-text);
+    display:flex; padding:6px 8px calc(6px + env(safe-area-inset-bottom));
+    box-shadow:0 -2px 10px rgba(0,0,0,.2);
+  }
+  .bottom-nav-btn {
+    flex:1; background:none; border:none; color:var(--header-muted);
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    font-size:10.5px; font-weight:700; padding:6px 2px; border-radius:8px;
+    position:relative;
+  }
+  .bottom-nav-btn span:first-child { font-size:19px; }
+  .bottom-nav-btn.active { color:#fff; background:rgba(255,255,255,.08); }
+  .bottom-nav-btn .badge { top:-2px; right:14px; }
 
   @media print {
     body > * { display:none !important; }
   }
 
-  /* ==== V6: dunklere, kontrastreichere Darstellung ==== */
-  .topbar { background:#e9edf2; border-bottom:2px solid #7f8a96; }
-  .panel { background:#f7f8fa; border:1px solid #8f99a4; }
-  .panel-title { background:#d7dde4; color:#111820; border-bottom:1px solid #8f99a4; }
-  .catbtn { background:#d9dee5; border:1px solid #8a949f; color:#1a232c; font-weight:600; }
-  .catbtn:hover { background:#c9d0d8; }
-  .catbtn.active { background:#244584; color:#fff; border-color:#173261; }
-  details { border:1px solid #939da8; background:#f7f8fa; }
-  summary { background:#cfd5dc; color:#141b22; font-weight:700; border-bottom:1px solid #a5adb6; }
-  .material-row { background:#f3f5f7; border-bottom:1px solid #b4bcc5; }
-  .material-row:nth-child(even) { background:#e7ebef; }
-  .material-row.selected { background:#cfe6d4; }
-  .material-name { color:#101820; font-weight:700; font-size:15px; }
-  .material-meta { display:none !important; }
-  .qty, .unit, .field input, .field select, .order-meta input, #searchInput {
-    background:#fff; color:#111820; border:1px solid #7d8893;
-  }
-  .qty:focus, .unit:focus, .field input:focus, .field select:focus, .order-meta input:focus, #searchInput:focus {
-    outline:2px solid #6f8fc8; border-color:#244584;
-  }
-  .cart-item { border-bottom:1px solid #b2bac3; }
-  .manage { background:#eef1f4; border:1px solid #8f99a4; }
-  .empty, .hint { color:#3d4955; }
+  @media (min-width:980px) {
+    .app-shell { padding-bottom:0; }
+    .bottom-nav { display:none; }
+    .desktop-nav { display:flex; gap:8px; padding:10px 0; flex-wrap:wrap; }
+    .app-header { padding:12px 20px 0; }
+    .app-title { text-align:left; font-size:20px; flex:0 0 auto; }
+    .app-header-row.search-row { padding:0 0 10px; }
+    #searchInput { max-width:420px; }
 
-
-  /* ==== V11: kompakte Materialzeilen ==== */
-  .material-row {
-    display:block;
-    padding:8px 10px;
-    border-bottom:1px solid #b4bcc5;
-  }
-
-  .material-main-row,
-  .material-extra-row,
-  .compact-head {
-    display:grid;
-    grid-template-columns:minmax(220px,1fr) 88px 110px 125px 42px;
-    gap:8px;
-    align-items:center;
-  }
-
-  .material-extra-row {
-    margin-top:6px;
-    padding-top:6px;
-    border-top:1px dashed #b7bec7;
-  }
-
-  .compact-head {
-    padding:8px 10px;
-    background:#c6cdd5;
-    border-bottom:1px solid #939da8;
-    font-weight:700;
-    font-size:13px;
-  }
-
-  .compact-head span:not(:first-child) {
-    text-align:center;
-  }
-
-  .material-extra-label {
-    color:#56616d;
-    font-size:18px;
-    padding-left:10px;
-  }
-
-  .type-select {
-    width:100%;
-    padding:8px;
-    border:1px solid #7d8893;
-    border-radius:6px;
-    background:#fff;
-    color:#111820;
-  }
-
-  .plus-btn,
-  .remove-extra-btn {
-    width:38px;
-    height:38px;
-    border-radius:7px;
-    border:1px solid #7d8893;
-    background:#fff;
-    font-size:21px;
-    line-height:1;
-  }
-
-  .remove-extra-btn {
-    color:#922;
-  }
-
-  .material-row.selected {
-    background:#cfe6d4;
-  }
-
-  #adminPanel .formgrid {
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-  }
-
-  #adminPanel .field {
-    min-width:0;
-  }
-
-  #adminPanel .field input,
-  #adminPanel .field select {
-    min-height:44px;
-    font-size:16px;
-  }
-
-  #adminPanel #saveEditBtn {
-    min-height:46px;
-    font-size:16px;
-    align-self:end;
-  }
-
-  @media(max-width:900px) {
-    .material-main-row,
-    .material-extra-row,
-    .compact-head {
-      grid-template-columns:minmax(150px,1fr) 72px 92px 112px 40px;
-      gap:5px;
+    .layout {
+      grid-template-columns:minmax(0,1fr) 360px;
+      padding:0 20px 30px;
+      align-items:start;
     }
 
-    #adminPanel .formgrid {
-      grid-template-columns:1fr;
+    .sheet:not(.cart-sheet) {
+      left:50%; top:50%; bottom:auto; right:auto;
+      transform:translate(-50%,-46%) scale(.98);
+      opacity:0; pointer-events:none;
+      width:min(680px,92vw); max-height:82vh;
+      border-radius:14px;
+      transition:opacity .18s ease, transform .18s ease;
     }
+    .sheet:not(.cart-sheet).open {
+      transform:translate(-50%,-50%) scale(1);
+      opacity:1; pointer-events:auto;
+    }
+
+    .cart-sheet {
+      position:sticky; top:calc(var(--header-h) + 14px);
+      grid-column:2; grid-row:1 / span 2;
+      transform:none !important;
+      max-height:calc(100vh - var(--header-h) - 28px);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
+
+    .mat-row-top { margin-bottom:6px; }
+    .mat-row-qty { grid-template-columns:180px 180px; }
   }
 
-  @media(max-width:620px) {
-    .material-row {
-      padding:7px 5px;
-    }
-
-    .material-main-row,
-    .material-extra-row,
-    .compact-head {
-      grid-template-columns:minmax(105px,1fr) 58px 74px 90px 34px;
-      gap:4px;
-    }
-
-    .compact-head {
-      padding:7px 5px;
-      font-size:9px;
-    }
-
-    .material-name {
-      font-size:12px;
-      line-height:1.15;
-    }
-
-    .qty,
-    .unit,
-    .type-select {
-      font-size:11px;
-      padding:6px 3px;
-    }
-
-    .plus-btn,
-    .remove-extra-btn {
-      width:32px;
-      height:32px;
-      font-size:18px;
-    }
-
-    #adminPanel {
-      padding:14px 10px;
-    }
-
-    #adminPanel .field input,
-    #adminPanel .field select {
-      min-height:50px;
-      font-size:18px;
-      padding:10px 12px;
-    }
-
-    #adminPanel .field label {
-      font-size:14px;
-    }
-
-    #adminPanel #saveEditBtn {
-      min-height:52px;
-      font-size:18px;
-      width:100%;
-    }
+  @media (max-width:430px) {
+    .app-title { font-size:15px; }
+    .icon-btn { padding:7px 8px; }
+    .mat-row-qty { grid-template-columns:1fr 1fr; gap:6px; }
+    .qty-input-group select { font-size:11px; }
   }
-
-  /* ==== V13: mobile Navigation platzsparend ==== */
-  #mobileMenuBtn {
-    display:none;
-  }
-
-  @media (max-width: 700px) {
-    .topbar {
-      transition:transform .22s ease;
-      will-change:transform;
-    }
-
-    .topbar.mobile-hidden {
-      transform:translateY(-105%);
-    }
-
-    #mobileMenuBtn {
-      position:fixed;
-      right:12px;
-      bottom:16px;
-      z-index:60;
-      width:48px;
-      height:48px;
-      border-radius:50%;
-      border:1px solid #6f7984;
-      background:#244584;
-      color:#fff;
-      font-size:23px;
-      line-height:1;
-      align-items:center;
-      justify-content:center;
-      box-shadow:0 3px 10px rgba(0,0,0,.28);
-    }
-
-    #mobileMenuBtn.show {
-      display:flex;
-    }
-  }
-
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="toprow">
-    <h1>Materialliste</h1>
-    <input id="searchInput" type="search" placeholder="Material suchen, z. B. Hilti Hit, Rüttelplatte, DN100 ...">
-    <button class="btn" id="manageBtn">Material hinzufügen</button>
-    <button class="btn" id="adminBtn">Materialverwaltung</button>
-    <button class="btn" id="historyBtn">Verlauf</button>
-    <button class="btn primary" id="summaryTopBtn">Bestellung <span id="topCount">0</span></button>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="app-header-row">
+      <button class="icon-btn" id="siteSwitchBtn" type="button" title="Baustelle wechseln">
+        <span class="site-label"><strong id="activeSiteName">Baustelle</strong><small>wechseln</small></span>
+      </button>
+      <div class="app-title">Materialplaner</div>
+      <button class="icon-btn" id="cartOpenBtn" type="button" title="Auswahl öffnen">
+        🛒<span class="badge zero" id="headerCartBadge">0</span>
+      </button>
+    </div>
+    <div class="app-header-row search-row">
+      <input type="search" id="searchInput" placeholder="Material suchen, z. B. Hilti Hit, Rüttelplatte, DN100 ...">
+    </div>
+    <nav class="desktop-nav">
+      <button class="btn" id="navAddMaterial" type="button">Material hinzufügen</button>
+      <button class="btn" id="navAdmin" type="button">Materialverwaltung</button>
+      <button class="btn" id="navHistory" type="button">Verlauf</button>
+      <button class="btn" id="navBackup" type="button">Datensicherung</button>
+      <button class="btn" id="navSites" type="button">Baustellen</button>
+    </nav>
+    <div class="category-bar" id="categoryBar"></div>
+  </header>
+
+  <div class="layout">
+    <main>
+      <section class="panel" id="searchPanel" hidden>
+        <div class="panel-title">Suche<span class="hint" id="searchCountLabel"></span></div>
+        <div id="searchResults"></div>
+      </section>
+
+      <section class="panel" id="categoryPanel">
+        <div class="panel-title" id="categoryTitle">Kategorie</div>
+        <div id="categoryView"></div>
+      </section>
+    </main>
+
+    <aside class="sheet cart-sheet" id="cartSheet">
+      <div class="sheet-head">
+        <h2>Auswahl<span class="badge zero" id="cartCount" style="position:static;margin-left:8px;">0</span></h2>
+        <button class="sheet-close" id="cartCloseBtn" type="button" aria-label="Schließen">✕</button>
+      </div>
+      <div class="cart-summary">
+        <input type="text" id="orderProject" placeholder="Bauvorhaben / Ansprechpartner">
+        <input type="date" id="orderDate">
+        <textarea id="orderNote" placeholder="Anmerkung zur Bestellung (optional)"></textarea>
+      </div>
+      <div id="cartItems"></div>
+      <div class="cart-actions">
+        <button class="btn primary" id="openOrderBtn" type="button">Bestellung zusammenfassen</button>
+        <button class="btn" id="saveOrderBtn" type="button">Bestellung speichern</button>
+        <button class="btn danger" id="clearOrderBtn" type="button">Bestellung leeren</button>
+      </div>
+    </aside>
   </div>
-  <div class="categorybar" id="categoryBar"></div>
+
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bottom-nav-btn active" id="navMaterialBtn" type="button"><span>📦</span><span>Material</span></button>
+    <button class="bottom-nav-btn" id="navCartBtn" type="button"><span>🛒</span><span>Auswahl</span><span class="badge zero" id="bottomCartBadge">0</span></button>
+    <button class="bottom-nav-btn" id="navMoreBtn" type="button"><span>☰</span><span>Mehr</span></button>
+  </nav>
 </div>
 
-<button id="mobileMenuBtn" type="button" aria-label="Navigation öffnen" title="Navigation öffnen">☰</button>
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
 
-<div class="manage" id="managePanel">
-  <div class="panel-title" style="padding:0 0 10px;border:0;background:none;">Material dauerhaft hinzufügen</div>
-  <div class="formgrid">
-    <div class="field">
-      <label>Material</label>
-      <input id="newName" placeholder="z. B. Spezialdübel XY">
-    </div>
-    <div class="field">
-      <label>Kategorie</label>
-      <select id="newCategory"></select>
-    </div>
-    <div class="field">
-      <label>Unterkategorie</label>
-      <input id="newSubcategory" placeholder="z. B. Sonstiges">
-    </div>
-    <div class="field">
-      <label>Einheiten</label>
-      <input id="newUnits" placeholder="Stk., Pkg.">
-    </div>
-    <button class="btn primary" id="addMaterialBtn">Speichern</button>
-  </div>
-  <div class="hint">Das neue Material wird dauerhaft auf diesem Gerät gespeichert und erscheint künftig in Suche und Kategorie.</div>
-</div>
-
-<div class="manage" id="adminPanel">
-  <div class="panel-title" style="padding:0 0 10px;border:0;background:none;">Materialverwaltung</div>
-  <div class="hint" style="margin-bottom:10px;">
-    Änderungen sind nur hier möglich. In der normalen Materialliste gibt es bewusst keine Bearbeiten- oder Löschen-Buttons.
-  </div>
-
-  <div class="hint" style="margin:0 0 16px;padding:12px;border:1px dashed #8f99a4;border-radius:8px;color:var(--text);">
-    <div style="font-weight:700;margin-bottom:6px;">Datensicherung</div>
-    <div style="margin-bottom:10px;">
-      Eigene Materialien, Änderungen, die aktuelle Auswahl und der Verlauf liegen nur in diesem Browser auf diesem Gerät.
-      Sichere sie regelmäßig als Datei – z. B. um sie auf ein anderes Handy/PC zu übertragen oder wiederherzustellen, falls der Browser-Speicher gelöscht wird.
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button class="btn primary" id="exportDataBtn" type="button">Daten exportieren</button>
-      <label class="btn" for="importDataInput" style="display:inline-block;margin:0;">
-        Daten importieren
-        <input type="file" id="importDataInput" accept="application/json" style="display:none;">
-      </label>
-    </div>
-  </div>
-
-  <div class="formgrid" style="grid-template-columns:1.4fr 1.6fr 1fr 1fr 1.2fr auto;">
-    <div class="field">
-      <label>Material suchen</label>
-      <input id="adminSearch" placeholder="Materialname eingeben">
-    </div>
-    <div class="field">
-      <label>Material auswählen</label>
-      <select id="adminMaterial"></select>
-    </div>
-    <div class="field">
-      <label>Neuer Name</label>
-      <input id="editName">
-    </div>
-    <div class="field">
-      <label>Kategorie</label>
-      <select id="editCategory"></select>
-    </div>
-    <div class="field">
-      <label>Unterkategorie</label>
-      <input id="editSubcategory">
-    </div>
-    <button class="btn primary" id="saveEditBtn">Änderung speichern</button>
-  </div>
-  <div class="field" style="margin-top:10px;max-width:520px;">
-    <label>Einheiten</label>
-    <input id="editUnits" placeholder="Stk., Pkg., Karton">
-  </div>
-  <div class="hint">
-    Es gibt hier absichtlich keinen Löschen-Button. Damit kann niemand durch einen falschen Klick Material aus dem Stamm entfernen.
+<div class="sheet" id="moreSheet">
+  <div class="sheet-head"><h2>Mehr</h2><button class="sheet-close" data-close type="button" aria-label="Schließen">✕</button></div>
+  <div class="sheet-body more-list">
+    <button class="btn" id="moreSitesBtn" type="button">🏗️ Baustellen wechseln / verwalten</button>
+    <button class="btn" id="moreHistoryBtn" type="button">🕘 Bestellverlauf</button>
+    <button class="btn" id="moreAddMaterialBtn" type="button">➕ Material hinzufügen</button>
+    <button class="btn" id="moreAdminBtn" type="button">🛠️ Materialverwaltung</button>
+    <button class="btn" id="moreBackupBtn" type="button">💾 Datensicherung</button>
   </div>
 </div>
 
-<div class="manage" id="historyPanel">
-  <div class="panel-title" style="padding:0 0 10px;border:0;background:none;">Bestellverlauf</div>
-  <div class="hint" style="margin-bottom:10px;">
-    Jede zusammengefasste Bestellung wird hier automatisch mit Datum und Bauvorhaben gespeichert – auch wenn die aktuelle Auswahl später geleert wird. So lässt sich nachvollziehen, was wann bestellt wurde, und eine ältere Bestellung kann bei Bedarf erneut in die Auswahl geladen werden.
-  </div>
-  <div id="historyList"></div>
-  <div class="cart-actions" style="padding:12px 0 0;">
-    <button class="btn danger" id="clearHistoryBtn" type="button">Gesamten Verlauf löschen</button>
+<div class="sheet" id="sitesSheet">
+  <div class="sheet-head"><h2>Baustellen</h2><button class="sheet-close" data-close type="button" aria-label="Schließen">✕</button></div>
+  <div class="sheet-body">
+    <div class="hint" style="margin-bottom:12px;">
+      Jede Baustelle hat ihre eigene Auswahl und ihren eigenen Bestellverlauf. Der Materialkatalog (inkl. eigener Materialien) wird von allen Baustellen gemeinsam genutzt.
+    </div>
+    <div id="siteList"></div>
+    <div class="formrow" style="margin-top:14px;">
+      <div class="field" style="grid-column:1/-1;">
+        <label>Neue Baustelle</label>
+        <input id="newSiteName" placeholder="z. B. Musterstraße 12">
+      </div>
+    </div>
+    <button class="btn primary block" id="addSiteBtn" type="button">Baustelle anlegen</button>
+
+    <div id="archivedSiteWrap" style="margin-top:18px;"></div>
   </div>
 </div>
 
-<div class="layout">
-  <main>
-    <section class="panel" id="searchPanel">
-      <div class="panel-title">Suche</div>
-      <div id="searchResults"></div>
-      <div class="empty" id="searchEmpty">Oben Material eingeben oder eine Kategorie auswählen.</div>
-    </section>
+<div class="sheet" id="historySheet">
+  <div class="sheet-head"><h2>Bestellverlauf</h2><button class="sheet-close" data-close type="button" aria-label="Schließen">✕</button></div>
+  <div class="sheet-body">
+    <div class="hint" style="margin-bottom:12px;" id="historyIntro"></div>
+    <div id="historyList"></div>
+    <button class="btn danger block" id="clearHistoryBtn" type="button" style="margin-top:10px;">Verlauf dieser Baustelle löschen</button>
+  </div>
+</div>
 
-    <section class="panel" style="margin-top:14px;">
-      <div class="panel-title" id="categoryTitle">Kategorie</div>
-      <div id="categoryView"></div>
-    </section>
-  </main>
+<div class="sheet" id="addMaterialSheet">
+  <div class="sheet-head"><h2>Material hinzufügen</h2><button class="sheet-close" data-close type="button" aria-label="Schließen">✕</button></div>
+  <div class="sheet-body">
+    <div class="hint" style="margin-bottom:12px;">Das neue Material wird dauerhaft gespeichert und steht künftig auf allen Baustellen in Suche und Kategorie zur Verfügung.</div>
+    <div class="field"><label>Material</label><input id="newName" placeholder="z. B. Spezialdübel XY"></div>
+    <div class="formrow">
+      <div class="field"><label>Kategorie</label><select id="newCategory"></select></div>
+      <div class="field"><label>Unterkategorie</label><input id="newSubcategory" placeholder="z. B. Sonstiges"></div>
+    </div>
+    <div class="field"><label>Einheiten (mit Komma trennen)</label><input id="newUnits" placeholder="Stk., Pkg."></div>
+    <button class="btn primary block" id="addMaterialBtn" type="button">Speichern</button>
+  </div>
+</div>
 
-  <aside class="panel cart" id="cartPanel">
-    <div class="panel-title cart-head">
-      <span>Auswahl</span>
-      <span id="cartCount">0</span>
+<div class="sheet" id="adminSheet">
+  <div class="sheet-head"><h2>Materialverwaltung</h2><button class="sheet-close" data-close type="button" aria-label="Schließen">✕</button></div>
+  <div class="sheet-body">
+    <div class="hint" style="margin-bottom:12px;">
+      Änderungen sind nur hier möglich. In der normalen Materialliste gibt es bewusst keine Bearbeiten- oder Löschen-Buttons – und auch hier gibt es absichtlich keinen Löschen-Button, damit niemand durch einen falschen Klick Material aus dem gemeinsamen Stamm entfernt.
     </div>
-    <div class="order-meta">
-      <input type="date" id="orderDate">
-      <input type="text" id="orderProject" placeholder="Bauvorhaben">
+    <div class="field"><label>Material suchen</label><input id="adminSearch" placeholder="Materialname eingeben"></div>
+    <div class="field"><label>Material auswählen</label><select id="adminMaterial"></select></div>
+    <div class="field"><label>Neuer Name</label><input id="editName"></div>
+    <div class="formrow">
+      <div class="field"><label>Kategorie</label><select id="editCategory"></select></div>
+      <div class="field"><label>Unterkategorie</label><input id="editSubcategory"></div>
     </div>
-    <div id="cartItems"></div>
-    <div class="cart-actions">
-      <button class="btn primary" id="openOrderBtn">Bestellung zusammenfassen</button>
-      <button class="btn" id="saveOrderBtn">Bestellung speichern</button>
-      <button class="btn danger" id="clearOrderBtn">Bestellung leeren</button>
+    <div class="field"><label>Einheiten (mit Komma trennen)</label><input id="editUnits" placeholder="Stk., Pkg., Karton"></div>
+    <button class="btn primary block" id="saveEditBtn" type="button">Änderung speichern</button>
+  </div>
+</div>
+
+<div class="sheet" id="backupSheet">
+  <div class="sheet-head"><h2>Datensicherung</h2><button class="sheet-close" data-close type="button" aria-label="Schließen">✕</button></div>
+  <div class="sheet-body">
+    <div class="backup-box">
+      <div class="hint">
+        Baustellen, Materialkatalog, laufende Bestellungen und Verläufe liegen nur in diesem Browser auf diesem Gerät. Sichere sie regelmäßig als Datei – z. B. um sie auf ein anderes Handy/PC zu übertragen oder wiederherzustellen, falls der Browser-Speicher gelöscht wird.
+      </div>
+      <div class="backup-actions">
+        <button class="btn primary" id="exportDataBtn" type="button">Alle Daten exportieren</button>
+        <label class="btn" for="importDataInput">
+          Daten importieren
+          <input type="file" id="importDataInput" accept="application/json" style="display:none;">
+        </label>
+      </div>
     </div>
-  </aside>
+  </div>
 </div>
 
 <script>
@@ -670,18 +568,6 @@ const STANDARD_UNITS = [
 ];
 
 
-const STORAGE_CUSTOM = "materialliste_custom_v2";
-const STORAGE_ORDER = "materialliste_order_v2";
-const STORAGE_META = "materialliste_meta_v2";
-const STORAGE_OVERRIDES = "materialliste_overrides_v1";
-const STORAGE_HISTORY = "materialliste_history_v1";
-
-let customMaterials = loadJSON(STORAGE_CUSTOM, []);
-let materialOverrides = loadJSON(STORAGE_OVERRIDES, {});
-let order = loadJSON(STORAGE_ORDER, {});
-let orderMeta = loadJSON(STORAGE_META, {date:"", project:""});
-let orderHistory = loadJSON(STORAGE_HISTORY, []);
-let activeCategory = BASE_CATEGORIES[0] || "";
 
 function loadJSON(key, fallback) {
   try {
@@ -699,6 +585,38 @@ function saveJSON(key, value) {
 function norm(s) {
   return String(s || "").trim().toLocaleLowerCase("de").replace(/\s+/g, " ");
 }
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function escAttr(s) { return esc(s); }
+function cssEscape(s) {
+  if (window.CSS && CSS.escape) return CSS.escape(s);
+  return String(s).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+}
+
+const STORAGE_SITES = "mp_sites_v1";
+const STORAGE_ACTIVE_SITE = "mp_active_site_v1";
+const STORAGE_CUSTOM = "mp_custom_v1";
+const STORAGE_OVERRIDES = "mp_overrides_v1";
+
+function cartKey(id) { return "mp_cart_" + id; }
+function metaKey(id) { return "mp_meta_" + id; }
+function historyKey(id) { return "mp_history_" + id; }
+function favKey(id) { return "mp_favorites_" + id; }
+
+let sites = loadJSON(STORAGE_SITES, {});
+let activeSiteId = loadJSON(STORAGE_ACTIVE_SITE, null);
+let customMaterials = loadJSON(STORAGE_CUSTOM, []);
+let materialOverrides = loadJSON(STORAGE_OVERRIDES, {});
+let activeCategory = BASE_CATEGORIES[0] || "";
+let cart = {};
+let orderMeta = {date:"", project:"", note:""};
+let orderHistory = [];
+let favorites = [];
+let cartUpdateTimer = null;
+
+/* ---------------- Materialkatalog ---------------- */
 
 function catalog() {
   const merged = new Map();
@@ -719,13 +637,9 @@ function catalog() {
     }
 
     const target = merged.get(k);
-    (copy.units || []).forEach(u => {
-      if (u && !target.units.includes(u)) target.units.push(u);
-    });
+    (copy.units || []).forEach(u => { if (u && !target.units.includes(u)) target.units.push(u); });
     (copy.locations || []).forEach(loc => {
-      if (!target.locations.some(x => x.category === loc.category && x.subcategory === loc.subcategory)) {
-        target.locations.push(loc);
-      }
+      if (!target.locations.some(x => x.category === loc.category && x.subcategory === loc.subcategory)) target.locations.push(loc);
     });
     target.custom = target.custom || copy.custom;
   });
@@ -740,9 +654,7 @@ function allCategories() {
   }));
 
   const result = [...FIXED_CATEGORY_ORDER];
-  discovered.forEach(cat => {
-    if (!result.includes(cat)) result.push(cat);
-  });
+  discovered.forEach(cat => { if (!result.includes(cat)) result.push(cat); });
   return result;
 }
 
@@ -750,267 +662,318 @@ function itemById(id) {
   return catalog().find(x => x.id === id);
 }
 
-function ensureOrder(id) {
+/* ---------------- Baustellen ---------------- */
+
+function makeSite(name) {
+  return {
+    id:"s" + Date.now() + Math.random().toString(36).slice(2, 6),
+    name:name || "Baustelle",
+    createdAt:new Date().toISOString(),
+    archived:false
+  };
+}
+
+function saveSites() { saveJSON(STORAGE_SITES, sites); }
+
+function ensureAtLeastOneSite() {
+  if (!Object.keys(sites).length) {
+    const s = makeSite("Baustelle 1");
+    sites[s.id] = s;
+    saveSites();
+  }
+}
+
+function pickActiveSiteId() {
+  if (activeSiteId && sites[activeSiteId] && !sites[activeSiteId].archived) return activeSiteId;
+  const firstActive = Object.values(sites).find(s => !s.archived);
+  return firstActive ? firstActive.id : Object.keys(sites)[0];
+}
+
+function loadActiveSiteData() {
+  cart = loadJSON(cartKey(activeSiteId), {});
+  orderMeta = loadJSON(metaKey(activeSiteId), {date:"", project:"", note:""});
+  orderHistory = loadJSON(historyKey(activeSiteId), []);
+  favorites = loadJSON(favKey(activeSiteId), []);
+
+  document.getElementById("activeSiteName").textContent = (sites[activeSiteId] && sites[activeSiteId].name) || "Baustelle";
+  document.getElementById("orderDate").value = orderMeta.date || new Date().toISOString().slice(0, 10);
+  document.getElementById("orderProject").value = orderMeta.project || "";
+  document.getElementById("orderNote").value = orderMeta.note || "";
+}
+
+function switchToSite(id) {
+  if (!sites[id]) return;
+  activeSiteId = id;
+  saveJSON(STORAGE_ACTIVE_SITE, activeSiteId);
+  loadActiveSiteData();
+  activeCategory = BASE_CATEGORIES[0] || "";
+  renderCategories();
+  renderCategoryView();
+  renderSearch();
+  renderCart();
+  renderHistory();
+  closeSheet("sitesSheet");
+}
+
+function renderSiteList() {
+  const list = document.getElementById("siteList");
+  const archivedWrap = document.getElementById("archivedSiteWrap");
+  const active = Object.values(sites).filter(s => !s.archived).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const archived = Object.values(sites).filter(s => s.archived).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+
+  list.innerHTML = active.map(s => `
+    <div class="site-card ${s.id === activeSiteId ? "active" : ""}">
+      <div class="site-card-main">
+        <strong>${esc(s.name)}</strong>
+        <small>angelegt ${esc(new Date(s.createdAt).toLocaleDateString("de-DE"))}${s.id === activeSiteId ? " · aktiv" : ""}</small>
+      </div>
+      <div class="site-card-actions">
+        ${s.id === activeSiteId ? "" : `<button class="btn small" type="button" data-switch="${escAttr(s.id)}">Wechseln</button>`}
+        <button class="btn small" type="button" data-rename="${escAttr(s.id)}">Umbenennen</button>
+        <button class="btn small danger" type="button" data-archive="${escAttr(s.id)}">Archivieren</button>
+      </div>
+    </div>`
+  ).join("") || `<div class="empty">Keine Baustelle vorhanden.</div>`;
+
+  archivedWrap.innerHTML = archived.length ? `
+    <details><summary style="cursor:pointer;font-weight:700;padding:6px 0;">Archivierte Baustellen (${archived.length})</summary>
+      <div style="margin-top:8px;">
+        ${archived.map(s => `
+          <div class="site-card">
+            <div class="site-card-main"><strong>${esc(s.name)}</strong><small>archiviert</small></div>
+            <div class="site-card-actions">
+              <button class="btn small" type="button" data-unarchive="${escAttr(s.id)}">Reaktivieren</button>
+            </div>
+          </div>`
+        ).join("")}
+      </div>
+    </details>` : "";
+
+  list.querySelectorAll("[data-switch]").forEach(b => b.onclick = () => switchToSite(b.dataset.switch));
+  list.querySelectorAll("[data-rename]").forEach(b => b.onclick = () => {
+    const s = sites[b.dataset.rename];
+    const name = prompt("Neuer Name für diese Baustelle:", s.name);
+    if (name === null) return;
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    s.name = trimmed;
+    saveSites();
+    renderSiteList();
+    if (s.id === activeSiteId) document.getElementById("activeSiteName").textContent = trimmed;
+  });
+  list.querySelectorAll("[data-archive]").forEach(b => b.onclick = () => {
+    const id = b.dataset.archive;
+    const remainingActive = Object.values(sites).filter(s => !s.archived && s.id !== id);
+    if (!remainingActive.length) {
+      alert("Das ist die letzte aktive Baustelle. Lege zuerst eine neue Baustelle an, bevor du diese archivierst.");
+      return;
+    }
+    if (!confirm('Baustelle "' + sites[id].name + '" archivieren? Auswahl und Verlauf bleiben erhalten und lassen sich später reaktivieren.')) return;
+    sites[id].archived = true;
+    saveSites();
+    if (id === activeSiteId) switchToSite(remainingActive[0].id);
+    renderSiteList();
+  });
+  archivedWrap.querySelectorAll("[data-unarchive]").forEach(b => b.onclick = () => {
+    sites[b.dataset.unarchive].archived = false;
+    saveSites();
+    renderSiteList();
+  });
+}
+
+/* ---------------- Auswahl (Warenkorb) ---------------- */
+
+function ensureCartRow(id) {
+  if (!cart[id]) {
+    const item = itemById(id);
+    const defaultUnit = (item && item.units[0]) || "Stk.";
+    cart[id] = {orderQty:"", orderUnit:defaultUnit, takeQty:"", takeUnit:defaultUnit, urgent:false};
+  }
+  return cart[id];
+}
+
+function getCartRow(id) {
+  if (cart[id]) return cart[id];
   const item = itemById(id);
   const defaultUnit = (item && item.units[0]) || "Stk.";
-
-  if (!order[id]) {
-    order[id] = {
-      primaryQty:"",
-      primaryUnit:defaultUnit,
-      primaryType:"order",
-      extraEnabled:false,
-      extraQty:"",
-      extraUnit:defaultUnit,
-      extraType:"take"
-    };
-  } else if ("orderQty" in order[id] || "takeQty" in order[id]) {
-    // V10 automatisch in das kompakte V11-Modell übernehmen
-    const old = order[id];
-    const hasOrder = old.orderQty !== "" && old.orderQty !== undefined;
-    const hasTake = old.takeQty !== "" && old.takeQty !== undefined;
-
-    if (hasOrder) {
-      order[id] = {
-        primaryQty:old.orderQty || "",
-        primaryUnit:old.orderUnit || defaultUnit,
-        primaryType:"order",
-        extraEnabled:hasTake,
-        extraQty:hasTake ? (old.takeQty || "") : "",
-        extraUnit:hasTake ? (old.takeUnit || defaultUnit) : defaultUnit,
-        extraType:"take"
-      };
-    } else if (hasTake) {
-      order[id] = {
-        primaryQty:old.takeQty || "",
-        primaryUnit:old.takeUnit || defaultUnit,
-        primaryType:"take",
-        extraEnabled:false,
-        extraQty:"",
-        extraUnit:defaultUnit,
-        extraType:"order"
-      };
-    }
-  } else if ("qty" in order[id] && !("primaryQty" in order[id])) {
-    // noch ältere Auswahl
-    const old = order[id];
-    order[id] = {
-      primaryQty:old.qty || "",
-      primaryUnit:old.unit || defaultUnit,
-      primaryType:"order",
-      extraEnabled:false,
-      extraQty:"",
-      extraUnit:defaultUnit,
-      extraType:"take"
-    };
-  }
-
-  if (!("primaryQty" in order[id])) order[id].primaryQty = "";
-  if (!("primaryUnit" in order[id])) order[id].primaryUnit = defaultUnit;
-  if (!("primaryType" in order[id])) order[id].primaryType = "order";
-  if (!("extraEnabled" in order[id])) order[id].extraEnabled = false;
-  if (!("extraQty" in order[id])) order[id].extraQty = "";
-  if (!("extraUnit" in order[id])) order[id].extraUnit = defaultUnit;
-  if (!("extraType" in order[id])) order[id].extraType = order[id].primaryType === "order" ? "take" : "order";
-
-  return order[id];
+  return {orderQty:"", orderUnit:defaultUnit, takeQty:"", takeUnit:defaultUnit, urgent:false};
 }
 
-function numericQty(v) {
-  return Number(String(v).replace(",", "."));
+function numericQty(v) { return Number(String(v).replace(",", ".")); }
+
+function rowHasQty(o) {
+  const oq = numericQty(o.orderQty || "");
+  const tq = numericQty(o.takeQty || "");
+  return (o.orderQty !== "" && !Number.isNaN(oq) && oq > 0) ||
+         (o.takeQty !== "" && !Number.isNaN(tq) && tq > 0);
 }
 
-function isSelected(id) {
-  const o = order[id];
-  if (!o) return false;
+function isFavorite(id) { return favorites.includes(id); }
 
-  const primary = numericQty(o.primaryQty || "");
-  const extra = numericQty(o.extraQty || "");
-
-  return (o.primaryQty !== "" && !Number.isNaN(primary) && primary > 0) ||
-         (o.extraEnabled && o.extraQty !== "" && !Number.isNaN(extra) && extra > 0);
+function toggleFavorite(id) {
+  const idx = favorites.indexOf(id);
+  if (idx >= 0) favorites.splice(idx, 1); else favorites.push(id);
+  saveJSON(favKey(activeSiteId), favorites);
 }
 
+function toggleUrgentFlag(id) {
+  const o = ensureCartRow(id);
+  o.urgent = !o.urgent;
+  if (!rowHasQty(o) && !o.urgent) delete cart[id];
+  saveJSON(cartKey(activeSiteId), cart);
+}
 
-let orderUpdateTimer = null;
-
-function scheduleOrderRefresh() {
-  if (orderUpdateTimer) clearTimeout(orderUpdateTimer);
-  orderUpdateTimer = setTimeout(() => {
-    saveJSON(STORAGE_ORDER, order);
+function scheduleCartRefresh() {
+  if (cartUpdateTimer) clearTimeout(cartUpdateTimer);
+  cartUpdateTimer = setTimeout(() => {
+    saveJSON(cartKey(activeSiteId), cart);
     renderCart();
-    orderUpdateTimer = null;
+    cartUpdateTimer = null;
   }, 180);
 }
 
-function saveRowState(id, row, immediate=false) {
-  const o = ensureOrder(id);
+function saveRowState(id, row, immediate) {
+  const o = ensureCartRow(id);
 
-  const primaryQty = row.querySelector(".primary-qty");
-  const primaryUnit = row.querySelector(".primary-unit");
-  const primaryType = row.querySelector(".primary-type");
+  const orderQtyEl = row.querySelector(".order-qty");
+  const orderUnitEl = row.querySelector(".order-unit");
+  const takeQtyEl = row.querySelector(".take-qty");
+  const takeUnitEl = row.querySelector(".take-unit");
 
-  o.primaryQty = primaryQty ? primaryQty.value : "";
-  o.primaryUnit = primaryUnit ? primaryUnit.value : o.primaryUnit;
-  o.primaryType = primaryType ? primaryType.value : o.primaryType;
+  if (orderQtyEl) o.orderQty = orderQtyEl.value;
+  if (orderUnitEl) o.orderUnit = orderUnitEl.value;
+  if (takeQtyEl) o.takeQty = takeQtyEl.value;
+  if (takeUnitEl) o.takeUnit = takeUnitEl.value;
 
-  const extraQty = row.querySelector(".extra-qty");
-  const extraUnit = row.querySelector(".extra-unit");
-  const extraType = row.querySelector(".extra-type");
+  const hasQty = rowHasQty(o);
+  if (!hasQty && !o.urgent) delete cart[id];
 
-  if (o.extraEnabled && extraQty && extraUnit && extraType) {
-    o.extraQty = extraQty.value;
-    o.extraUnit = extraUnit.value;
-    o.extraType = extraType.value;
-  }
-
-  const primaryValid =
-    o.primaryQty !== "" &&
-    !Number.isNaN(numericQty(o.primaryQty)) &&
-    numericQty(o.primaryQty) > 0;
-
-  const extraValid =
-    o.extraEnabled &&
-    o.extraQty !== "" &&
-    !Number.isNaN(numericQty(o.extraQty)) &&
-    numericQty(o.extraQty) > 0;
-
-  if (!primaryValid && !extraValid && !o.extraEnabled) {
-    delete order[id];
-  }
-
-  row.classList.toggle("selected", primaryValid || extraValid);
+  row.classList.toggle("is-selected", hasQty);
+  row.classList.toggle("is-urgent", hasQty && o.urgent);
 
   if (immediate) {
-    if (orderUpdateTimer) {
-      clearTimeout(orderUpdateTimer);
-      orderUpdateTimer = null;
-    }
-    saveJSON(STORAGE_ORDER, order);
+    if (cartUpdateTimer) { clearTimeout(cartUpdateTimer); cartUpdateTimer = null; }
+    saveJSON(cartKey(activeSiteId), cart);
     renderCart();
   } else {
-    scheduleOrderRefresh();
+    scheduleCartRefresh();
   }
 }
 
-function locationsText(item) {
-  return (item.locations || []).map(l => l.category + (l.subcategory && l.subcategory !== "Allgemein" ? " › " + l.subcategory : "")).join(" · ");
-}
-
-function rowHTML(item) {
-  const o = ensureOrder(item.id);
+function matRowHTML(item) {
+  const o = getCartRow(item.id);
   const units = [...new Set([...(item.units || []), ...STANDARD_UNITS])];
 
-  const primaryUnitOptions = units.map(u =>
-    `<option value="${escAttr(u)}" ${o.primaryUnit===u ? "selected" : ""}>${esc(u)}</option>`
-  ).join("");
+  const orderUnitOptions = units.map(u => `<option value="${escAttr(u)}" ${o.orderUnit === u ? "selected" : ""}>${esc(u)}</option>`).join("");
+  const takeUnitOptions = units.map(u => `<option value="${escAttr(u)}" ${o.takeUnit === u ? "selected" : ""}>${esc(u)}</option>`).join("");
 
-  const extraUnitOptions = units.map(u =>
-    `<option value="${escAttr(u)}" ${o.extraUnit===u ? "selected" : ""}>${esc(u)}</option>`
-  ).join("");
-
-  const typeOptions = current =>
-    `<option value="order" ${current==="order" ? "selected" : ""}>Bestellung</option>` +
-    `<option value="take" ${current==="take" ? "selected" : ""}>Mitnehmen</option>`;
+  const selected = rowHasQty(o);
+  const fav = isFavorite(item.id);
+  const urgent = !!o.urgent;
 
   return `
-    <div class="material-row ${isSelected(item.id) ? "selected" : ""}" data-id="${escAttr(item.id)}">
-      <div class="material-main-row">
-        <div class="material-name">${esc(item.name)}</div>
-        <input class="qty primary-qty" type="number" min="0" step="any" inputmode="decimal"
-               value="${escAttr(o.primaryQty || "")}" placeholder="Menge">
-        <select class="unit primary-unit">${primaryUnitOptions}</select>
-        <select class="type-select primary-type">${typeOptions(o.primaryType)}</select>
-        <button class="plus-btn" type="button" title="zweite Zuordnung hinzufügen">+</button>
+    <div class="mat-row ${selected ? "is-selected" : ""} ${selected && urgent ? "is-urgent" : ""}" data-id="${escAttr(item.id)}">
+      <div class="mat-row-top">
+        <button type="button" class="icon-toggle fav-toggle ${fav ? "active" : ""}" title="Favorit" data-fav>${fav ? "★" : "☆"}</button>
+        <div class="mat-name">${esc(item.name)}${item.custom ? '<span class="mat-meta">Eigenes Material</span>' : ""}</div>
+        <button type="button" class="icon-toggle urgent-toggle ${urgent ? "active" : ""}" title="Dringend markieren" data-urgent>!</button>
       </div>
-
-      ${o.extraEnabled ? `
-      <div class="material-extra-row">
-        <div class="material-extra-label">↳</div>
-        <input class="qty extra-qty" type="number" min="0" step="any" inputmode="decimal"
-               value="${escAttr(o.extraQty || "")}" placeholder="Menge">
-        <select class="unit extra-unit">${extraUnitOptions}</select>
-        <select class="type-select extra-type">${typeOptions(o.extraType)}</select>
-        <button class="remove-extra-btn" type="button" title="zweite Zuordnung entfernen">×</button>
-      </div>` : ""}
+      <div class="mat-row-qty">
+        <div class="qty-field">
+          <label>Bestellen</label>
+          <div class="qty-input-group">
+            <input class="order-qty" type="number" min="0" step="any" inputmode="decimal" value="${escAttr(o.orderQty || "")}" placeholder="0">
+            <select class="order-unit">${orderUnitOptions}</select>
+          </div>
+        </div>
+        <div class="qty-field">
+          <label>Mitnehmen</label>
+          <div class="qty-input-group">
+            <input class="take-qty" type="number" min="0" step="any" inputmode="decimal" value="${escAttr(o.takeQty || "")}" placeholder="0">
+            <select class="take-unit">${takeUnitOptions}</select>
+          </div>
+        </div>
+      </div>
     </div>`;
 }
 
 function bindRows(root) {
-  root.querySelectorAll(".material-row").forEach(row => {
+  root.querySelectorAll(".mat-row").forEach(row => {
     const id = row.dataset.id;
 
-    row.querySelectorAll(".primary-qty, .extra-qty").forEach(el => {
+    row.querySelectorAll(".order-qty, .take-qty").forEach(el => {
       el.addEventListener("input", () => saveRowState(id, row, false));
       el.addEventListener("change", () => saveRowState(id, row, true));
     });
-
-    row.querySelectorAll(".primary-unit, .primary-type, .extra-unit, .extra-type").forEach(el => {
+    row.querySelectorAll(".order-unit, .take-unit").forEach(el => {
       el.addEventListener("change", () => saveRowState(id, row, true));
     });
 
-    const plus = row.querySelector(".plus-btn");
-    if (plus) {
-      plus.onclick = () => {
-        const o = ensureOrder(id);
-        o.extraEnabled = true;
-        o.extraType = o.primaryType === "order" ? "take" : "order";
-        if (!o.extraUnit) {
-          o.extraUnit = o.primaryUnit || ((itemById(id)?.units || [])[0]) || "Stk.";
-        }
-        saveJSON(STORAGE_ORDER, order);
-        refreshAllVisibleRows(id);
-        renderCart();
-      };
-    }
+    const favBtn = row.querySelector("[data-fav]");
+    if (favBtn) favBtn.onclick = () => { toggleFavorite(id); refreshAllVisibleRows(id); renderCategories(); };
 
-    const remove = row.querySelector(".remove-extra-btn");
-    if (remove) {
-      remove.onclick = () => {
-        const o = ensureOrder(id);
-        o.extraEnabled = false;
-        o.extraQty = "";
-        o.extraType = o.primaryType === "order" ? "take" : "order";
-        saveJSON(STORAGE_ORDER, order);
-        refreshAllVisibleRows(id);
-        renderCart();
-      };
-    }
+    const urgentBtn = row.querySelector("[data-urgent]");
+    if (urgentBtn) urgentBtn.onclick = () => { toggleUrgentFlag(id); refreshAllVisibleRows(id); renderCart(); };
   });
 }
 
 function refreshAllVisibleRows(id) {
-  document.querySelectorAll(`.material-row[data-id="${cssEscape(id)}"]`).forEach(oldRow => {
+  document.querySelectorAll('.mat-row[data-id="' + cssEscape(id) + '"]').forEach(oldRow => {
     const item = itemById(id);
     if (!item) return;
-
     const wrapper = document.createElement("div");
-    wrapper.innerHTML = rowHTML(item).trim();
+    wrapper.innerHTML = matRowHTML(item).trim();
     const newRow = wrapper.firstElementChild;
     oldRow.replaceWith(newRow);
     bindRows(newRow.parentElement || document);
   });
 }
 
+/* ---------------- Kategorien, Suche ---------------- */
+
+function showView(view) {
+  document.getElementById("searchPanel").hidden = view !== "search";
+  document.getElementById("categoryPanel").hidden = view === "search";
+}
+
 function renderCategories() {
   const bar = document.getElementById("categoryBar");
   const cats = allCategories();
-  bar.innerHTML = cats.map(cat => `<button class="catbtn ${cat===activeCategory ? "active":""}" data-cat="${escAttr(cat)}">${esc(cat)}</button>`).join("");
+  const chips = favorites.length ? ["__FAV__", ...cats] : cats;
+
+  bar.innerHTML = chips.map(cat => cat === "__FAV__"
+    ? `<button class="catbtn fav ${activeCategory === cat ? "active" : ""}" data-cat="__FAV__">★ Favoriten</button>`
+    : `<button class="catbtn ${cat === activeCategory ? "active" : ""}" data-cat="${escAttr(cat)}">${esc(cat)}</button>`
+  ).join("");
+
   bar.querySelectorAll(".catbtn").forEach(btn => btn.onclick = () => {
     activeCategory = btn.dataset.cat;
+    document.getElementById("searchInput").value = "";
+    showView("category");
     renderCategories();
-    renderCategory();
-    if (isMobileNavigation()) {
-      setTimeout(hideMobileTopbar, 120);
-    }
+    renderCategoryView();
   });
-  const select = document.getElementById("newCategory");
-  select.innerHTML = cats.map(c => `<option>${esc(c)}</option>`).join("");
+
+  const newCategorySelect = document.getElementById("newCategory");
+  const prev = newCategorySelect.value;
+  newCategorySelect.innerHTML = cats.map(c => `<option>${esc(c)}</option>`).join("");
+  if (cats.includes(prev)) newCategorySelect.value = prev;
 }
 
-function renderCategory() {
-  document.getElementById("categoryTitle").textContent = activeCategory || "Kategorie";
+function renderCategoryView() {
   const view = document.getElementById("categoryView");
+
+  if (activeCategory === "__FAV__") {
+    document.getElementById("categoryTitle").textContent = "★ Favoriten";
+    const items = catalog().filter(it => favorites.includes(it.id)).sort((a, b) => a.name.localeCompare(b.name, "de"));
+    view.innerHTML = items.length
+      ? `<div class="hint" style="padding:4px 4px 10px;">Häufig gebrauchte Materialien dieser Baustelle – markiert mit ☆ bei jedem Material.</div>` + items.map(matRowHTML).join("")
+      : `<div class="empty">Noch keine Favoriten. Tippe bei einem Material auf ☆, um es hier anzupinnen.</div>`;
+    bindRows(view);
+    return;
+  }
+
+  document.getElementById("categoryTitle").textContent = activeCategory || "Kategorie";
   const groups = new Map();
 
   catalog().forEach(item => {
@@ -1048,10 +1011,9 @@ function renderCategory() {
       if (ib === -1) return -1;
       return ia - ib;
     });
-
     const open = first ? " open" : "";
     first = false;
-    return `<details${open}><summary>${esc(sub)} (${arr.length})</summary><div class="subrows"><div class="compact-head"><span>Material</span><span>Menge</span><span>Einheit</span><span>Art</span><span>+</span></div>${arr.map(rowHTML).join("")}</div></details>`;
+    return `<details class="subgroup"${open}><summary>${esc(sub)} (${arr.length})</summary><div>${arr.map(matRowHTML).join("")}</div></details>`;
   }).join("");
   bindRows(view);
 }
@@ -1060,285 +1022,118 @@ function renderSearch() {
   const input = document.getElementById("searchInput");
   const q = norm(input.value);
   const box = document.getElementById("searchResults");
-  const empty = document.getElementById("searchEmpty");
+  const label = document.getElementById("searchCountLabel");
 
-  if (!q) {
-    box.style.display = "none";
-    box.innerHTML = "";
-    empty.style.display = "";
-    return;
-  }
+  if (!q) { box.innerHTML = ""; label.textContent = ""; return; }
 
   const hits = catalog().filter(item => {
     if (norm(item.name).includes(q)) return true;
     return (item.locations || []).some(l => norm(l.category + " " + l.subcategory).includes(q));
   }).slice(0, 120);
 
-  empty.style.display = "none";
-  box.style.display = "block";
-  box.innerHTML = `<div class="search-note">${hits.length} Treffer${hits.length===120 ? " (erste 120)" : ""}</div>` +
-    (hits.length
-      ? `<div class="compact-head"><span>Material</span><span>Menge</span><span>Einheit</span><span>Art</span><span>+</span></div>` + hits.map(rowHTML).join("")
-      : `<div class="empty">Kein Treffer</div>`);
+  label.textContent = hits.length + " Treffer" + (hits.length === 120 ? " (erste 120)" : "");
+  box.innerHTML = hits.length ? hits.map(matRowHTML).join("") : `<div class="empty">Kein Treffer</div>`;
   bindRows(box);
 }
 
+/* ---------------- Auswahl-Panel ---------------- */
+
 function selectedItems() {
   const result = [];
-
-  Object.keys(order).forEach(id => {
+  Object.keys(cart).forEach(id => {
     const item = itemById(id);
     if (!item) return;
+    const o = cart[id];
+    const oq = numericQty(o.orderQty || "");
+    const tq = numericQty(o.takeQty || "");
 
-    const o = ensureOrder(id);
-
-    if (
-      o.primaryQty !== "" &&
-      !Number.isNaN(numericQty(o.primaryQty)) &&
-      numericQty(o.primaryQty) > 0
-    ) {
-      result.push({
-        type:o.primaryType,
-        item,
-        qty:o.primaryQty,
-        unit:o.primaryUnit || item.units[0] || "Stk."
-      });
+    if (o.orderQty !== "" && !Number.isNaN(oq) && oq > 0) {
+      result.push({type:"order", item, qty:o.orderQty, unit:o.orderUnit || item.units[0] || "Stk.", urgent:!!o.urgent});
     }
-
-    if (
-      o.extraEnabled &&
-      o.extraQty !== "" &&
-      !Number.isNaN(numericQty(o.extraQty)) &&
-      numericQty(o.extraQty) > 0
-    ) {
-      result.push({
-        type:o.extraType,
-        item,
-        qty:o.extraQty,
-        unit:o.extraUnit || item.units[0] || "Stk."
-      });
+    if (o.takeQty !== "" && !Number.isNaN(tq) && tq > 0) {
+      result.push({type:"take", item, qty:o.takeQty, unit:o.takeUnit || item.units[0] || "Stk.", urgent:!!o.urgent});
     }
   });
-
   return result;
+}
+
+function byUrgentThenName(a, b) {
+  return (b.urgent - a.urgent) || a.item.name.localeCompare(b.item.name, "de");
 }
 
 function renderCart() {
   const list = selectedItems();
-  const orderList = list.filter(x => x.type === "order");
-  const takeList = list.filter(x => x.type === "take");
+  const orderList = list.filter(x => x.type === "order").sort(byUrgentThenName);
+  const takeList = list.filter(x => x.type === "take").sort(byUrgentThenName);
   const uniqueCount = new Set(list.map(x => x.item.id)).size;
 
+  [document.getElementById("headerCartBadge"), document.getElementById("bottomCartBadge")].forEach(b => {
+    b.textContent = uniqueCount;
+    b.classList.toggle("zero", uniqueCount === 0);
+  });
   document.getElementById("cartCount").textContent = uniqueCount;
-  document.getElementById("topCount").textContent = uniqueCount;
 
   const box = document.getElementById("cartItems");
-
   if (!list.length) {
     box.innerHTML = `<div class="empty">Noch keine Position ausgewählt.</div>`;
     return;
   }
 
+  const rowsHTML = arr => arr.map(x => `
+    <div class="cart-item ${x.urgent ? "urgent" : ""}">
+      <div><b>${x.urgent ? "❗ " : ""}${esc(x.item.name)}</b></div>
+      <div><b>${esc(x.qty)} ${esc(x.unit)}</b></div>
+    </div>`
+  ).join("");
+
   let html = "";
-
-  if (orderList.length) {
-    html += `<div style="font-weight:700;padding:6px 4px;">Bestellung</div>`;
-    html += orderList.map(x => `
-      <div class="cart-item">
-        <div><b>${esc(x.item.name)}</b></div>
-        <div><b>${esc(x.qty)} ${esc(x.unit)}</b></div>
-      </div>`
-    ).join("");
-  }
-
-  if (takeList.length) {
-    html += `<div style="font-weight:700;padding:12px 4px 6px;">Mitnehmen</div>`;
-    html += takeList.map(x => `
-      <div class="cart-item">
-        <div><b>${esc(x.item.name)}</b></div>
-        <div><b>${esc(x.qty)} ${esc(x.unit)}</b></div>
-      </div>`
-    ).join("");
-  }
-
+  if (orderList.length) html += `<div class="cart-group-title">Bestellung</div>` + rowsHTML(orderList);
+  if (takeList.length) html += `<div class="cart-group-title">Mitnehmen</div>` + rowsHTML(takeList);
   box.innerHTML = html;
 }
 
-function addCustomMaterial() {
-  const name = document.getElementById("newName").value.trim();
-  const category = document.getElementById("newCategory").value.trim();
-  const subcategory = document.getElementById("newSubcategory").value.trim() || "Sonstiges";
-  const units = document.getElementById("newUnits").value
-    .split(",").map(x => x.trim()).filter(Boolean);
-
-  if (!name) {
-    alert("Bitte Materialnamen eingeben.");
-    return;
-  }
-  if (!units.length) units.push("Stk.");
-
-  const existing = catalog().find(x => norm(x.name) === norm(name));
-  if (existing) {
-    const custom = customMaterials.find(x => norm(x.name) === norm(name));
-    if (custom) {
-      units.forEach(u => { if (!custom.units.includes(u)) custom.units.push(u); });
-      const loc = {category, subcategory};
-      if (!custom.locations.some(l => l.category===category && l.subcategory===subcategory)) custom.locations.push(loc);
-    } else {
-      customMaterials.push({
-        id:"c" + Date.now(),
-        name:existing.name,
-        units:[...new Set([...(existing.units || []), ...units])],
-        locations:[{category, subcategory}],
-        custom:true
-      });
-    }
-  } else {
-    customMaterials.push({
-      id:"c" + Date.now(),
-      name,
-      units,
-      locations:[{category, subcategory}],
-      custom:true
-    });
-  }
-
-  saveJSON(STORAGE_CUSTOM, customMaterials);
-  document.getElementById("newName").value = "";
-  document.getElementById("newSubcategory").value = "";
-  document.getElementById("newUnits").value = "";
-  activeCategory = category;
-  renderCategories();
-  renderCategory();
-  renderSearch();
-  alert("Material dauerhaft gespeichert.");
-}
-
-
-function populateAdminMaterials() {
-  const search = norm(document.getElementById("adminSearch").value);
-  const select = document.getElementById("adminMaterial");
-  const previous = select.value;
-
-  const items = catalog()
-    .filter(item => !search || norm(item.name).includes(search))
-    .sort((a,b) => a.name.localeCompare(b.name, "de"));
-
-  select.innerHTML = items.map(item =>
-    `<option value="${escAttr(item.id)}">${esc(item.name)}</option>`
-  ).join("");
-
-  if (items.some(x => x.id === previous)) select.value = previous;
-  loadAdminMaterial();
-}
-
-function loadAdminMaterial() {
-  const id = document.getElementById("adminMaterial").value;
-  const item = itemById(id);
-  const editCategory = document.getElementById("editCategory");
-
-  editCategory.innerHTML = allCategories()
-    .map(c => `<option value="${escAttr(c)}">${esc(c)}</option>`)
-    .join("");
-
-  if (!item) {
-    document.getElementById("editName").value = "";
-    document.getElementById("editSubcategory").value = "";
-    document.getElementById("editUnits").value = "";
-    return;
-  }
-
-  const loc = (item.locations && item.locations[0]) || {category:"NICHT ZUGEORDNET", subcategory:"Sonstiges"};
-  document.getElementById("editName").value = item.name || "";
-  editCategory.value = loc.category || "NICHT ZUGEORDNET";
-  document.getElementById("editSubcategory").value = loc.subcategory || "Sonstiges";
-  document.getElementById("editUnits").value = (item.units || []).join(", ");
-}
-
-function saveAdminEdit() {
-  const id = document.getElementById("adminMaterial").value;
-  const item = itemById(id);
-  if (!item) {
-    alert("Bitte zuerst ein Material auswählen.");
-    return;
-  }
-
-  const name = document.getElementById("editName").value.trim();
-  const category = document.getElementById("editCategory").value.trim();
-  const subcategory = document.getElementById("editSubcategory").value.trim() || "Sonstiges";
-  const units = document.getElementById("editUnits").value
-    .split(",").map(x => x.trim()).filter(Boolean);
-
-  if (!name) {
-    alert("Der Materialname darf nicht leer sein.");
-    return;
-  }
-  if (!units.length) units.push("Stk.");
-
-  if (!confirm(
-    'Änderungen an "' + item.name + '" wirklich speichern?\\n\\n' +
-    'Name: ' + name + '\\n' +
-    'Kategorie: ' + category + '\\n' +
-    'Unterkategorie: ' + subcategory + '\\n' +
-    'Einheiten: ' + units.join(", ")
-  )) return;
-
-  materialOverrides[id] = {
-    name,
-    units:[...new Set(units)],
-    locations:[{category, subcategory}]
+function saveOrderMetaSilent() {
+  orderMeta = {
+    date:document.getElementById("orderDate").value,
+    project:document.getElementById("orderProject").value,
+    note:document.getElementById("orderNote").value
   };
-  saveJSON(STORAGE_OVERRIDES, materialOverrides);
-
-  activeCategory = category;
-  renderCategories();
-  renderCategory();
-  renderSearch();
-  renderCart();
-  populateAdminMaterials();
-
-  alert("Material wurde geändert.");
+  saveJSON(metaKey(activeSiteId), orderMeta);
 }
 
 function saveOrder() {
-  saveJSON(STORAGE_ORDER, order);
-  orderMeta = {
-    date:document.getElementById("orderDate").value,
-    project:document.getElementById("orderProject").value
-  };
-  saveJSON(STORAGE_META, orderMeta);
-  alert("Bestellung gespeichert.");
+  saveOrderMetaSilent();
+  saveJSON(cartKey(activeSiteId), cart);
+  alert("Auswahl gespeichert.");
 }
 
 function clearOrder() {
-  if (!confirm("Aktuelle Bestellung wirklich leeren? Der Materialstamm bleibt erhalten.")) return;
-  order = {};
-  saveJSON(STORAGE_ORDER, order);
-  renderCategory();
+  if (!confirm("Aktuelle Auswahl dieser Baustelle wirklich leeren? Der Materialstamm bleibt erhalten.")) return;
+  cart = {};
+  saveJSON(cartKey(activeSiteId), cart);
+  renderCategoryView();
   renderSearch();
   renderCart();
 }
 
 function composeOrder() {
   saveOrderMetaSilent();
-
   const list = selectedItems();
-  if (!list.length) {
-    alert("Keine Materialien ausgewählt.");
-    return;
-  }
+  if (!list.length) { alert("Keine Materialien ausgewählt."); return; }
 
-  const orderList = list.filter(x => x.type === "order");
-  const takeList = list.filter(x => x.type === "take");
+  const orderList = list.filter(x => x.type === "order").sort(byUrgentThenName);
+  const takeList = list.filter(x => x.type === "take").sort(byUrgentThenName);
 
-  const date = document.getElementById("orderDate").value;
-  const project = document.getElementById("orderProject").value.trim();
+  const date = orderMeta.date;
+  const project = orderMeta.project.trim();
+  const note = orderMeta.note.trim();
+  const siteName = (sites[activeSiteId] && sites[activeSiteId].name) || "";
 
-  addHistoryEntry(list, date, project);
+  addHistoryEntry(list, {date, project, note});
 
-  const makeRows = arr => arr.map(x =>
-    `<tr>
-      <td>${esc(x.item.name)}</td>
+  const makeRows = arr => arr.map(x => `
+    <tr class="${x.urgent ? "urgent" : ""}">
+      <td>${x.urgent ? "❗ " : ""}${esc(x.item.name)}</td>
       <td>${esc(x.qty)}</td>
       <td>${esc(x.unit)}</td>
     </tr>`
@@ -1347,81 +1142,60 @@ function composeOrder() {
   const orderRows = makeRows(orderList);
   const takeRows = makeRows(takeList);
 
-  const orderText =
-    `*Bestellung*
-` +
-    (project ? `*Bauvorhaben:* ${project}
-` : "") +
-    (date ? `*Datum:* ${date}
-` : "") +
-    `
-` +
-    orderList.map(x => `${x.item.name} – ${x.qty} ${x.unit}`).join("\n");
+  const textBlock = (title, arr) =>
+    `*${title}*\n` +
+    (siteName ? `*Baustelle:* ${siteName}\n` : "") +
+    (project ? `*Bauvorhaben:* ${project}\n` : "") +
+    (date ? `*Datum:* ${date}\n` : "") +
+    `\n` +
+    arr.map(x => `${x.urgent ? "❗️ " : ""}${x.item.name} – ${x.qty} ${x.unit}`).join("\n") +
+    (note ? `\n\n*Anmerkung:* ${note}` : "");
 
-  const takeText =
-    `*Mitnehmen*
-` +
-    (project ? `*Bauvorhaben:* ${project}
-` : "") +
-    (date ? `*Datum:* ${date}
-` : "") +
-    `
-` +
-    takeList.map(x => `${x.item.name} – ${x.qty} ${x.unit}`).join("\n");
+  const orderText = textBlock("Bestellung", orderList);
+  const takeText = textBlock("Mitnehmen", takeList);
 
   const section = (id, title, rows) => rows ? `
     <section id="${id}" class="print-section">
       <h2>${title}</h2>
       <table>
-        <thead>
-          <tr>
-            <th>Material</th>
-            <th>Menge</th>
-            <th>Einheit</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Material</th><th>Menge</th><th>Einheit</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-    </section>
-  ` : "";
+    </section>` : "";
 
-  const w = window.open("", "Materialliste", "width=900,height=760");
-
-  if (!w) {
-    alert("Popup wurde vom Browser blockiert.");
-    return;
-  }
+  const w = window.open("", "Materialplaner", "width=900,height=760");
+  if (!w) { alert("Popup wurde vom Browser blockiert."); return; }
 
   w.document.write(`<!doctype html>
   <html>
   <head>
     <meta charset="utf-8">
-    <title>Materialliste</title>
+    <title>Materialplaner</title>
     <style>
       body{font-family:Arial,sans-serif;margin:24px;color:#222}
-      h1{margin-bottom:8px}
+      h1{margin-bottom:4px}
       h2{margin-top:24px}
-      .meta{margin-bottom:18px}
+      .meta{margin-bottom:18px;color:#444}
       table{width:100%;border-collapse:collapse;margin-bottom:18px}
       th,td{border:1px solid #aaa;padding:8px;text-align:left}
       th{background:#ddd}
+      tr.urgent td{background:#fbe3e0;font-weight:700}
+      .note{margin-top:6px;padding:10px;background:#f3f3f3;border-radius:6px;white-space:pre-wrap}
       .actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
       button{padding:10px 14px}
       @media print{
         .actions{display:none!important}
         body.print-order #takeSection{display:none!important}
         body.print-take #orderSection{display:none!important}
-        body.print-order h1,
-        body.print-take h1{display:none!important}
       }
     </style>
   </head>
   <body>
-    <h1>Materialliste</h1>
-
+    <h1>Materialplaner${siteName ? " – " + esc(siteName) : ""}</h1>
     <div class="meta">
       ${date ? "Datum: " + esc(date) + "<br>" : ""}
       ${project ? "Bauvorhaben: " + esc(project) : ""}
+      ${note ? '<div class="note">' + esc(note) + "</div>" : ""}
     </div>
 
     ${section("orderSection", "Bestellung", orderRows)}
@@ -1453,20 +1227,14 @@ function composeOrder() {
       const waOrder = document.getElementById("waOrder");
       if (waOrder) {
         waOrder.onclick = function() {
-          window.open(
-            "https://wa.me/?text=" + encodeURIComponent(${JSON.stringify(orderText)}),
-            "_blank"
-          );
+          window.open("https://wa.me/?text=" + encodeURIComponent(${JSON.stringify(orderText)}), "_blank");
         };
       }
 
       const waTake = document.getElementById("waTake");
       if (waTake) {
         waTake.onclick = function() {
-          window.open(
-            "https://wa.me/?text=" + encodeURIComponent(${JSON.stringify(takeText)}),
-            "_blank"
-          );
+          window.open("https://wa.me/?text=" + encodeURIComponent(${JSON.stringify(takeText)}), "_blank");
         };
       }
     <\/script>
@@ -1476,28 +1244,32 @@ function composeOrder() {
   w.document.close();
 }
 
-function addHistoryEntry(list, date, project) {
-  if (!list.length) return;
+/* ---------------- Bestellverlauf ---------------- */
 
+function addHistoryEntry(list, meta) {
+  if (!list.length) return;
   orderHistory.unshift({
     id:"h" + Date.now(),
     savedAt:new Date().toISOString(),
-    date,
-    project,
-    items:list.map(x => ({id:x.item.id, name:x.item.name, qty:x.qty, unit:x.unit, type:x.type}))
+    date:meta.date,
+    project:meta.project,
+    note:meta.note,
+    items:list.map(x => ({id:x.item.id, name:x.item.name, qty:x.qty, unit:x.unit, type:x.type, urgent:!!x.urgent}))
   });
-
   if (orderHistory.length > 50) orderHistory.length = 50;
-  saveJSON(STORAGE_HISTORY, orderHistory);
+  saveJSON(historyKey(activeSiteId), orderHistory);
   renderHistory();
 }
 
 function renderHistory() {
   const box = document.getElementById("historyList");
+  const intro = document.getElementById("historyIntro");
+  const siteName = (sites[activeSiteId] && sites[activeSiteId].name) || "";
+  if (intro) intro.textContent = 'Verlauf für „' + siteName + '“. Jede zusammengefasste Bestellung wird hier automatisch gespeichert – auch wenn die Auswahl später geleert wird.';
   if (!box) return;
 
   if (!orderHistory.length) {
-    box.innerHTML = `<div class="empty">Noch keine Bestellung im Verlauf.</div>`;
+    box.innerHTML = `<div class="empty">Noch keine Bestellung im Verlauf dieser Baustelle.</div>`;
     return;
   }
 
@@ -1507,21 +1279,25 @@ function renderHistory() {
     const orderCount = h.items.filter(i => i.type === "order").length;
     const takeCount = h.items.filter(i => i.type === "take").length;
     const rows = h.items.map(i => `
-      <div class="cart-item">
-        <div>${esc(i.name)}${i.type === "take" ? ' <small>(Mitnehmen)</small>' : ""}</div>
+      <div class="cart-item ${i.urgent ? "urgent" : ""}">
+        <div>${i.urgent ? "❗ " : ""}${esc(i.name)}${i.type === "take" ? ' <small>(Mitnehmen)</small>' : ""}</div>
         <div><b>${esc(i.qty)} ${esc(i.unit)}</b></div>
       </div>`
     ).join("");
+    const noteHTML = h.note ? `<div class="hint" style="margin:8px 0;padding:8px;background:var(--surface-alt);border-radius:6px;">${esc(h.note)}</div>` : "";
 
     return `
       <details class="history-entry"${idx === 0 ? " open" : ""}>
         <summary>${esc(label)} — ${orderCount} Bestellung / ${takeCount} Mitnehmen
-          <small style="color:var(--muted);font-weight:normal;">(gespeichert ${esc(savedLabel)})</small>
+          <div class="hint" style="font-weight:normal;">gespeichert ${esc(savedLabel)}</div>
         </summary>
-        <div class="subrows">${rows}</div>
-        <div class="cart-actions">
-          <button class="btn primary" type="button" data-reload="${escAttr(h.id)}">In aktuelle Auswahl laden</button>
-          <button class="btn danger" type="button" data-delhist="${escAttr(h.id)}">Eintrag löschen</button>
+        <div style="padding:0 12px 12px;">
+          ${rows}
+          ${noteHTML}
+          <div class="cart-actions" style="padding:10px 0 0;border:0;">
+            <button class="btn primary" type="button" data-reload="${escAttr(h.id)}">In aktuelle Auswahl laden</button>
+            <button class="btn danger" type="button" data-delhist="${escAttr(h.id)}">Eintrag löschen</button>
+          </div>
         </div>
       </details>`;
   }).join("");
@@ -1535,80 +1311,180 @@ function reloadHistoryEntry(id) {
   if (!entry) return;
 
   const label = [entry.date, entry.project].filter(Boolean).join(" · ") || "ohne Angabe";
-  if (!confirm(
-    'Bestellung "' + label + '" in die aktuelle Auswahl laden?\n\n' +
-    'Die Mengen der darin enthaltenen Materialien werden dabei überschrieben.'
-  )) return;
+  if (!confirm('Bestellung "' + label + '" in die aktuelle Auswahl laden?\n\nBestehende Mengen dieser Materialien werden dabei überschrieben.')) return;
 
   let missing = 0;
   entry.items.forEach(it => {
     if (!itemById(it.id)) { missing++; return; }
-    order[it.id] = {
-      primaryQty:it.qty,
-      primaryUnit:it.unit,
-      primaryType:it.type,
-      extraEnabled:false,
-      extraQty:"",
-      extraUnit:it.unit,
-      extraType:it.type === "order" ? "take" : "order"
-    };
+    const o = ensureCartRow(it.id);
+    if (it.type === "order") { o.orderQty = it.qty; o.orderUnit = it.unit; }
+    else { o.takeQty = it.qty; o.takeUnit = it.unit; }
+    if (it.urgent) o.urgent = true;
   });
 
-  saveJSON(STORAGE_ORDER, order);
-  renderCategory();
+  saveJSON(cartKey(activeSiteId), cart);
+  renderCategoryView();
   renderSearch();
   renderCart();
 
-  alert(
-    "Bestellung wurde in die aktuelle Auswahl geladen." +
-    (missing ? "\n\n" + missing + " Material(ien) aus diesem Eintrag gibt es nicht mehr und wurden übersprungen." : "")
-  );
-  document.getElementById("cartPanel").scrollIntoView({behavior:"smooth", block:"start"});
+  alert("Bestellung wurde in die aktuelle Auswahl geladen." + (missing ? "\n\n" + missing + " Material(ien) aus diesem Eintrag gibt es nicht mehr und wurden übersprungen." : ""));
+  openSheet("cartSheet");
 }
 
 function deleteHistoryEntry(id) {
   if (!confirm("Diesen Verlaufseintrag wirklich löschen?")) return;
   orderHistory = orderHistory.filter(h => h.id !== id);
-  saveJSON(STORAGE_HISTORY, orderHistory);
+  saveJSON(historyKey(activeSiteId), orderHistory);
   renderHistory();
 }
 
 function clearHistory() {
-  if (!confirm("Den gesamten Bestellverlauf wirklich löschen? Das kann nicht rückgängig gemacht werden.")) return;
+  if (!confirm("Den gesamten Bestellverlauf dieser Baustelle wirklich löschen? Das kann nicht rückgängig gemacht werden.")) return;
   orderHistory = [];
-  saveJSON(STORAGE_HISTORY, orderHistory);
+  saveJSON(historyKey(activeSiteId), orderHistory);
   renderHistory();
 }
 
-function openHistoryPanel() {
-  const panel = document.getElementById("historyPanel");
-  panel.classList.add("show");
-  renderHistory();
-  panel.scrollIntoView({behavior:"smooth", block:"start"});
+/* ---------------- Material hinzufügen / verwalten ---------------- */
+
+function addCustomMaterial() {
+  const name = document.getElementById("newName").value.trim();
+  const category = document.getElementById("newCategory").value.trim();
+  const subcategory = document.getElementById("newSubcategory").value.trim() || "Sonstiges";
+  const units = document.getElementById("newUnits").value.split(",").map(x => x.trim()).filter(Boolean);
+
+  if (!name) { alert("Bitte Materialnamen eingeben."); return; }
+  if (!units.length) units.push("Stk.");
+
+  const existing = catalog().find(x => norm(x.name) === norm(name));
+  if (existing) {
+    const custom = customMaterials.find(x => norm(x.name) === norm(name));
+    if (custom) {
+      units.forEach(u => { if (!custom.units.includes(u)) custom.units.push(u); });
+      const loc = {category, subcategory};
+      if (!custom.locations.some(l => l.category === category && l.subcategory === subcategory)) custom.locations.push(loc);
+    } else {
+      customMaterials.push({id:"c" + Date.now(), name:existing.name, units:[...new Set([...(existing.units || []), ...units])], locations:[{category, subcategory}], custom:true});
+    }
+  } else {
+    customMaterials.push({id:"c" + Date.now(), name, units, locations:[{category, subcategory}], custom:true});
+  }
+
+  saveJSON(STORAGE_CUSTOM, customMaterials);
+  document.getElementById("newName").value = "";
+  document.getElementById("newSubcategory").value = "";
+  document.getElementById("newUnits").value = "";
+  activeCategory = category;
+  renderCategories();
+  renderCategoryView();
+  renderSearch();
+  alert("Material dauerhaft gespeichert.");
+}
+
+function populateAdminMaterials() {
+  const search = norm(document.getElementById("adminSearch").value);
+  const select = document.getElementById("adminMaterial");
+  const previous = select.value;
+
+  const items = catalog().filter(item => !search || norm(item.name).includes(search)).sort((a, b) => a.name.localeCompare(b.name, "de"));
+  select.innerHTML = items.map(item => `<option value="${escAttr(item.id)}">${esc(item.name)}</option>`).join("");
+
+  if (items.some(x => x.id === previous)) select.value = previous;
+  loadAdminMaterial();
+}
+
+function loadAdminMaterial() {
+  const id = document.getElementById("adminMaterial").value;
+  const item = itemById(id);
+  const editCategory = document.getElementById("editCategory");
+
+  editCategory.innerHTML = allCategories().map(c => `<option value="${escAttr(c)}">${esc(c)}</option>`).join("");
+
+  if (!item) {
+    document.getElementById("editName").value = "";
+    document.getElementById("editSubcategory").value = "";
+    document.getElementById("editUnits").value = "";
+    return;
+  }
+
+  const loc = (item.locations && item.locations[0]) || {category:"NICHT ZUGEORDNET", subcategory:"Sonstiges"};
+  document.getElementById("editName").value = item.name || "";
+  editCategory.value = loc.category || "NICHT ZUGEORDNET";
+  document.getElementById("editSubcategory").value = loc.subcategory || "Sonstiges";
+  document.getElementById("editUnits").value = (item.units || []).join(", ");
+}
+
+function saveAdminEdit() {
+  const id = document.getElementById("adminMaterial").value;
+  const item = itemById(id);
+  if (!item) { alert("Bitte zuerst ein Material auswählen."); return; }
+
+  const name = document.getElementById("editName").value.trim();
+  const category = document.getElementById("editCategory").value.trim();
+  const subcategory = document.getElementById("editSubcategory").value.trim() || "Sonstiges";
+  const units = document.getElementById("editUnits").value.split(",").map(x => x.trim()).filter(Boolean);
+
+  if (!name) { alert("Der Materialname darf nicht leer sein."); return; }
+  if (!units.length) units.push("Stk.");
+
+  if (!confirm(
+    'Änderungen an "' + item.name + '" wirklich speichern?\n\n' +
+    'Name: ' + name + '\n' +
+    'Kategorie: ' + category + '\n' +
+    'Unterkategorie: ' + subcategory + '\n' +
+    'Einheiten: ' + units.join(", ")
+  )) return;
+
+  materialOverrides[id] = {name, units:[...new Set(units)], locations:[{category, subcategory}]};
+  saveJSON(STORAGE_OVERRIDES, materialOverrides);
+
+  activeCategory = category;
+  renderCategories();
+  renderCategoryView();
+  renderSearch();
+  renderCart();
+  populateAdminMaterials();
+  alert("Material wurde geändert.");
+}
+
+/* ---------------- Datensicherung ---------------- */
+
+function cleanCart(c) {
+  const out = {};
+  Object.keys(c).forEach(id => { if (rowHasQty(c[id]) || c[id].urgent) out[id] = c[id]; });
+  return out;
 }
 
 function exportData() {
-  const cleanOrder = {};
-  Object.keys(order).forEach(id => {
-    if (isSelected(id)) cleanOrder[id] = order[id];
+  saveOrderMetaSilent();
+  saveJSON(cartKey(activeSiteId), cart);
+
+  const sitesData = {};
+  Object.keys(sites).forEach(id => {
+    sitesData[id] = {
+      cart:id === activeSiteId ? cleanCart(cart) : cleanCart(loadJSON(cartKey(id), {})),
+      meta:id === activeSiteId ? orderMeta : loadJSON(metaKey(id), {date:"", project:"", note:""}),
+      history:id === activeSiteId ? orderHistory : loadJSON(historyKey(id), []),
+      favorites:id === activeSiteId ? favorites : loadJSON(favKey(id), [])
+    };
   });
 
   const payload = {
-    type:"materialliste-backup",
+    type:"materialplaner-backup",
     version:1,
     exportedAt:new Date().toISOString(),
+    sites,
+    activeSiteId,
+    sitesData,
     customMaterials,
-    materialOverrides,
-    order:cleanOrder,
-    orderMeta,
-    orderHistory
+    materialOverrides
   };
 
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "materialliste-sicherung-" + new Date().toISOString().slice(0, 10) + ".json";
+  a.download = "materialplaner-sicherung-" + new Date().toISOString().slice(0, 10) + ".json";
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -1628,39 +1504,46 @@ function importData(file) {
       return;
     }
 
-    if (!data || typeof data !== "object" || !("customMaterials" in data)) {
-      alert("Das ist keine gültige Materialliste-Sicherungsdatei.");
+    if (!data || typeof data !== "object" || !("sites" in data) || !("sitesData" in data)) {
+      alert("Das ist keine gültige Materialplaner-Sicherungsdatei.");
       return;
     }
 
     if (!confirm(
       "Sicherung wiederherstellen?\n\n" +
-      "Eigene Materialien, Änderungen, die aktuelle Auswahl und der Verlauf auf diesem Gerät werden dabei ersetzt.\n" +
+      "Alle Baustellen, der Materialkatalog und alle Bestellungen/Verläufe auf diesem Gerät werden dabei ersetzt.\n" +
       "Datum der Sicherung: " + (data.exportedAt ? new Date(data.exportedAt).toLocaleString("de-DE") : "unbekannt")
     )) return;
 
+    sites = (data.sites && typeof data.sites === "object") ? data.sites : {};
+    ensureAtLeastOneSite();
     customMaterials = Array.isArray(data.customMaterials) ? data.customMaterials : [];
     materialOverrides = (data.materialOverrides && typeof data.materialOverrides === "object") ? data.materialOverrides : {};
-    order = (data.order && typeof data.order === "object") ? data.order : {};
-    orderMeta = (data.orderMeta && typeof data.orderMeta === "object") ? data.orderMeta : {date:"", project:""};
-    orderHistory = Array.isArray(data.orderHistory) ? data.orderHistory : [];
 
+    Object.keys(data.sitesData || {}).forEach(id => {
+      if (!sites[id]) return;
+      const sd = data.sitesData[id] || {};
+      saveJSON(cartKey(id), (sd.cart && typeof sd.cart === "object") ? sd.cart : {});
+      saveJSON(metaKey(id), (sd.meta && typeof sd.meta === "object") ? sd.meta : {date:"", project:"", note:""});
+      saveJSON(historyKey(id), Array.isArray(sd.history) ? sd.history : []);
+      saveJSON(favKey(id), Array.isArray(sd.favorites) ? sd.favorites : []);
+    });
+
+    saveJSON(STORAGE_SITES, sites);
+    activeSiteId = (data.activeSiteId && sites[data.activeSiteId] && !sites[data.activeSiteId].archived) ? data.activeSiteId : pickActiveSiteId();
+    saveJSON(STORAGE_ACTIVE_SITE, activeSiteId);
     saveJSON(STORAGE_CUSTOM, customMaterials);
     saveJSON(STORAGE_OVERRIDES, materialOverrides);
-    saveJSON(STORAGE_ORDER, order);
-    saveJSON(STORAGE_META, orderMeta);
-    saveJSON(STORAGE_HISTORY, orderHistory);
 
-    document.getElementById("orderDate").value = orderMeta.date || new Date().toISOString().slice(0, 10);
-    document.getElementById("orderProject").value = orderMeta.project || "";
-
+    loadActiveSiteData();
     activeCategory = BASE_CATEGORIES[0] || "";
     renderCategories();
-    renderCategory();
+    renderCategoryView();
     renderSearch();
     renderCart();
-    populateAdminMaterials();
     renderHistory();
+    renderSiteList();
+    populateAdminMaterials();
 
     alert("Sicherung wurde wiederhergestellt.");
   };
@@ -1668,150 +1551,109 @@ function importData(file) {
   reader.readAsText(file, "utf-8");
 }
 
-function scrollToSearchResults() {
-  const panel = document.getElementById("searchPanel");
-  if (panel) {
-    panel.scrollIntoView({behavior:"smooth", block:"start"});
+/* ---------------- Sheets / Navigation ---------------- */
+
+function openSheet(id) {
+  document.querySelectorAll(".sheet.open").forEach(s => { if (s.id !== id) s.classList.remove("open"); });
+  document.getElementById(id).classList.add("open");
+
+  const isDesktopCart = id === "cartSheet" && window.matchMedia("(min-width:980px)").matches;
+  if (isDesktopCart) {
+    document.getElementById("sheetBackdrop").classList.remove("show");
+  } else {
+    document.getElementById("sheetBackdrop").classList.add("show");
   }
 }
-
-function openAddMaterialPanel() {
-  const panel = document.getElementById("managePanel");
-  panel.classList.add("show");
-  panel.scrollIntoView({behavior:"smooth", block:"start"});
-  setTimeout(() => {
-    const input = document.getElementById("newName");
-    if (input) input.focus();
-  }, 300);
+function closeSheet(id) {
+  document.getElementById(id).classList.remove("open");
+  if (!document.querySelector(".sheet.open")) document.getElementById("sheetBackdrop").classList.remove("show");
+}
+function closeAllSheets() {
+  document.querySelectorAll(".sheet.open").forEach(s => s.classList.remove("open"));
+  document.getElementById("sheetBackdrop").classList.remove("show");
 }
 
-function openAdminPanel() {
-  const panel = document.getElementById("adminPanel");
-  panel.classList.add("show");
-  populateAdminMaterials();
-  panel.scrollIntoView({behavior:"smooth", block:"start"});
-  setTimeout(() => {
-    const input = document.getElementById("adminSearch");
-    if (input) input.focus();
-  }, 300);
-}
+document.querySelectorAll("[data-close]").forEach(btn => {
+  btn.onclick = () => closeSheet(btn.closest(".sheet").id);
+});
+document.getElementById("sheetBackdrop").onclick = closeAllSheets;
+document.getElementById("cartCloseBtn").onclick = () => closeSheet("cartSheet");
 
+document.getElementById("siteSwitchBtn").onclick = () => { renderSiteList(); openSheet("sitesSheet"); };
+document.getElementById("navSites").onclick = () => { renderSiteList(); openSheet("sitesSheet"); };
+document.getElementById("moreSitesBtn").onclick = () => { closeSheet("moreSheet"); renderSiteList(); openSheet("sitesSheet"); };
 
-function isMobileNavigation() {
-  return window.matchMedia("(max-width: 700px)").matches;
-}
+document.getElementById("cartOpenBtn").onclick = () => openSheet("cartSheet");
+document.getElementById("navCartBtn").onclick = () => openSheet("cartSheet");
 
-function hideMobileTopbar() {
-  if (!isMobileNavigation()) return;
-  const topbar = document.querySelector(".topbar");
-  const menuBtn = document.getElementById("mobileMenuBtn");
-  if (!topbar || !menuBtn) return;
+document.getElementById("navMaterialBtn").onclick = () => {
+  closeAllSheets();
+  document.getElementById("searchInput").value = "";
+  showView("category");
+};
+document.getElementById("navMoreBtn").onclick = () => openSheet("moreSheet");
 
-  topbar.classList.add("mobile-hidden");
-  menuBtn.classList.add("show");
-}
+document.getElementById("navAddMaterial").onclick = () => openSheet("addMaterialSheet");
+document.getElementById("moreAddMaterialBtn").onclick = () => { closeSheet("moreSheet"); openSheet("addMaterialSheet"); };
 
-function showMobileTopbar() {
-  const topbar = document.querySelector(".topbar");
-  const menuBtn = document.getElementById("mobileMenuBtn");
-  if (!topbar || !menuBtn) return;
+document.getElementById("navAdmin").onclick = () => { populateAdminMaterials(); openSheet("adminSheet"); };
+document.getElementById("moreAdminBtn").onclick = () => { closeSheet("moreSheet"); populateAdminMaterials(); openSheet("adminSheet"); };
 
-  topbar.classList.remove("mobile-hidden");
-  menuBtn.classList.remove("show");
-}
+document.getElementById("navHistory").onclick = () => { renderHistory(); openSheet("historySheet"); };
+document.getElementById("moreHistoryBtn").onclick = () => { closeSheet("moreSheet"); renderHistory(); openSheet("historySheet"); };
 
-let lastMobileScrollY = window.scrollY;
+document.getElementById("navBackup").onclick = () => openSheet("backupSheet");
+document.getElementById("moreBackupBtn").onclick = () => { closeSheet("moreSheet"); openSheet("backupSheet"); };
 
-function handleMobileNavigationScroll() {
-  if (!isMobileNavigation()) {
-    showMobileTopbar();
-    lastMobileScrollY = window.scrollY;
-    return;
-  }
-
-  const currentY = window.scrollY;
-  const movedDown = currentY > lastMobileScrollY + 8;
-
-  if (movedDown && currentY > 90) {
-    hideMobileTopbar();
-  }
-
-  lastMobileScrollY = currentY;
-}
-
-function saveOrderMetaSilent() {
-  orderMeta = {
-    date:document.getElementById("orderDate").value,
-    project:document.getElementById("orderProject").value
-  };
-  saveJSON(STORAGE_META, orderMeta);
-}
-
-function esc(s) {
-  return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function escAttr(s) { return esc(s); }
-function cssEscape(s) {
-  if (window.CSS && CSS.escape) return CSS.escape(s);
-  return String(s).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
-}
+document.getElementById("addSiteBtn").onclick = () => {
+  const input = document.getElementById("newSiteName");
+  const name = input.value.trim();
+  if (!name) { alert("Bitte einen Namen für die Baustelle eingeben."); return; }
+  const s = makeSite(name);
+  sites[s.id] = s;
+  saveSites();
+  input.value = "";
+  switchToSite(s.id);
+  renderSiteList();
+};
 
 document.getElementById("searchInput").addEventListener("input", function() {
+  showView(this.value.trim() ? "search" : "category");
   renderSearch();
-
-  if (this.value.trim()) {
-    scrollToSearchResults();
-    if (isMobileNavigation()) {
-      setTimeout(hideMobileTopbar, 260);
-    }
-  }
 });
 
-document.getElementById("manageBtn").onclick = () => {
-  openAddMaterialPanel();
-  if (isMobileNavigation()) setTimeout(hideMobileTopbar, 260);
-};
-
-document.getElementById("adminBtn").onclick = () => {
-  openAdminPanel();
-  if (isMobileNavigation()) setTimeout(hideMobileTopbar, 260);
-};
-document.getElementById("historyBtn").onclick = () => {
-  openHistoryPanel();
-  if (isMobileNavigation()) setTimeout(hideMobileTopbar, 260);
-};
 document.getElementById("adminSearch").addEventListener("input", populateAdminMaterials);
 document.getElementById("adminMaterial").addEventListener("change", loadAdminMaterial);
 document.getElementById("saveEditBtn").onclick = saveAdminEdit;
 document.getElementById("addMaterialBtn").onclick = addCustomMaterial;
+
+document.getElementById("saveOrderBtn").onclick = saveOrder;
+document.getElementById("clearOrderBtn").onclick = clearOrder;
+document.getElementById("openOrderBtn").onclick = composeOrder;
+document.getElementById("orderDate").addEventListener("change", saveOrderMetaSilent);
+document.getElementById("orderProject").addEventListener("input", saveOrderMetaSilent);
+document.getElementById("orderNote").addEventListener("input", saveOrderMetaSilent);
+
 document.getElementById("exportDataBtn").onclick = exportData;
 document.getElementById("importDataInput").addEventListener("change", (e) => {
   const file = e.target.files && e.target.files[0];
   importData(file);
   e.target.value = "";
 });
+
 document.getElementById("clearHistoryBtn").onclick = clearHistory;
-document.getElementById("saveOrderBtn").onclick = saveOrder;
-document.getElementById("clearOrderBtn").onclick = clearOrder;
-document.getElementById("openOrderBtn").onclick = composeOrder;
-document.getElementById("summaryTopBtn").onclick = () => document.getElementById("cartPanel").scrollIntoView({behavior:"smooth",block:"start"});
-document.getElementById("orderDate").addEventListener("change", saveOrderMetaSilent);
-document.getElementById("orderProject").addEventListener("input", saveOrderMetaSilent);
 
-document.getElementById("mobileMenuBtn").onclick = showMobileTopbar;
-window.addEventListener("scroll", handleMobileNavigationScroll, {passive:true});
-window.addEventListener("resize", () => {
-  if (!isMobileNavigation()) showMobileTopbar();
-});
+/* ---------------- Start ---------------- */
 
-document.getElementById("orderDate").value = orderMeta.date || new Date().toISOString().slice(0,10);
-document.getElementById("orderProject").value = orderMeta.project || "";
+ensureAtLeastOneSite();
+activeSiteId = pickActiveSiteId();
+saveJSON(STORAGE_ACTIVE_SITE, activeSiteId);
 
+loadActiveSiteData();
 renderCategories();
-renderCategory();
+renderCategoryView();
 renderSearch();
 renderCart();
-renderHistory();
 </script>
 </body>
 </html>
