@@ -82,6 +82,20 @@
       }
     }
 
+    /* ========= HANDY: SCHLANKE PERMANENTE LEISTE ========= */
+    /* Nur die Formularauswahl (Regiebericht/Bautagesbericht/Stundenzettel)
+       und der "Mehr"-Knopf bleiben am Handy immer sichtbar, damit die oben
+       klebende Leiste nicht den halben Bildschirm einnimmt. Alles andere
+       (Zoom, Schrift, Speichern, Drucken, Editor, ...) klappt erst nach
+       Antippen von "⋯ Mehr" auf. Am PC bleibt alles wie gehabt sichtbar. */
+    #toolbarMoreToggle{ display:none; }
+    @media (max-width: 700px){
+      #toolbarMoreToggle{ display:inline-flex; }
+      .extra-btn{ display:none !important; }
+      body.toolbar-extra-open .extra-btn{ display:inline-flex !important; }
+    }
+    /* ========= END HANDY-LEISTE ========= */
+
     #toolbarEditor{ display:none; }
     body.editor-on #toolbarEditor{ display:flex; }
     body.editor-on #toolbarProd{ display:none; }
@@ -465,9 +479,7 @@ body.original-only #stundenCalcPanel{ display:none !important; }
 
   <!-- ========= TOOLBAR (PRODUKTIV) ========= -->
   <div class="bar" id="toolbarProd">
-    <button id="newReport" class="primary">Neuer Bericht</button>
-    <button id="newSite">Neue Baustelle (alles leer)</button>
-
+    <!-- Diese Knöpfe bleiben am Handy immer sichtbar (Formularauswahl). -->
     <button id="tplRegie">Regiebericht</button>
     <button id="tplBau">Bautagesbericht</button>
     <button id="tplStunden">Stundenzettel</button>
@@ -477,39 +489,46 @@ body.original-only #stundenCalcPanel{ display:none !important; }
     <button id="stundenFinanz" style="display:none;">Original</button>
     <button id="stundenDiff" style="display:none;">Differenz</button>
 
-    <button id="onlyOriginal">Nur Original</button>
+    <button id="toolbarMoreToggle" title="Weitere Funktionen ein-/ausblenden">⋯ Mehr</button>
+
+    <!-- Ab hier: am Handy standardmäßig hinter "⋯ Mehr" versteckt, damit die
+         permanent sichtbare Leiste schmal bleibt. Am PC immer sichtbar. -->
+    <button id="newReport" class="primary extra-btn">Neuer Bericht</button>
+    <button id="newSite" class="extra-btn">Neue Baustelle (alles leer)</button>
+
+    <button id="onlyOriginal" class="extra-btn">Nur Original</button>
     <button id="showAll" style="display:none;" title="Vollansicht">+</button>
 
-    <button id="zoomOut">-</button>
-    <button id="zoomReset">100%</button>
-    <button id="zoomIn">+</button>
-    <span class="hint" id="zoomHint">Zoom: 100%</span>
+    <button id="zoomOut" class="extra-btn">-</button>
+    <button id="zoomReset" class="extra-btn">100%</button>
+    <button id="zoomIn" class="extra-btn">+</button>
+    <span class="hint extra-btn" id="zoomHint">Zoom: 100%</span>
 
     <!-- ========= SCHRIFTGRÖSSE (PRODUKTIV) ========= -->
-    <span class="hint">Schrift:</span>
-    <button id="fontMinus">A-</button>
-    <button id="fontPlus">A+</button>
-    <button id="fontReset">Reset</button>
-    <span class="hint" id="fontHint">Feld: 16px</span>
+    <span class="hint extra-btn">Schrift:</span>
+    <button id="fontMinus" class="extra-btn">A-</button>
+    <button id="fontPlus" class="extra-btn">A+</button>
+    <button id="fontReset" class="extra-btn">Reset</button>
+    <span class="hint extra-btn" id="fontHint">Feld: 16px</span>
     <!-- ========= END SCHRIFTGRÖSSE ========= -->
 
-    <button id="saveData">Daten speichern</button>
-    <label id="loadDataLabel">
+    <button id="saveData" class="extra-btn">Daten speichern</button>
+    <label id="loadDataLabel" class="extra-btn">
       Daten laden
       <input id="loadData" type="file" accept="application/json" />
     </label>
 
-    <label id="workCalendarLabel" style="display:none;">
+    <label id="workCalendarLabel" class="extra-btn" style="display:none;">
       Arbeitskalender laden
       <input id="loadWorkCalendar" type="file" accept="application/json" />
     </label>
-    <span class="hint" id="workCalendarStatus" style="display:none;"></span>
+    <span class="hint extra-btn" id="workCalendarStatus" style="display:none;"></span>
 
-    <button id="printPdf">Als PDF drucken</button>
+    <button id="printPdf" class="extra-btn">Als PDF drucken</button>
 
-    <button id="enterEditor">Editor/Layout (Passwort)</button>
+    <button id="enterEditor" class="extra-btn">Editor/Layout (Passwort)</button>
 
-    <span class="hint" data-desktop-only>Shortcut: STRG + ALT + L</span>
+    <span class="hint extra-btn" data-desktop-only>Shortcut: STRG + ALT + L</span>
   </div>
 
   <div id="stundenCalcPanel" aria-live="polite">
@@ -3511,6 +3530,13 @@ function loadStundenLayout(side, skipPersist = false){
 
   on("showAll","click", () => {
     setOriginalOnlyMode(false);
+  });
+
+  // ---------- Handy: "Mehr"-Leiste ein-/ausklappen ----------
+  on("toolbarMoreToggle","click", () => {
+    const offen = document.body.classList.toggle("toolbar-extra-open");
+    const btn = document.getElementById("toolbarMoreToggle");
+    if (btn) btn.textContent = offen ? "✕ Schließen" : "⋯ Mehr";
   });
 
   // ---------- Zoom ----------
