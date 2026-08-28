@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stundenzettel – Erfassung</title>
+<style>
+  :root {
+    --blau: #3f51b5;
+    --gruen: #4caf50;
+    --rot: #d32f2f;
+    --grau: #666;
+    --bg: #f7f7f8;
+    --karte: #ffffff;
+    --rand: #ddd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 0 0 60px 0;
+    font-size: 16px;
+    color: #222;
+  }
+  header {
+    background: var(--blau);
+    color: #fff;
+    padding: 14px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.25em;
+  }
+  nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 16px;
+    background: #e8eaf6;
+  }
+  nav a {
+    color: var(--blau);
+    text-decoration: none;
+    font-weight: bold;
+    white-space: nowrap;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #fff;
+    border: 1px solid var(--rand);
+  }
+  main {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  section {
+    background: var(--karte);
+    border: 1px solid var(--rand);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  section h2 {
+    margin-top: 0;
+    font-size: 1.1em;
+    color: var(--blau);
+  }
+  label {
+    display: block;
+    font-weight: bold;
+    margin: 10px 0 4px;
+    font-size: 0.95em;
+  }
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
+  input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid var(--rand);
+    border-radius: 6px;
+    background: #fff;
+  }
+  .zeile2 {
+    display: flex;
+    gap: 10px;
+  }
+  .zeile2 > div { flex: 1; }
+  button {
+    font-size: 16px;
+    padding: 12px 16px;
+    min-height: 44px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .btn-primary { background: var(--blau); color: #fff; }
+  .btn-gruen { background: var(--gruen); color: #fff; }
+  .btn-grau { background: #e0e0e0; color: #333; }
+  .btn-rot { background: var(--rot); color: #fff; }
+  .btn-mic { background: #ff9800; color: #fff; }
+  .btn-mic.aktiv { background: var(--rot); }
+  .btn-reihe {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .btn-reihe button { flex: 1; min-width: 120px; }
+
+  .diktat-box {
+    margin-top: 10px;
+    padding: 10px;
+    background: #fff8e1;
+    border: 1px dashed #ff9800;
+    border-radius: 8px;
+    font-size: 0.95em;
+    display: none;
+  }
+  .diktat-box.sichtbar { display: block; }
+  .hinweis {
+    font-size: 0.85em;
+    color: var(--grau);
+    margin-top: 6px;
+  }
+  .warnbox {
+    background: #ffebee;
+    border: 1px solid #ef9a9a;
+    color: #b71c1c;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    margin-bottom: 16px;
+  }
+
+  .tag-gruppe {
+    border: 1px solid var(--rand);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .tag-kopf {
+    background: #eef1fb;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag-kopf .diff-pos { color: var(--gruen); }
+  .tag-kopf .diff-neg { color: var(--rot); }
+  .eintrag-zeile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-top: 1px solid #eee;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .eintrag-info { flex: 1; min-width: 180px; }
+  .eintrag-info .bau { font-weight: bold; }
+  .eintrag-info .zeit { color: var(--grau); font-size: 0.9em; }
+  .eintrag-aktionen { display: flex; gap: 6px; }
+  .eintrag-aktionen button { padding: 6px 10px; min-height: 36px; font-size: 0.85em; }
+
+  table.uebersicht {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+  }
+  table.uebersicht th, table.uebersicht td {
+    border: 1px solid var(--rand);
+    padding: 6px 8px;
+    text-align: right;
+  }
+  table.uebersicht th:first-child, table.uebersicht td:first-child { text-align: left; }
+  table.uebersicht tr:nth-child(even) { background: #f4f4f8; }
+  .typ-toggle {
+    font-size: 0.8em;
+    padding: 4px 8px;
+    min-height: auto;
+  }
+  #exportBox {
+    display: none;
+    margin-top: 10px;
+  }
+  #exportBox.sichtbar { display: block; }
+  #exportText {
+    width: 100%;
+    height: 160px;
+    font-family: monospace;
+    font-size: 13px;
+  }
+  details summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--blau);
+  }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Stundenzettel – Erfassung</h1>
+</header>
+<nav>
+  <a href="#eingabe">Eintragen</a>
+  <a href="#liste">Tage</a>
+  <a href="#uebersicht">Wochen/Monate</a>
+  <a href="#einstellungen">Einstellungen</a>
+</nav>
+
+<main>
+
+  <div class="warnbox">
+    ⚠️ <b>Sicherheitshinweis:</b> Diktat-Funktion bitte nur im Stand nutzen (z. B. an der Ampel, in der Pause,
+    vor Fahrtantritt) – nie während des Fahrens bedienen.
+  </div>
+
+  <section id="eingabe">
+    <h2>Neuer Eintrag</h2>
+
+    <label for="inpDatum">Datum</label>
+    <input type="date" id="inpDatum">
+
+    <label for="inpBaustelle">Baustelle</label>
+    <div class="zeile2">
+      <div><input type="text" id="inpBaustelle" list="baustellenListe" placeholder="z. B. Musterweg 12"></div>
+      <div style="flex: 0 0 auto;">
+        <button type="button" class="btn-mic" id="btnDiktat" title="Per Sprache diktieren">🎤</button>
+      </div>
+    </div>
+    <datalist id="baustellenListe"></datalist>
+
+    <div id="diktatBox" class="diktat-box">
+      <div><b>Gehört:</b> <span id="diktatRoh">–</span></div>
+      <div class="hinweis">Erkannt wurden nur die Felder unten – bitte vor dem Speichern kurz prüfen.</div>
+    </div>
+
+    <div class="zeile2">
+      <div>
+        <label for="inpVon">Von</label>
+        <input type="time" id="inpVon" value="07:00">
+      </div>
+      <div>
+        <label for="inpBis">Bis</label>
+        <input type="time" id="inpBis" value="16:00">
+      </div>
+    </div>
+
+    <label for="inpPause">Pause (Minuten)</label>
+    <input type="number" id="inpPause" min="0" step="5" value="30">
+
+    <label for="inpNotiz">Notiz (optional)</label>
+    <input type="text" id="inpNotiz" placeholder="z. B. Regie, Schlechtwetter, ...">
+
+    <div class="hinweis" id="berechneteStunden">Ergibt: 0,00 h</div>
+
+    <div class="btn-reihe">
+      <button type="button" class="btn-primary" id="btnSpeichern">Eintrag speichern</button>
+      <button type="button" class="btn-grau" id="btnAbbrechen" style="display:none;">Bearbeitung abbrechen</button>
+    </div>
+  </section>
+
+  <section id="liste">
+    <h2>Erfasste Tage</h2>
+    <div id="tagesListe"></div>
+    <div class="btn-reihe">
+      <button type="button" class="btn-grau" id="btnExport">Als Text exportieren</button>
+      <button type="button" class="btn-rot" id="btnAllesLoeschen">Alle Daten löschen</button>
+    </div>
+    <div id="exportBox">
+      <textarea id="exportText" readonly></textarea>
+      <div class="btn-reihe">
+        <button type="button" class="btn-primary" id="btnKopieren">In Zwischenablage kopieren</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="uebersicht">
+    <h2>Wochenübersicht</h2>
+    <div id="wochenTabelle"></div>
+
+    <h2>Monatsübersicht</h2>
+    <div id="monatsTabelle"></div>
+  </section>
+
+  <section id="einstellungen">
+    <h2>Einstellungen</h2>
+    <p class="hinweis">
+      Diese Soll-Stunden bestimmen, wie die Differenz (Über-/Minusstunden) berechnet wird.
+      Bitte an euren Kollektivvertrag / eure Firmenregelung anpassen – das sind nur sinnvolle Startwerte.
+    </p>
+
+    <label for="setName">Name</label>
+    <input type="text" id="setName" placeholder="Dein Name">
+
+    <div class="grid2">
+      <div>
+        <label for="setMoDo">Soll Mo–Do (h)</label>
+        <input type="number" id="setMoDo" step="0.25" min="0">
+      </div>
+      <div>
+        <label for="setFreiLang">Soll Freitag, Langwoche (h)</label>
+        <input type="number" id="setFreiLang" step="0.25" min="0">
+      </div>
+      <div>
+        <label for="setFreiKurz">Soll Freitag, Kurzwoche (h)</label>
+        <input type="number" id="setFreiKurz" step="0.25" min="0">
+      </div>
+      <div>
+        <label for="setSamstag">Soll Samstag (h)</label>
+        <input type="number" id="setSamstag" step="0.25" min="0">
+      </div>
+    </div>
+
+    <details style="margin-top:14px;">
+      <summary>Was bedeutet Kurzwoche / Langwoche?</summary>
+      <p class="hinweis">
+        Manche Bau-Kollektivverträge arbeiten mit einem 2-Wochen-Rhythmus: In der "Langwoche" wird auch
+        Freitag (verkürzt) gearbeitet, in der "Kurzwoche" ist Freitag frei bzw. es gelten andere Stunden.
+        Die Zuordnung für 2026 wurde aus eurem Arbeitskalender übernommen. Für jede Kalenderwoche kannst
+        du das unten in der Wochenübersicht bei Bedarf einzeln umschalten.
+      </p>
+    </details>
+
+    <p class="hinweis" style="margin-top:14px;">
+      Feiertage werden für 2026 automatisch mit Soll = 0 Stunden berücksichtigt (aus eurem Arbeitskalender).
+      Für andere Jahre bitte die Soll-Stunden an Feiertagen manuell auf 0 setzen bzw. den Tag einfach nicht erfassen.
+    </p>
+
+    <button type="button" class="btn-primary" id="btnEinstellungenSpeichern">Einstellungen speichern</button>
+  </section>
+
+</main>
+
+<script>
+/* ==========================================================
+   Datenbasis: Kalenderwochen-Typ (K/L) und Feiertage 2026.
+   Quelle: arbeitskalender_2026.json – hier eingebettet, damit
+   die Seite auch offline / per Doppelklick (ohne Server) läuft.
+   ========================================================== */
+const KALENDER_2026 = {
+  jahr: 2026,
+  wochen: {
+    1:"K",2:"K",3:"L",4:"K",5:"L",6:"K",7:"L",8:"K",9:"L",10:"K",
+    11:"L",12:"K",13:"L",14:"K",15:"L",16:"L",17:"K",18:"L",19:"L",20:"K",
+    21:"K",22:"L",23:"K",24:"L",25:"K",26:"L",27:"K",28:"L",29:"K",30:"L",
+    31:"K",32:"L",33:"K",34:"L",35:"K",36:"L",37:"K",38:"L",39:"K",40:"L",
+    41:"K",42:"L",43:"K",44:"L",45:"K",46:"L",47:"K",48:"L",49:"K",50:"K",
+    51:"K",52:"L",53:"L"
+  },
+  feiertage: {
+    "2026-01-01":"Neujahr","2026-01-06":"Hl. 3 Könige","2026-04-05":"Ostersonntag",
+    "2026-04-06":"Ostermontag","2026-05-01":"Staatsfeiertag","2026-05-14":"Christi Himmelfahrt",
+    "2026-05-24":"Pfingstsonntag","2026-05-25":"Pfingstmontag","2026-06-04":"Fronleichnam",
+    "2026-08-15":"Mariä Himmelfahrt","2026-10-26":"Nationalfeiertag","2026-11-01":"Allerheiligen",
+    "2026-12-08":"Mariä Empfängnis","2026-12-25":"Christtag","2026-12-26":"Stefanitag"
+  }
+};
+
+const STORAGE_KEY = "hsbau_stundenzettel_v1";
+
+function ladeState() {
+  const roh = localStorage.getItem(STORAGE_KEY);
+  if (roh) {
+    try { return JSON.parse(roh); } catch (e) { /* fällt durch auf Default */ }
+  }
+  return {
+    einstellungen: {
+      name: "",
+      sollMoDo: 8,
+      sollFreiLang: 6.5,
+      sollFreiKurz: 0,
+      sollSamstag: 0
+    },
+    eintraege: [],
+    wochenUeberschreibungen: {}
+  };
+}
+
+function speichereState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+let state = ladeState();
+let bearbeiteId = null;
+
+/* ---------- Datum/Zeit-Hilfsfunktionen ---------- */
+
+function heuteISO() {
+  return toISODateLocal(new Date());
+}
+
+function parseISODateLocal(iso) {
+  const [j, m, t] = iso.split("-").map(Number);
+  return new Date(j, m - 1, t);
+}
+
+function toISODateLocal(d) {
+  const j = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const t = String(d.getDate()).padStart(2, "0");
+  return `${j}-${m}-${t}`;
+}
+
+const WOCHENTAGE = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+
+function getISOWeekInfo(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const tagNr = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - tagNr);
+  const isoJahr = d.getUTCFullYear();
+  const jahresStart = new Date(Date.UTC(isoJahr, 0, 1));
+  const isoWoche = Math.ceil((((d - jahresStart) / 86400000) + 1) / 7);
+  return { isoJahr, isoWoche, key: `${isoJahr}-W${String(isoWoche).padStart(2, "0")}` };
+}
+
+function getWochenTyp(info) {
+  if (state.wochenUeberschreibungen[info.key]) return state.wochenUeberschreibungen[info.key];
+  if (info.isoJahr === 2026 && KALENDER_2026.wochen[info.isoWoche]) return KALENDER_2026.wochen[info.isoWoche];
+  return "L"; // Annahme, wenn keine Kalenderdaten vorliegen (z. B. andere Jahre)
+}
+
+function istFeiertag(iso) {
+  return Object.prototype.hasOwnProperty.call(KALENDER_2026.feiertage, iso);
+}
+
+function getSollStunden(dateObj) {
+  const iso = toISODateLocal(dateObj);
+  if (istFeiertag(iso)) return 0;
+  const wd = dateObj.getDay();
+  const s = state.einstellungen;
+  if (wd === 0) return 0; // Sonntag
+  if (wd === 6) return s.sollSamstag;
+  if (wd >= 1 && wd <= 4) return s.sollMoDo;
+  const info = getISOWeekInfo(dateObj);
+  const typ = getWochenTyp(info);
+  return typ === "K" ? s.sollFreiKurz : s.sollFreiLang;
+}
+
+function berechneStunden(von, bis, pauseMin) {
+  const [vh, vm] = von.split(":").map(Number);
+  const [bh, bm] = bis.split(":").map(Number);
+  let start = vh * 60 + vm;
+  let ende = bh * 60 + bm;
+  if (ende <= start) ende += 24 * 60;
+  const minuten = ende - start - (Number(pauseMin) || 0);
+  return Math.max(0, minuten) / 60;
+}
+
+function formatStunden(h) {
+  return h.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " h";
+}
+
+/* ---------- Formular: Stunden-Vorschau live ---------- */
+
+function aktualisierePreview() {
+  const von = document.getElementById("inpVon").value;
+  const bis = document.getElementById("inpBis").value;
+  const pause = document.getElementById("inpPause").value;
+  if (von && bis) {
+    const h = berechneStunden(von, bis, pause);
+    document.getElementById("berechneteStunden").textContent = "Ergibt: " + formatStunden(h);
+  }
+}
+
+["inpVon", "inpBis", "inpPause"].forEach(id => {
+  document.getElementById(id).addEventListener("input", aktualisierePreview);
+});
+
+/* ---------- Eintrag speichern / bearbeiten / löschen ---------- */
+
+function leereFormular() {
+  document.getElementById("inpDatum").value = heuteISO();
+  document.getElementById("inpBaustelle").value = "";
+  document.getElementById("inpVon").value = "07:00";
+  document.getElementById("inpBis").value = "16:00";
+  document.getElementById("inpPause").value = "30";
+  document.getElementById("inpNotiz").value = "";
+  bearbeiteId = null;
+  document.getElementById("btnSpeichern").textContent = "Eintrag speichern";
+  document.getElementById("btnAbbrechen").style.display = "none";
+  document.getElementById("diktatBox").classList.remove("sichtbar");
+  aktualisierePreview();
+}
+
+document.getElementById("btnSpeichern").addEventListener("click", function () {
+  const datum = document.getElementById("inpDatum").value;
+  const baustelle = document.getElementById("inpBaustelle").value.trim();
+  const von = document.getElementById("inpVon").value;
+  const bis = document.getElementById("inpBis").value;
+  const pause = Number(document.getElementById("inpPause").value) || 0;
+  const notiz = document.getElementById("inpNotiz").value.trim();
+
+  if (!datum || !baustelle || !von || !bis) {
+    alert("Bitte Datum, Baustelle, Von- und Bis-Zeit ausfüllen.");
+    return;
+  }
+
+  const stunden = berechneStunden(von, bis, pause);
+  const eintrag = { id: bearbeiteId || ("e" + Date.now() + Math.random().toString(16).slice(2)),
+    datum, baustelle, von, bis, pause, stunden, notiz };
+
+  if (bearbeiteId) {
+    const idx = state.eintraege.findIndex(e => e.id === bearbeiteId);
+    if (idx >= 0) state.eintraege[idx] = eintrag;
+  } else {
+    state.eintraege.push(eintrag);
+  }
+
+  speichereState();
+  leereFormular();
+  renderAlles();
+});
+
+document.getElementById("btnAbbrechen").addEventListener("click", leereFormular);
+
+function eintragBearbeiten(id) {
+  const e = state.eintraege.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById("inpDatum").value = e.datum;
+  document.getElementById("inpBaustelle").value = e.baustelle;
+  document.getElementById("inpVon").value = e.von;
+  document.getElementById("inpBis").value = e.bis;
+  document.getElementById("inpPause").value = e.pause;
+  document.getElementById("inpNotiz").value = e.notiz || "";
+  bearbeiteId = id;
+  document.getElementById("btnSpeichern").textContent = "Änderung speichern";
+  document.getElementById("btnAbbrechen").style.display = "inline-block";
+  aktualisierePreview();
+  document.getElementById("eingabe").scrollIntoView({ behavior: "smooth" });
+}
+
+function eintragLoeschen(id) {
+  if (!confirm("Diesen Eintrag wirklich löschen?")) return;
+  state.eintraege = state.eintraege.filter(e => e.id !== id);
+  speichereState();
+  renderAlles();
+}
+
+document.getElementById("btnAllesLoeschen").addEventListener("click", function () {
+  if (!confirm("Wirklich ALLE erfassten Einträge löschen? Das kann nicht rückgängig gemacht werden.")) return;
+  state.eintraege = [];
+  speichereState();
+  renderAlles();
+});
+
+/* ---------- Rendering: Tagesliste ---------- */
+
+function renderBaustellenListe() {
+  const namen = [...new Set(state.eintraege.map(e => e.baustelle))];
+  const dl = document.getElementById("baustellenListe");
+  dl.innerHTML = "";
+  namen.forEach(n => {
+    const opt = document.createElement("option");
+    opt.value = n;
+    dl.appendChild(opt);
+  });
+}
+
+function renderTagesListe() {
+  const container = document.getElementById("tagesListe");
+  container.innerHTML = "";
+
+  if (state.eintraege.length === 0) {
+    container.innerHTML = "<p class='hinweis'>Noch keine Einträge erfasst.</p>";
+    return;
+  }
+
+  const tage = [...new Set(state.eintraege.map(e => e.datum))].sort().reverse();
+
+  tage.forEach(datum => {
+    const eintraegeTag = state.eintraege.filter(e => e.datum === datum);
+    const dObj = parseISODateLocal(datum);
+    const wochentag = WOCHENTAGE[dObj.getDay()];
+    const ist = eintraegeTag.reduce((s, e) => s + e.stunden, 0);
+    const soll = getSollStunden(dObj);
+    const diff = ist - soll;
+
+    const gruppe = document.createElement("div");
+    gruppe.className = "tag-gruppe";
+
+    const kopf = document.createElement("div");
+    kopf.className = "tag-kopf";
+    kopf.innerHTML = `
+      <span>${wochentag}, ${datum}${istFeiertag(datum) ? " (Feiertag)" : ""}
+        ${eintraegeTag.length > 1 ? " – " + eintraegeTag.length + " Baustellen" : ""}</span>
+      <span>Ist ${formatStunden(ist)} / Soll ${formatStunden(soll)} /
+        <span class="${diff >= 0 ? "diff-pos" : "diff-neg"}">${diff >= 0 ? "+" : ""}${formatStunden(diff)}</span>
+      </span>`;
+    gruppe.appendChild(kopf);
+
+    eintraegeTag.forEach(e => {
+      const zeile = document.createElement("div");
+      zeile.className = "eintrag-zeile";
+      zeile.innerHTML = `
+        <div class="eintrag-info">
+          <div class="bau">${escapeHtml(e.baustelle)}</div>
+          <div class="zeit">${e.von}–${e.bis} Uhr, ${e.pause} Min. Pause → ${formatStunden(e.stunden)}
+            ${e.notiz ? " · " + escapeHtml(e.notiz) : ""}</div>
+        </div>
+        <div class="eintrag-aktionen">
+          <button type="button" class="btn-grau" data-aktion="bearbeiten" data-id="${e.id}">✎</button>
+          <button type="button" class="btn-rot" data-aktion="loeschen" data-id="${e.id}">🗑</button>
+        </div>`;
+      gruppe.appendChild(zeile);
+    });
+
+    container.appendChild(gruppe);
+  });
+
+  container.querySelectorAll("[data-aktion='bearbeiten']").forEach(btn => {
+    btn.addEventListener("click", () => eintragBearbeiten(btn.dataset.id));
+  });
+  container.querySelectorAll("[data-aktion='loeschen']").forEach(btn => {
+    btn.addEventListener("click", () => eintragLoeschen(btn.dataset.id));
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ---------- Rendering: Wochen- und Monatsübersicht ---------- */
+
+function renderWochenTabelle() {
+  const el = document.getElementById("wochenTabelle");
+  if (state.eintraege.length === 0) { el.innerHTML = ""; return; }
+
+  const proWoche = {};
+  state.eintraege.forEach(e => {
+    const dObj = parseISODateLocal(e.datum);
+    const info = getISOWeekInfo(dObj);
+    if (!proWoche[info.key]) proWoche[info.key] = { info, tage: new Set(), ist: 0 };
+    proWoche[info.key].tage.add(e.datum);
+    proWoche[info.key].ist += e.stunden;
+  });
+
+  const keys = Object.keys(proWoche).sort().reverse();
+  let html = "<table class='uebersicht'><tr><th>Woche</th><th>Typ</th><th>Ist</th><th>Soll</th><th>Differenz</th></tr>";
+
+  keys.forEach(key => {
+    const w = proWoche[key];
+    const soll = [...w.tage].reduce((s, iso) => s + getSollStunden(parseISODateLocal(iso)), 0);
+    const diff = w.ist - soll;
+    const typ = getWochenTyp(w.info);
+    html += `<tr>
+      <td>KW ${w.info.isoWoche} / ${w.info.isoJahr}</td>
+      <td><button type="button" class="btn-grau typ-toggle" data-woche="${key}">${typ === "K" ? "Kurzwoche" : "Langwoche"}</button></td>
+      <td>${formatStunden(w.ist)}</td>
+      <td>${formatStunden(soll)}</td>
+      <td class="${diff >= 0 ? "diff-pos" : "diff-neg"}">${diff >= 0 ? "+" : ""}${formatStunden(diff)}</td>
+    </tr>`;
+  });
+  html += "</table>";
+  el.innerHTML = html;
+
+  el.querySelectorAll("[data-woche]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.woche;
+      const aktuell = state.wochenUeberschreibungen[key] || proWoche[key].info && getWochenTyp(proWoche[key].info);
+      state.wochenUeberschreibungen[key] = aktuell === "K" ? "L" : "K";
+      speichereState();
+      renderAlles();
+    });
+  });
+}
+
+function renderMonatsTabelle() {
+  const el = document.getElementById("monatsTabelle");
+  if (state.eintraege.length === 0) { el.innerHTML = ""; return; }
+
+  const proMonat = {};
+  state.eintraege.forEach(e => {
+    const monatKey = e.datum.slice(0, 7); // YYYY-MM
+    if (!proMonat[monatKey]) proMonat[monatKey] = { tage: new Set(), ist: 0 };
+    proMonat[monatKey].tage.add(e.datum);
+    proMonat[monatKey].ist += e.stunden;
+  });
+
+  const keys = Object.keys(proMonat).sort().reverse();
+  let html = "<table class='uebersicht'><tr><th>Monat</th><th>Ist</th><th>Soll</th><th>Differenz</th></tr>";
+  let gesamtDiff = 0;
+
+  keys.forEach(key => {
+    const m = proMonat[key];
+    const soll = [...m.tage].reduce((s, iso) => s + getSollStunden(parseISODateLocal(iso)), 0);
+    const diff = m.ist - soll;
+    gesamtDiff += diff;
+    html += `<tr>
+      <td>${key}</td>
+      <td>${formatStunden(m.ist)}</td>
+      <td>${formatStunden(soll)}</td>
+      <td class="${diff >= 0 ? "diff-pos" : "diff-neg"}">${diff >= 0 ? "+" : ""}${formatStunden(diff)}</td>
+    </tr>`;
+  });
+  html += `<tr><td><b>Gesamtsaldo</b></td><td></td><td></td>
+    <td class="${gesamtDiff >= 0 ? "diff-pos" : "diff-neg"}"><b>${gesamtDiff >= 0 ? "+" : ""}${formatStunden(gesamtDiff)}</b></td></tr>`;
+  html += "</table>";
+  el.innerHTML = html;
+}
+
+/* ---------- Export ---------- */
+
+document.getElementById("btnExport").addEventListener("click", function () {
+  const box = document.getElementById("exportBox");
+  const tage = [...new Set(state.eintraege.map(e => e.datum))].sort();
+  let text = "Stundenzettel – " + (state.einstellungen.name || "") + "\n";
+  text += "Datum\tBaustelle\tVon\tBis\tPause\tStunden\tNotiz\n";
+  tage.forEach(datum => {
+    state.eintraege.filter(e => e.datum === datum).forEach(e => {
+      text += `${e.datum}\t${e.baustelle}\t${e.von}\t${e.bis}\t${e.pause}\t${e.stunden.toFixed(2)}\t${e.notiz || ""}\n`;
+    });
+  });
+  document.getElementById("exportText").value = text;
+  box.classList.toggle("sichtbar");
+});
+
+document.getElementById("btnKopieren").addEventListener("click", function () {
+  const ta = document.getElementById("exportText");
+  ta.select();
+  navigator.clipboard?.writeText(ta.value).then(() => {
+    alert("In die Zwischenablage kopiert.");
+  }).catch(() => {
+    document.execCommand("copy");
+    alert("Kopiert (über Zwischenablage).");
+  });
+});
+
+/* ---------- Einstellungen ---------- */
+
+function ladeEinstellungenInFormular() {
+  const s = state.einstellungen;
+  document.getElementById("setName").value = s.name || "";
+  document.getElementById("setMoDo").value = s.sollMoDo;
+  document.getElementById("setFreiLang").value = s.sollFreiLang;
+  document.getElementById("setFreiKurz").value = s.sollFreiKurz;
+  document.getElementById("setSamstag").value = s.sollSamstag;
+}
+
+document.getElementById("btnEinstellungenSpeichern").addEventListener("click", function () {
+  state.einstellungen = {
+    name: document.getElementById("setName").value.trim(),
+    sollMoDo: Number(document.getElementById("setMoDo").value) || 0,
+    sollFreiLang: Number(document.getElementById("setFreiLang").value) || 0,
+    sollFreiKurz: Number(document.getElementById("setFreiKurz").value) || 0,
+    sollSamstag: Number(document.getElementById("setSamstag").value) || 0
+  };
+  speichereState();
+  renderAlles();
+  alert("Einstellungen gespeichert.");
+});
+
+/* ---------- Diktat (Spracheingabe) ----------
+   Nutzt die Web-Speech-API des Browsers (nur Chrome/Android
+   zuverlässig unterstützt, iOS Safari eingeschränkt/nicht verfügbar).
+   Wichtig: Ergebnis wird NUR in die Formularfelder eingetragen,
+   NICHT automatisch gespeichert – der Nutzer prüft und bestätigt
+   selbst mit "Eintrag speichern". So kann eine Fehlerkennung nichts
+   verfälschen. */
+
+const SpeechImpl = window.SpeechRecognition || window.webkitSpeechRecognition;
+const btnDiktat = document.getElementById("btnDiktat");
+let erkennung = null;
+let hoertZu = false;
+
+if (SpeechImpl) {
+  erkennung = new SpeechImpl();
+  erkennung.lang = "de-DE";
+  erkennung.interimResults = true;
+  erkennung.maxAlternatives = 1;
+
+  erkennung.addEventListener("result", function (ev) {
+    let text = "";
+    for (let i = 0; i < ev.results.length; i++) {
+      text += ev.results[i][0].transcript;
+    }
+    document.getElementById("diktatRoh").textContent = text;
+    document.getElementById("diktatBox").classList.add("sichtbar");
+
+    const letztes = ev.results[ev.results.length - 1];
+    if (letztes.isFinal) {
+      const erkannt = parseDiktat(text);
+      if (erkannt.baustelle) document.getElementById("inpBaustelle").value = erkannt.baustelle;
+      if (erkannt.von) document.getElementById("inpVon").value = erkannt.von;
+      if (erkannt.bis) document.getElementById("inpBis").value = erkannt.bis;
+      if (erkannt.pause !== undefined) document.getElementById("inpPause").value = erkannt.pause;
+      aktualisierePreview();
+      vorlesen("Erfasst. Bitte kurz prüfen und speichern.");
+    }
+  });
+
+  erkennung.addEventListener("end", function () {
+    hoertZu = false;
+    btnDiktat.classList.remove("aktiv");
+  });
+
+  erkennung.addEventListener("error", function () {
+    hoertZu = false;
+    btnDiktat.classList.remove("aktiv");
+  });
+
+  btnDiktat.addEventListener("click", function () {
+    if (hoertZu) {
+      erkennung.stop();
+      return;
+    }
+    document.getElementById("diktatRoh").textContent = "…";
+    document.getElementById("diktatBox").classList.add("sichtbar");
+    hoertZu = true;
+    btnDiktat.classList.add("aktiv");
+    erkennung.start();
+  });
+} else {
+  btnDiktat.disabled = true;
+  btnDiktat.title = "Spracheingabe wird von diesem Browser nicht unterstützt";
+}
+
+function parseDiktat(rohtext) {
+  const t = rohtext.toLowerCase();
+  const ergebnis = {};
+
+  const bau = t.match(/baustelle\s+(.+?)(?:,|\bvon\b|\bpause\b|$)/);
+  if (bau) ergebnis.baustelle = bau[1].trim();
+
+  const zeit = t.match(/von\s+(\d{1,2})(?:[:.](\d{2}))?\s*(?:uhr)?\s*bis\s*(\d{1,2})(?:[:.](\d{2}))?/);
+  if (zeit) {
+    const vh = zeit[1].padStart(2, "0"), vm = (zeit[2] || "00").padStart(2, "0");
+    const bh = zeit[3].padStart(2, "0"), bm = (zeit[4] || "00").padStart(2, "0");
+    ergebnis.von = `${vh}:${vm}`;
+    ergebnis.bis = `${bh}:${bm}`;
+  }
+
+  if (/keine pause|ohne pause/.test(t)) ergebnis.pause = 0;
+  else if (/halbe stunde/.test(t)) ergebnis.pause = 30;
+  else if (/eine stunde pause|pause.*eine stunde/.test(t)) ergebnis.pause = 60;
+  else {
+    const p = t.match(/pause\s+(\d{1,3})/);
+    if (p) ergebnis.pause = parseInt(p[1], 10);
+  }
+
+  return ergebnis;
+}
+
+function vorlesen(text) {
+  if (!("speechSynthesis" in window)) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "de-DE";
+  window.speechSynthesis.speak(utter);
+}
+
+/* ---------- Gesamt-Render + Start ---------- */
+
+function renderAlles() {
+  renderBaustellenListe();
+  renderTagesListe();
+  renderWochenTabelle();
+  renderMonatsTabelle();
+}
+
+leereFormular();
+ladeEinstellungenInFormular();
+renderAlles();
+</script>
+</body>
+</html>
