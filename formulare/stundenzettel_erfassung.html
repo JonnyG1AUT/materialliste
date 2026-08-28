@@ -263,7 +263,7 @@
     </div>
 
     <label for="inpPause">Pause (Minuten)</label>
-    <input type="number" id="inpPause" min="0" step="5" value="30">
+    <input type="number" id="inpPause" min="0" step="5" value="60">
 
     <label for="inpNotiz">Notiz (optional)</label>
     <input type="text" id="inpNotiz" placeholder="z. B. Regie, Schlechtwetter, ...">
@@ -490,7 +490,7 @@ function leereFormular() {
   document.getElementById("inpBaustelle").value = "";
   document.getElementById("inpVon").value = "07:00";
   document.getElementById("inpBis").value = "16:00";
-  document.getElementById("inpPause").value = "30";
+  document.getElementById("inpPause").value = "60";
   document.getElementById("inpNotiz").value = "";
   bearbeiteId = null;
   document.getElementById("btnSpeichern").textContent = "Eintrag speichern";
