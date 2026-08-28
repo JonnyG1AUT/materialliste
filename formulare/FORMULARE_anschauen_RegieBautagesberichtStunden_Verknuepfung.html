@@ -4,15 +4,30 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Formular – PC-Version (Regie/Bau)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
 :root{
   --page-w: 794px;   /* A4 @ 96dpi (Screen-Referenz) */
   --page-h: 1123px;
-  --ui2: #f2f2f2;
-  --accent: #2b7cff;
 
-  /* Schrift – GLOBAL */
+  /* Marke: aus dem HS-Bau-Briefkopf abgetastet (Logo-Grün / warmes Papier-Beige),
+     NICHT frei erfunden. Betrifft nur die Bedienoberfläche (Leiste/Knöpfe/Panels) -
+     die Formularfelder selbst bleiben unverändert Arial/Schwarz-auf-Weiß. */
+  --ink:         #33302a;
+  --brand:       #4f6b52;
+  --brand-dark:  #3c5340;
+  --brand-light: #dce8d8;
+  --paper:       #f2ede2;
+  --line:        #dcd3c0;
+  --muted:       #6f6a5c;
+  --ui2: var(--paper);
+  --accent: var(--brand);
+  --chrome-font: 'Archivo', Arial, sans-serif;
+
+  /* Schrift – GLOBAL (nur Formularfelder, siehe unten) */
   --font-family: Arial, sans-serif;
   --font-size: 16px;
   --line-height: 1.2;
@@ -29,9 +44,9 @@
 
     body{
       margin:0;
-      background:#bdbdbd;
-      font-family: Arial, sans-serif;
-      color:#111;
+      background:#d9d2c0;
+      font-family: var(--chrome-font);
+      color: var(--ink);
     }
 
     /* ========= TOOLBARS ========= */
@@ -40,32 +55,47 @@
       top:0;
       z-index: 9999;
       background: var(--ui2);
-      border-bottom:1px solid #999;
-      padding:10px;
+      border-bottom:1px solid var(--line);
+      box-shadow: 0 2px 8px rgba(51,48,42,.08);
+      padding:10px 14px;
       display:flex;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
       align-items:center;
       justify-content:center;
     }
     .bar button, .bar label{
-      border:1px solid #777;
-      background:white;
-      padding:8px 10px;
-      border-radius:6px;
+      border:1px solid var(--line);
+      background:#fff;
+      color: var(--ink);
+      padding:8px 12px;
+      border-radius:8px;
       cursor:pointer;
-      font-size:14px;
+      font-family: var(--chrome-font);
+      font-weight:600;
+      font-size:13.5px;
       user-select:none;
+      transition: background-color .12s ease, border-color .12s ease, transform .05s ease;
+    }
+    .bar button:hover{
+      border-color: var(--brand);
+      background: var(--brand-light);
+    }
+    .bar button:active{
+      transform: translateY(1px);
     }
     .bar button.primary{
-      border-color: var(--accent);
+      border-color: var(--brand-dark);
       color: white;
-      background: var(--accent);
+      background: var(--brand);
+    }
+    .bar button.primary:hover{
+      background: var(--brand-dark);
     }
     .bar .hint{
-      font-size:13px;
-      opacity:.8;
-      padding:0 6px;
+      font-size:12.5px;
+      color: var(--muted);
+      padding:0 4px;
       white-space:nowrap;
     }
 
@@ -88,7 +118,12 @@
        klebende Leiste nicht den halben Bildschirm einnimmt. Alles andere
        (Zoom, Schrift, Speichern, Drucken, Editor, ...) klappt erst nach
        Antippen von "⋯ Mehr" auf. Am PC bleibt alles wie gehabt sichtbar. */
-    #toolbarMoreToggle{ display:none; }
+    #toolbarMoreToggle{
+      display:none;
+      background: var(--brand-light) !important;
+      border-color: var(--brand) !important;
+      color: var(--brand-dark) !important;
+    }
     @media (max-width: 700px){
       #toolbarMoreToggle{ display:inline-flex; }
       .extra-btn{ display:none !important; }
@@ -105,28 +140,28 @@
       width:min(760px, calc(100% - 24px));
       margin:12px auto 0;
       background:#fff;
-      border:1px solid #999;
-      border-radius:8px;
-      padding:12px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:14px;
       box-sizing:border-box;
-      box-shadow:0 4px 14px rgba(0,0,0,.12);
-      font-family:Arial,sans-serif;
+      box-shadow:0 4px 14px rgba(51,48,42,.1);
+      font-family: Arial, sans-serif;
     }
     #differencePanel.on{ display:block; }
-    #differencePanel h3{ margin:0 0 8px; font-size:16px; }
-    #differencePanel .diff-meta{ margin:0 0 10px; font-size:13px; }
+    #differencePanel h3{ margin:0 0 8px; font-size:16px; font-family: var(--chrome-font); color: var(--ink); }
+    #differencePanel .diff-meta{ margin:0 0 10px; font-size:13px; color: var(--muted); }
     #differencePanel table{
       width:100%;
       border-collapse:collapse;
       font-size:13px;
     }
     #differencePanel th,#differencePanel td{
-      border:1px solid #bbb;
+      border:1px solid var(--line);
       padding:5px 7px;
       text-align:left;
     }
-    #differencePanel th{ background:#f2f2f2; }
-    #differencePanel .num{ text-align:right; }
+    #differencePanel th{ background: var(--brand-light); font-family: var(--chrome-font); }
+    #differencePanel .num{ text-align:right; font-variant-numeric: tabular-nums; }
     /* ========= END DIFFERENZ-ÜBERSICHT ========= */
 
     /* ========= END TOOLBARS ========= */
@@ -372,18 +407,20 @@ body.original-only #showAll{
   display:none;
   max-width:980px;
   margin:8px auto 0;
-  padding:10px 12px;
-  border:1px solid #bbb;
+  padding:10px 14px;
+  border:1px solid var(--line);
   border-radius:8px;
   background:#fff;
   gap:10px;
   align-items:center;
   flex-wrap:wrap;
+  font-family: var(--chrome-font);
+  color: var(--ink);
 }
 #stundenCalcPanel.on{ display:flex; }
 #stundenCalcPanel label{ display:flex; align-items:center; gap:6px; }
-#stundenCalcPanel input{ width:95px; padding:5px 7px; }
-#stundenCalcPanel .calc-result{ font-weight:700; min-width:115px; }
+#stundenCalcPanel input{ width:95px; padding:5px 7px; border:1px solid var(--line); border-radius:6px; font-variant-numeric: tabular-nums; }
+#stundenCalcPanel .calc-result{ font-weight:700; min-width:115px; color: var(--brand-dark); font-variant-numeric: tabular-nums; }
 body.original-only #stundenCalcPanel{ display:none !important; }
 @media print{ #stundenCalcPanel{ display:none !important; } }
 
@@ -468,7 +505,8 @@ body.original-only #stundenCalcPanel{ display:none !important; }
 
   
 .active-page {
-  background: #0d6efd !important;
+  background: var(--brand) !important;
+  border-color: var(--brand-dark) !important;
   color: white !important;
 }
 
