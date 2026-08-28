@@ -20,6 +20,12 @@ HS-Bau-Formulare, unabhängig von der Materialliste (`../index.html`).
   Feiertage) – unveränderte Kopie aus der PC-Datei, siehe unten
 - `stundenzettel_erfassung.html` – **mobiles Erfassungstool** für den
   Stundenzettel, das exakt dieselbe Logik verwendet (siehe unten)
+- `stammdaten.js` – gemeinsame Kopfdaten (Name/Bauvorhaben/Auftraggeber),
+  die sich die drei Erfassungstools teilen (siehe unten)
+- `bautagesbericht_erfassung.html` – mobiles Erfassungstool für den
+  Bautagesbericht
+- `regiebericht_erfassung.html` – mobiles Erfassungstool für den
+  Regiebericht
 
 ## Rechenlogik (`stunden_logik.js`)
 
@@ -76,11 +82,39 @@ Quick-Code-Eingabe** wie im PC-Programm (kein vereinfachtes Dropdown):
 Stand gedacht (Pause, Ampel, vor Fahrtantritt) – nicht während des Fahrens
 bedienen.
 
+## Gemeinsame Kopfdaten (`stammdaten.js`)
+
+Name, aktuelles Bauvorhaben und Auftraggeber müssen nicht in jedem Tool
+einzeln eingetippt werden: Wird eines davon in einem Tool gespeichert
+(z. B. das Bauvorhaben im Bautagesbericht), ist es beim nächsten Öffnen
+eines anderen Tools im selben Browser/Gerät schon vorausgefüllt. Die
+Daten liegen dafür in einem gemeinsamen `localStorage`-Schlüssel. Jedes
+Tool bleibt trotzdem für sich allein nutzbar, falls diese Datei einmal
+fehlt.
+
+## Bautagesbericht-Erfassung (`bautagesbericht_erfassung.html`)
+
+Mobile Erfassung für den Bautagesbericht mit denselben Feldern wie das
+Papierformular: Witterung/Temperatur, Arbeiter-/Gerätestand,
+Leistungsfortschritt und Materiallieferungen, Bedenken/Ausführungsfehler/
+besondere Vorkommnisse/Güteprüfungen, Regieleistungen,
+Ausführungsunterlagen, Hausbesuch, sonstige Besucher, sowie
+Unterschriften per Finger/Maus (Unterschriftsfeld). Berichte werden pro
+Datum/Bauvorhaben gespeichert, aufgelistet, bearbeitet und als Text
+exportiert.
+
+## Regiebericht-Erfassung (`regiebericht_erfassung.html`)
+
+Mobile Erfassung für den Regiebericht: Auftraggeber/Bauvorhaben, erbrachte
+Leistungen, beliebig viele Zeilen für eingesetzte Arbeitskräfte (Std.,
+Beschäftigungsgruppe, Name, Arbeitszeit, Aufzahlungen) und für Beistellung
+von Stoffen/Geräten/Fremdleistungen (Menge, Einheit, Bezeichnung), sowie
+Unterschriften für Auftragnehmer und Auftraggeber.
+
 ## Hinweis
 
-Diese Dateien sind aktuell unabhängig von der Materialliste-App. Eine
-Zusammenführung (gemeinsames Datenmodell für Bauvorhaben/Datum über alle
-Formulare hinweg) wurde besprochen, aber noch nicht umgesetzt. Ebenso
-könnten Bautagesbericht und Regiebericht nach demselben Prinzip wie die
-Stundenzettel-Erfassung mobil nutzbar gemacht werden – bisher aber nur der
-Stundenzettel.
+Diese drei Erfassungstools (Stundenzettel, Bautagesbericht, Regiebericht)
+teilen sich Name/Bauvorhaben/Auftraggeber über `stammdaten.js`, sind
+ansonsten aber eigenständige, einzeln nutzbare Seiten – kein einzelnes
+großes Programm mit gemeinsamer Tagesansicht. Sie sind weiterhin
+unabhängig von der Materialliste-App.
