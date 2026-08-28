@@ -1359,28 +1359,35 @@ function createField(type){
     applyBg();
 
     for (const f of (layout?.fields || [])){
-      const tmpId = createField(
-        f.type === "sig" ? "sig" :
-        f.type === "area" ? "area" :
-        f.type === "date" ? "date" :
-        f.type === "time" ? "time" :
-        f.type === "check" ? "check" :
-        f.type === "small" ? "small" : "text"
-      );
+      // Ein einzelnes fehlerhaftes Feld (z. B. Unterschriftsfeld ohne
+      // nutzbaren Canvas-Kontext in Ausnahmefällen) darf nicht dazu führen,
+      // dass alle danach folgenden Felder auf der Seite fehlen.
+      try {
+        const tmpId = createField(
+          f.type === "sig" ? "sig" :
+          f.type === "area" ? "area" :
+          f.type === "date" ? "date" :
+          f.type === "time" ? "time" :
+          f.type === "check" ? "check" :
+          f.type === "small" ? "small" : "text"
+        );
 
-      const el = document.getElementById(tmpId);
-      el.style.left = px(f.left);
-      el.style.top = px(f.top);
-      el.style.width = px(f.width);
-      el.style.height = px(f.height);
+        const el = document.getElementById(tmpId);
+        el.style.left = px(f.left);
+        el.style.top = px(f.top);
+        el.style.width = px(f.width);
+        el.style.height = px(f.height);
 
-      // Sticky aus Layout übernehmen (default 0)
-      el.dataset.sticky = (f.sticky ? "1" : "0");
+        // Sticky aus Layout übernehmen (default 0)
+        el.dataset.sticky = (f.sticky ? "1" : "0");
 
-      el.id = f.id;
+        el.id = f.id;
 
-      const c = el.querySelector("canvas");
-      if (c) fixSignaturePixelRatio(c);
+        const c = el.querySelector("canvas");
+        if (c) fixSignaturePixelRatio(c);
+      } catch (err) {
+        console.warn("Feld konnte nicht angelegt werden, überspringe:", f.id, err);
+      }
     }
 
     setLayoutMode(false);
@@ -1532,6 +1539,12 @@ const stundenCache = {
   finanz: { values:{}, signatures:{} },
   diff:   { values:{}, signatures:{} }
 };
+
+// Merkt sich die zuletzt eingetragenen Werte von Regiebericht/Bautagesbericht
+// in dieser Sitzung (nur im Arbeitsspeicher, nicht gespeichert), damit sie
+// beim Wechsel zu einem anderen Formular und zurück nicht verloren gehen -
+// genau wie stundenCache das für die Stundenzettel-Unterseiten schon tut.
+const templateDataCache = { regie: null, bau: null };
 
 function persistCurrentStundenSide(){
   if (currentTemplate.key !== "stunden") return;
@@ -3412,6 +3425,15 @@ function setTemplateKey(key){
   const t = TEMPLATES[key];
   if (!t) return;
 
+  // Aktuell sichtbare Eingaben sichern, BEVOR zu einem anderen Formular
+  // gewechselt wird - sonst gehen sie beim Wechsel verloren. Beim
+  // Stundenzettel übernimmt das die bereits vorhandene Seiten-Logik.
+  if (currentTemplate.key === "stunden"){
+    persistCurrentStundenSide();
+  } else if (currentTemplate.key === "regie" || currentTemplate.key === "bau"){
+    templateDataCache[currentTemplate.key] = collectCurrentPageData();
+  }
+
   currentTemplate = t;
 
   // Button-Highlight
@@ -3426,7 +3448,14 @@ function setTemplateKey(key){
     currentSide = "front";
     setActiveStundenButton("stundenFront");
     updateToolbarForTemplate();
-    loadStundenLayout("front");
+    // skipPersist=true: das Sichern der zuvor sichtbaren Seite/des zuvor
+    // sichtbaren Formulars ist oben (vor der Template-Umschaltung) bereits
+    // korrekt passiert. Würde loadStundenLayout hier zusätzlich selbst
+    // persistieren, geschähe das mit currentSide bereits auf "front"
+    // gesetzt und ggf. noch den alten (alten Formulars) Feldern im
+    // Bildschirm - das würde den Vorne-Zwischenspeicher mit falschen
+    // Daten überschreiben.
+    loadStundenLayout("front", true);
     enableEditorUI(false);
     return;
   }
@@ -3447,6 +3476,11 @@ function setTemplateKey(key){
 
   if (layoutZumLaden){
     applyLayout(layoutZumLaden);
+    // Zwischengespeicherte Eingaben aus dieser Sitzung wiederherstellen,
+    // falls vorher schon mal etwas in dieses Formular eingetragen wurde.
+    if (templateDataCache[key]){
+      applyDataToCurrentPage(templateDataCache[key]);
+    }
     enableEditorUI(false);
     return;
   }
