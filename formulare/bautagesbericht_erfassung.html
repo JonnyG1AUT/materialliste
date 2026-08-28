@@ -13,9 +13,26 @@
     --bg: #f7f7f8;
     --karte: #ffffff;
     --rand: #ddd;
+    --text: #222;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16171a;
+      --karte: #222327;
+      --rand: #3a3b40;
+      --text: #e8e8ea;
+      --grau: #a3a4a9;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16171a;
+    --karte: #222327;
+    --rand: #3a3b40;
+    --text: #e8e8ea;
+    --grau: #a3a4a9;
   }
   * { box-sizing: border-box; }
-  body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; padding: 0 0 60px 0; font-size: 16px; color: #222; }
+  body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; padding: 0 0 60px 0; font-size: 16px; color: var(--text); }
   header { background: var(--blau); color: #fff; padding: 14px 16px; position: sticky; top: 0; z-index: 10; }
   header h1 { margin: 0; font-size: 1.25em; }
   nav { display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px; background: #e8eaf6; }

@@ -13,6 +13,23 @@
     --bg: #f7f7f8;
     --karte: #ffffff;
     --rand: #ddd;
+    --text: #222;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16171a;
+      --karte: #222327;
+      --rand: #3a3b40;
+      --text: #e8e8ea;
+      --grau: #a3a4a9;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16171a;
+    --karte: #222327;
+    --rand: #3a3b40;
+    --text: #e8e8ea;
+    --grau: #a3a4a9;
   }
   * { box-sizing: border-box; }
   body {
@@ -21,7 +38,7 @@
     margin: 0;
     padding: 0 0 60px 0;
     font-size: 16px;
-    color: #222;
+    color: var(--text);
   }
   header {
     background: var(--blau);
