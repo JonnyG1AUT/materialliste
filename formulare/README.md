@@ -15,35 +15,62 @@ HS-Bau-Formulare, unabhängig von der Materialliste (`../index.html`).
 - `FORMULARE_anschauen_RegieBautagesberichtStunden_Verknuepfung.html` –
   Ansicht/Verknüpfung der Formulare
 - `vorlagen/` – Referenzbilder der Papiervorlagen (komprimiert als JPEG)
-- `stundenzettel_erfassung.html` – **Neues, eigenständiges Erfassungstool**
-  für den Stundenzettel (siehe unten)
+- `stunden_logik.js` – **die geprüfte Rechenlogik** für den Stundenzettel
+  (Original/Differenz/Arbeitszeit, Person-1/Person-2, Kurz-/Langwoche,
+  Feiertage) – unveränderte Kopie aus der PC-Datei, siehe unten
+- `stundenzettel_erfassung.html` – **mobiles Erfassungstool** für den
+  Stundenzettel, das exakt dieselbe Logik verwendet (siehe unten)
+
+## Rechenlogik (`stunden_logik.js`)
+
+Die eigentliche Stundenberechnung steckt **nicht** in den Layout-JSONs
+(die enthalten nur Feld-*Positionen*), sondern im Rechenteil von
+`FORMULARE_anschauen_RegieBautagesberichtStunden_Verknuepfung.html`. Diese
+Datei enthält bereits 58 eingebaute Selbsttests, die die Formel exakt
+festlegen – u. a.:
+
+- **Person 1** (normale Mitarbeiter) und **Person 2** (Name enthält
+  "Hannes") haben unterschiedliche Tages-Sollstunden (Hannes: +1 Stunde
+  pro Tag). Die Differenz wird aber immer gegen das Soll von Person 1
+  berechnet.
+- Kurzwoche/Langwoche (WKO-Modell) bestimmt das Freitags-Soll.
+- Mehrere Baustellen an einem Tag werden mit "/" eingetragen (z. B.
+  `3/3/3`), Sonderfälle wie Urlaub (`U`), Krank (`K`), Schlechtwetter
+  (`SW`), Arzttermin (z. B. `4A/5`) werden erkannt.
+- Die Arbeitszeit wird immer als "7:00 + Stunden + 1 Stunde Pause"
+  geschrieben.
+
+`stunden_logik.js` ist eine **unveränderte Kopie** dieses Rechenteils,
+ausgelagert in eine eigene Datei, damit sowohl das PC-Programm als auch
+das mobile Tool exakt dieselbe, geprüfte Formel verwenden. Die Datei ist
+bewusst nicht automatisch synchronisiert – bei Änderungen an der Formel
+in der PC-Datei muss sie hier von Hand nachgezogen werden (die 58
+Selbsttests laufen bei jedem Laden automatisch mit und melden Abweichungen
+in der Browser-Konsole).
 
 ## Stundenzettel-Erfassung (`stundenzettel_erfassung.html`)
 
-Mobil nutzbare Web-Seite (funktioniert auch offline / per Doppelklick, ohne
-Server) zum Erfassen von Arbeitsstunden – als Ersatz/Ergänzung zum
-Papier-Stundenzettel:
+Mobil nutzbare Web-Seite (funktioniert auch offline / per Doppelklick,
+ohne Server) zum Erfassen von Arbeitsstunden – mit **derselben
+Quick-Code-Eingabe** wie im PC-Programm (kein vereinfachtes Dropdown):
 
-- Beliebig viele Baustellen pro Tag erfassbar (mehrere Einträge mit
-  gleichem Datum)
-- Stunden werden automatisch aus Von-/Bis-Zeit und Pause berechnet
-- Soll-Stunden pro Wochentag sind einstellbar (Einstellungen-Bereich),
-  inkl. Kurzwoche/Langwoche-Unterscheidung für Freitag
-- Feiertage 2026 werden automatisch mit Soll = 0 Stunden berücksichtigt
-  (Quelle: `arbeitskalender_2026.json`, direkt in der Seite eingebettet)
-- Wochen- und Monatsübersicht mit Ist/Soll/Differenz (Über-/Minusstunden)
-- Diktier-Button (Mikrofon) zum Ausfüllen per Spracheingabe – nutzt die
+- Eingabe wie gewohnt: eine Zahl, mehrere Baustellen mit "/" (z. B.
+  `3/3/3`), oder Sonderkürzel (`U`, `K`, `SU`, `SW`, `4A/5`, ...)
+- Live-Vorschau von Original/Differenz/Arbeitszeit beim Tippen
+- Name einmal hinterlegen (Einstellungen) – die App erkennt automatisch
+  "Hannes" und rechnet mit dessen höherem Soll
+- Eigener Bereich "Kalender" zum jährlichen Eintragen der WKO-Kurz-/
+  Langwochen und Feiertage (2026 ist bereits fix hinterlegt und
+  gesperrt) – ohne hinterlegten Kalender wird deutlich gewarnt und keine
+  Differenz geraten
+- Wochen- und Monatsübersicht mit Ist-Stunden und Differenz-Summe
+- Diktier-Buttons (Mikrofon) für Baustelle und Stunden – nutzen die
   Spracherkennung des Browsers (zuverlässig nur in Chrome/Android,
   eingeschränkt/nicht verfügbar in iOS Safari); erkannter Text wird nur
-  in die Felder eingetragen, nie automatisch gespeichert
+  ins Feld eingetragen, nie automatisch gespeichert
 - Alle Daten bleiben lokal im Browser (`localStorage`) – kein Server,
   keine Übertragung an Dritte
 - Export als Text (z. B. zum Kopieren/Teilen)
-
-**Wichtiger Hinweis:** Die ursprünglichen Layout-JSONs (oben) enthalten nur
-Feld-*Positionen*, keine Berechnungsformeln. Die Soll-Stunden-Werte in den
-Einstellungen sind daher sinnvoll gewählte Startwerte und sollten mit dem
-tatsächlichen Kollektivvertrag/der Firmenregelung abgeglichen werden.
 
 **Sicherheitshinweis:** Die Diktier-Funktion ist nur für die Nutzung im
 Stand gedacht (Pause, Ampel, vor Fahrtantritt) – nicht während des Fahrens
@@ -55,5 +82,5 @@ Diese Dateien sind aktuell unabhängig von der Materialliste-App. Eine
 Zusammenführung (gemeinsames Datenmodell für Bauvorhaben/Datum über alle
 Formulare hinweg) wurde besprochen, aber noch nicht umgesetzt. Ebenso
 könnten Bautagesbericht und Regiebericht nach demselben Prinzip wie die
-Stundenzettel-Erfassung digitalisiert werden – bisher aber nur der
+Stundenzettel-Erfassung mobil nutzbar gemacht werden – bisher aber nur der
 Stundenzettel.
