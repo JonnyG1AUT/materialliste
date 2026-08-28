@@ -1,0 +1,1325 @@
+{
+  "version": 3,
+  "template": "stunden",
+  "bg": {
+    "rot": 0,
+    "x": 0,
+    "y": 0
+  },
+  "fields": [
+    {
+      "id": "fin_name",
+      "type": "text",
+      "sticky": false,
+      "left": 113,
+      "top": 129,
+      "width": 594,
+      "height": 18
+    },
+    {
+      "id": "fin_monat",
+      "type": "text",
+      "sticky": false,
+      "left": 113,
+      "top": 163,
+      "width": 214,
+      "height": 16
+    },
+    {
+      "id": "fin_jahr",
+      "type": "text",
+      "sticky": false,
+      "left": 385,
+      "top": 163,
+      "width": 154,
+      "height": 16
+    },
+    {
+      "id": "fin_datum_01",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 226,
+      "width": 34,
+      "height": 18
+    },
+    {
+      "id": "fin_bau_01",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 226,
+      "width": 205,
+      "height": 18
+    },
+    {
+      "id": "fin_stunden_01",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 226,
+      "width": 62,
+      "height": 18
+    },
+    {
+      "id": "fin_arbeitszeit_01",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 226,
+      "width": 276,
+      "height": 18
+    },
+    {
+      "id": "fin_datum_02",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 248,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_02",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 248,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_02",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 248,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_02",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 248,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_03",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 270,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_03",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 270,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_03",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 270,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_03",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 270,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_04",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 292,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_04",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 292,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_04",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 292,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_04",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 292,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_05",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 315,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_05",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 315,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_05",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 315,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_05",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 315,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_06",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 337,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_06",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 337,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_06",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 337,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_06",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 337,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_07",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 359,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_07",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 359,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_07",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 359,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_07",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 359,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_08",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 382,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_08",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 382,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_08",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 382,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_08",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 382,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_09",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 404,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_09",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 404,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_09",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 404,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_09",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 404,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_10",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 426,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_10",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 426,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_10",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 426,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_10",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 426,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_11",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 449,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_11",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 449,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_11",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 449,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_11",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 449,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_12",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 470,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_12",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 470,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_12",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 470,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_12",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 470,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_13",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 492,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_13",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 492,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_13",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 492,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_13",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 492,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_14",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 515,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_14",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 515,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_14",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 515,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_14",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 515,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_15",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 537,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_15",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 537,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_15",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 537,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_15",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 537,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_16",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 559,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_16",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 559,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_16",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 559,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_16",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 559,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_17",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 582,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_17",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 582,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_17",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 582,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_17",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 582,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_18",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 604,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_18",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 604,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_18",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 604,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_18",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 604,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_19",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 626,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_19",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 626,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_19",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 626,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_19",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 626,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_20",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 648,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_20",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 648,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_20",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 648,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_20",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 648,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_21",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 671,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_21",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 671,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_21",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 671,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_21",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 671,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_22",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 693,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_22",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 693,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_22",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 693,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_22",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 693,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_23",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 715,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_23",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 715,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_23",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 715,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_23",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 715,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_24",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 737,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_24",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 737,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_24",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 737,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_24",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 737,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_25",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 759,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_25",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 759,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_25",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 759,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_25",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 759,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_26",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 781,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_26",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 781,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_26",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 781,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_26",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 781,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_27",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 804,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_27",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 804,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_27",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 804,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_27",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 804,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_28",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 826,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_28",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 826,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_28",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 826,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_28",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 826,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_29",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 848,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_29",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 848,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_29",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 848,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_29",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 848,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_30",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 870,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_30",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 870,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_30",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 870,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_30",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 870,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_31",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 893,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_31",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 893,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_31",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 893,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_31",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 893,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_32",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 915,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_32",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 915,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_32",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 915,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_32",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 915,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_33",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 937,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_33",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 937,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_33",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 937,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_33",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 937,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_34",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 959,
+      "width": 34,
+      "height": 19
+    },
+    {
+      "id": "fin_bau_34",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 959,
+      "width": 205,
+      "height": 19
+    },
+    {
+      "id": "fin_stunden_34",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 959,
+      "width": 62,
+      "height": 19
+    },
+    {
+      "id": "fin_arbeitszeit_34",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 959,
+      "width": 276,
+      "height": 19
+    },
+    {
+      "id": "fin_datum_35",
+      "type": "small",
+      "sticky": false,
+      "left": 79,
+      "top": 982,
+      "width": 34,
+      "height": 18
+    },
+    {
+      "id": "fin_bau_35",
+      "type": "text",
+      "sticky": false,
+      "left": 153,
+      "top": 982,
+      "width": 205,
+      "height": 18
+    },
+    {
+      "id": "fin_stunden_35",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 982,
+      "width": 62,
+      "height": 18
+    },
+    {
+      "id": "fin_arbeitszeit_35",
+      "type": "text",
+      "sticky": false,
+      "left": 438,
+      "top": 982,
+      "width": 276,
+      "height": 18
+    },
+    {
+      "id": "fin_summe_stunden",
+      "type": "text",
+      "sticky": false,
+      "left": 367,
+      "top": 1005,
+      "width": 62,
+      "height": 13
+    },
+    {
+      "id": "fin_kennzeichen",
+      "type": "text",
+      "sticky": false,
+      "left": 511,
+      "top": 1025,
+      "width": 192,
+      "height": 15
+    },
+    {
+      "id": "fin_km_stand",
+      "type": "text",
+      "sticky": false,
+      "left": 495,
+      "top": 1040,
+      "width": 209,
+      "height": 15
+    }
+  ]
+}
