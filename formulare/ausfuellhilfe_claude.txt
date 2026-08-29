@@ -1,17 +1,32 @@
 ANLEITUNG FÜR CLAUDE - HS-BAU FORMULARE PER SPRACHE/CHAT AUSFÜLLEN
 ====================================================================
 
-Kontext: Ich (der Nutzer) leite die Firma HS-Bau / Manfred Hauser GmbH in
-Innsbruck. Ich benutze ein digitales Formular-Programm für Regiebericht,
+Ich benutze ein digitales Formular-Programm für Regiebericht,
 Bautagesbericht und Stundenzettel. Das Programm zeigt eingescannte
 Papiervorlagen als Hintergrundbild und legt Eingabefelder exakt darüber.
 Jedes Feld hat eine zufällige Feld-ID (z. B. "f_b0bfd31d896e9819bea3c0e2f").
 
-Deine Aufgabe: Ich erzähle dir in normaler Sprache, was an einem Arbeitstag
-passiert ist (Baustelle, Mitarbeiter, Stunden, besondere Vorkommnisse
-usw.). Du ordnest das den passenden Feldern unten zu und gibst mir am Ende
-eine fertige JSON-Datei aus, die ich im Programm über den Knopf
-"Daten laden" einlese.
+Deine Aufgabe: Ich erzähle dir, was an einem Arbeitstag passiert ist
+(Baustelle, Mitarbeiter, Stunden, besondere Vorkommnisse usw.). Du
+ordnest das den passenden Feldern unten zu und gibst mir am Ende eine
+fertige JSON-Datei aus, die ich im Programm über den Knopf "Daten laden"
+einlese.
+
+ABLAUF - ERST SAMMELN, DANN FORMULIEREN:
+1. Ich diktiere dir zunächst Rohinformationen - in mehreren Häppchen,
+   nicht zwingend in der richtigen Reihenfolge oder schon fertig
+   formuliert. Sammle das nur, frag bei Unklarheiten kurz nach, aber
+   formuliere noch NICHT die endgültigen Feldtexte.
+2. Erst wenn ich "Go" sage, fasst du das Gesammelte zusammen: formuliere
+   die Einträge und verteile sie sinnvoll auf die verfügbaren Zeilen
+   (siehe ZEICHENLIMITS unten). Du darfst dabei Inhalte anders aufteilen
+   als ich sie nacheinander erzählt habe, wenn das eine bessere
+   Zeilennutzung ergibt.
+3. Bei "Go" gibst du ZUERST die fertige JSON-Datei aus, DIREKT DARUNTER
+   zusätzlich einen kompakten Stundenzettel-Auszug, eine Zeile pro Tag,
+   in diesem Format:
+   <Stunden> | <Kürzel 1> | <Kürzel 2> | <Leistung>
+   Beispiel: 9 | Va | H | Leistung
 
 WICHTIGE REGELN:
 - Erfinde nichts. Wenn eine Angabe fehlt oder unklar ist, lass das Feld
@@ -32,42 +47,73 @@ WICHTIGE REGELN:
   zum Stunden-Kurzcode sage. Du trägst nur den Kurzcode ein, den ich dir
   nenne bzw. der sich aus meiner Beschreibung ergibt.
 
+ZEICHENLIMITS (unbedingt einhalten UND möglichst gut ausnutzen):
+- Regiebericht, "Erbrachte Leistungen"-Zeilen: max. 123 Zeichen je Zeile.
+- Bautagesbericht, "Leistungsfortschritt, Materiallieferungen"-Zeilen:
+  max. 102 Zeichen je Zeile.
+- Stundenzettel, Spalte "Leistung": max. 34 Zeichen.
+Ziel ist NICHT, möglichst kurz zu bleiben, sondern die verfügbare Zeile
+gut auszunutzen. Wenn eine Formulierung zu kurz auf mehrere Zeilen
+verteilt wäre, verteile den Inhalt lieber neu (auch wenn ich die Angaben
+nacheinander in einer anderen Aufteilung erzählt habe), damit die Zeilen
+sinnvoll gefüllt sind und keine davon fast leer bleibt oder das Limit
+überschreitet.
+
 STUNDENZETTEL-KURZCODES (Spalte "Stunden", Formular-Vorderseite):
 - Normale Zahl = Anzahl gearbeiteter Stunden, z. B. "8"
 - Mehrere Baustellen an einem Tag mit "/" trennen, z. B. "3/3/3"
-- F = Feiertag, U = Urlaub, K = Krank, SW = Wetterschicht (Schlechtwetter)
+- F = Feiertag, U = Urlaub, K = Krank, SU = Sonderurlaub,
+  SW = Wetterschicht (Schlechtwetter)
 - Arzttermin z. B. "4A/5" (4 Stunden gearbeitet, dann Arzttermin, dann
   nochmal 5 Stunden gearbeitet - genaue Schreibweise so übernehmen, wie
   ich sie nenne bzw. wie im Programm schon verwendet)
 - Die Spalte "Leistung" ist eine kurze Tätigkeitsbeschreibung
   (z. B. "Mauerarbeiten", "Aushub"), KEINE Uhrzeit.
 
+FESTE ABKÜRZUNGEN (in Leistungs-/Bauvorhaben-Texten konsequent verwenden):
+TODO - Bedeutung noch nicht bestätigt (Va, Fa, Ha, Baul, Pol, Lsn, Ws,
+Stk, Pau, h) - wird nachgetragen, sobald geklärt.
+
 AUSGABEFORMAT
 
-Für Regiebericht und Bautagesbericht (flaches Format):
+Für Regiebericht und Bautagesbericht - exakt das Format, das der
+Programm-Knopf "Daten speichern" selbst erzeugt:
 {
+  "version": 1,
+  "template": "regie",
+  "timestamp": "<aktueller Zeitpunkt, ISO-Format, z. B. 2026-08-29T10:00:00.000Z>",
   "values": {
     "<Feld-ID 1>": "<Text oder true/false>",
     "<Feld-ID 2>": "<...>"
   },
   "signatures": {}
 }
-(Unterschriften kannst du nicht ausfüllen, "signatures" bleibt leer.)
+("template" ist "regie" oder "bau" je nach Formular. Unterschriften kannst
+du nicht ausfüllen, "signatures" bleibt leer.)
 
-Für den Stundenzettel (verschachteltes Format, WICHTIG anders als oben!):
+Für den Stundenzettel - exakt das Format, das "Daten speichern" für den
+Stundenzettel erzeugt (WICHTIG: anders als oben, mit "version": 2 und
+mehreren Unterseiten):
 {
+  "version": 2,
   "template": "stunden",
+  "name": null,
+  "timestamp": "<aktueller Zeitpunkt, ISO-Format>",
   "front": {
     "values": {
       "<Feld-ID 1>": "<Text>",
       "<Feld-ID 2>": "<...>"
     },
     "signatures": {}
-  }
+  },
+  "back":   { "values": {}, "signatures": {} },
+  "finanz": { "values": {}, "signatures": {} },
+  "diff":   { "values": {}, "signatures": {} },
+  "auto": { "rulesVersion": 10, "originalOverrides": [], "diffOverrides": [] }
 }
-(Nur "front" befüllen - die Seiten "back" und "finanz"/"original" kannst
-du weglassen, die entstehen im Programm automatisch bzw. fülle ich später
-von Hand aus.)
+Nur "front" tatsächlich befüllen. "back", "finanz" und "diff" bleiben mit
+leeren values/signatures stehen (nicht weglassen, aber auch nicht selbst
+berechnen) - das Programm füllt sie beim Laden automatisch aus "front".
 
 ====================================================================
 REGIEBERICHT - Feldliste (119 Felder)
