@@ -200,6 +200,10 @@ ein - bitte nur befüllen, wenn ich sie ausdrücklich erwähne.
 ====================================================================
 BAUTAGESBERICHT - Feldliste (75 Felder)
 ====================================================================
+Hinweis: Die mit "[optional, meist nicht per Sprache]" markierten Felder
+(die linke, unbeschriftete Spalte der Tabelle "Leistungsfortschritt,
+Materiallieferungen") trage ich normalerweise selbst ein - bitte nur
+befüllen, wenn ich sie ausdrücklich erwähne.
 
 1. f_9904f3333497f19bea55c2cb — Wetter - Sonnig (Häkchen)
 2. f_5613eb156bf1119bea562f27 — Wetter - Bewölkt (Häkchen)
@@ -212,43 +216,43 @@ BAUTAGESBERICHT - Feldliste (75 Felder)
 9. f_0ffff26746d9e19bea584243 — Bauvorhaben
 10. f_2a565e3f959f619bea588f53 — Nr.
 11. f_f7ceb7a4ce12419bea58cc82 — Datum
-12. f_062c0db76915b819bea59a559 — Leistungsfortschritt, Materiallieferungen - Zeile 1 - linke Spalte (ohne eigene Beschriftung im Formular)
+12. f_062c0db76915b819bea59a559 — Leistungsfortschritt, Materiallieferungen - Zeile 1 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 13. f_cd76f8792875319bea59eb62 — Leistungsfortschritt, Materiallieferungen - Zeile 1
-14. f_411758db0ae26819bea5bc380 — Leistungsfortschritt, Materiallieferungen - Zeile 2 - linke Spalte (ohne eigene Beschriftung im Formular)
+14. f_411758db0ae26819bea5bc380 — Leistungsfortschritt, Materiallieferungen - Zeile 2 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 15. f_b153d0feacd2219bea5bea49 — Leistungsfortschritt, Materiallieferungen - Zeile 2
-16. f_891c58f2b151b19bea5c05fa — Leistungsfortschritt, Materiallieferungen - Zeile 3 - linke Spalte (ohne eigene Beschriftung im Formular)
+16. f_891c58f2b151b19bea5c05fa — Leistungsfortschritt, Materiallieferungen - Zeile 3 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 17. f_657edcba6291619bea5c1b44 — Leistungsfortschritt, Materiallieferungen - Zeile 3
-18. f_3c7251a02147819bea5c32b6 — Leistungsfortschritt, Materiallieferungen - Zeile 4 - linke Spalte (ohne eigene Beschriftung im Formular)
+18. f_3c7251a02147819bea5c32b6 — Leistungsfortschritt, Materiallieferungen - Zeile 4 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 19. f_52eb2417cf0b0819bea5c5046 — Leistungsfortschritt, Materiallieferungen - Zeile 4
-20. f_84ab7bd46472719bea5c7f5a — Leistungsfortschritt, Materiallieferungen - Zeile 5 - linke Spalte (ohne eigene Beschriftung im Formular)
+20. f_84ab7bd46472719bea5c7f5a — Leistungsfortschritt, Materiallieferungen - Zeile 5 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 21. f_069bd7a1b7c6c19bea5ca74f — Leistungsfortschritt, Materiallieferungen - Zeile 5
-22. f_e20a56c075775819bea5cd5f0 — Leistungsfortschritt, Materiallieferungen - Zeile 6 - linke Spalte (ohne eigene Beschriftung im Formular)
+22. f_e20a56c075775819bea5cd5f0 — Leistungsfortschritt, Materiallieferungen - Zeile 6 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 23. f_50d2a56886acf19bea5cea58 — Leistungsfortschritt, Materiallieferungen - Zeile 6
-24. f_74fe678c4d9ab819bea5d3db8 — Leistungsfortschritt, Materiallieferungen - Zeile 7 - linke Spalte (ohne eigene Beschriftung im Formular)
+24. f_74fe678c4d9ab819bea5d3db8 — Leistungsfortschritt, Materiallieferungen - Zeile 7 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 25. f_4a4d3cdcc3d8619bea5d60fa — Leistungsfortschritt, Materiallieferungen - Zeile 7
-26. f_3e8084006780319bea5d8f9d — Leistungsfortschritt, Materiallieferungen - Zeile 8 - linke Spalte (ohne eigene Beschriftung im Formular)
+26. f_3e8084006780319bea5d8f9d — Leistungsfortschritt, Materiallieferungen - Zeile 8 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 27. f_c2ced36c06a3b19bea5dc6e0 — Leistungsfortschritt, Materiallieferungen - Zeile 8
-28. f_eea5bc25d72ab819bea5e1240 — Leistungsfortschritt, Materiallieferungen - Zeile 9 - linke Spalte (ohne eigene Beschriftung im Formular)
+28. f_eea5bc25d72ab819bea5e1240 — Leistungsfortschritt, Materiallieferungen - Zeile 9 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 29. f_f6b5dbb5bd45e19bea5e2eda — Leistungsfortschritt, Materiallieferungen - Zeile 9
-30. f_19df8e039fcb4819bea5e5241 — Leistungsfortschritt, Materiallieferungen - Zeile 10 - linke Spalte (ohne eigene Beschriftung im Formular)
+30. f_19df8e039fcb4819bea5e5241 — Leistungsfortschritt, Materiallieferungen - Zeile 10 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 31. f_0f7615c0386f8819bea5e7308 — Leistungsfortschritt, Materiallieferungen - Zeile 10
-32. f_a736e5633eebe819bea5e8f1e — Leistungsfortschritt, Materiallieferungen - Zeile 11 - linke Spalte (ohne eigene Beschriftung im Formular)
+32. f_a736e5633eebe819bea5e8f1e — Leistungsfortschritt, Materiallieferungen - Zeile 11 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 33. f_e16a90925468719bea5ecf19 — Leistungsfortschritt, Materiallieferungen - Zeile 11
-34. f_383efcfcc554319bea5ee8d3 — Leistungsfortschritt, Materiallieferungen - Zeile 12 - linke Spalte (ohne eigene Beschriftung im Formular)
+34. f_383efcfcc554319bea5ee8d3 — Leistungsfortschritt, Materiallieferungen - Zeile 12 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 35. f_318273d1ace6319bea5f1972 — Leistungsfortschritt, Materiallieferungen - Zeile 12
-36. f_a2ec2356a151519bea5f380f — Leistungsfortschritt, Materiallieferungen - Zeile 13 - linke Spalte (ohne eigene Beschriftung im Formular)
+36. f_a2ec2356a151519bea5f380f — Leistungsfortschritt, Materiallieferungen - Zeile 13 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 37. f_e47080ee3d33e819bea5f55dd — Leistungsfortschritt, Materiallieferungen - Zeile 13
-38. f_782e927d6425619bea5f78c7 — Leistungsfortschritt, Materiallieferungen - Zeile 14 - linke Spalte (ohne eigene Beschriftung im Formular)
+38. f_782e927d6425619bea5f78c7 — Leistungsfortschritt, Materiallieferungen - Zeile 14 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 39. f_073bad36cbe32819bea5f92a9 — Leistungsfortschritt, Materiallieferungen - Zeile 14
-40. f_43292678784d719bea5fb497 — Leistungsfortschritt, Materiallieferungen - Zeile 15 - linke Spalte (ohne eigene Beschriftung im Formular)
+40. f_43292678784d719bea5fb497 — Leistungsfortschritt, Materiallieferungen - Zeile 15 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 41. f_fbbd0f7f5f4c519bea5fcd7f — Leistungsfortschritt, Materiallieferungen - Zeile 15
-42. f_c0b208f04cfb19bea5ff2b1 — Leistungsfortschritt, Materiallieferungen - Zeile 16 - linke Spalte (ohne eigene Beschriftung im Formular)
+42. f_c0b208f04cfb19bea5ff2b1 — Leistungsfortschritt, Materiallieferungen - Zeile 16 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 43. f_6bf1cea1fda9319bea600b0b — Leistungsfortschritt, Materiallieferungen - Zeile 16
-44. f_69fc79857fd4d819bea605a96 — Leistungsfortschritt, Materiallieferungen - Zeile 17 - linke Spalte (ohne eigene Beschriftung im Formular)
+44. f_69fc79857fd4d819bea605a96 — Leistungsfortschritt, Materiallieferungen - Zeile 17 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 45. f_f9dcc9f7a2ff9819bea607873 — Leistungsfortschritt, Materiallieferungen - Zeile 17
-46. f_6bc8e3f7d037519bea608e37 — Leistungsfortschritt, Materiallieferungen - Zeile 18 - linke Spalte (ohne eigene Beschriftung im Formular)
+46. f_6bc8e3f7d037519bea608e37 — Leistungsfortschritt, Materiallieferungen - Zeile 18 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 47. f_015f9f2697f86819bea60a07b — Leistungsfortschritt, Materiallieferungen - Zeile 18
-48. f_cda8bb4e7fe5a819bea60c2e1 — Leistungsfortschritt, Materiallieferungen - Zeile 19 - linke Spalte (ohne eigene Beschriftung im Formular)
+48. f_cda8bb4e7fe5a819bea60c2e1 — Leistungsfortschritt, Materiallieferungen - Zeile 19 - linke Spalte (ohne eigene Beschriftung im Formular) [optional, meist nicht per Sprache]
 49. f_1d1393a3c9a319bea60e3aa — Leistungsfortschritt, Materiallieferungen - Zeile 19
 50. f_f0e17c40b479e819bea61244f — Bedenken gegen Weisungen, Bestellungen, Vorleistungen und Ausführungsunterlagen (Häkchen)
 51. f_c1d992585616f819bea6182a6 — Bedenken gegen Weisungen, Bestellungen, Vorleistungen und Ausführungsunterlagen - Zeile 1
