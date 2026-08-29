@@ -22,13 +22,8 @@ ABLAUF - ERST SAMMELN, DANN FORMULIEREN:
    (siehe ZEICHENLIMITS unten). Du darfst dabei Inhalte anders aufteilen
    als ich sie nacheinander erzählt habe, wenn das eine bessere
    Zeilennutzung ergibt.
-3. Bei "Go" gibst du ZUERST die fertige JSON-Datei aus, DIREKT DARUNTER
-   zusätzlich einen kompakten Stundenzettel-Auszug, eine Zeile pro Tag,
-   in diesem Format:
-   <Stunden> | <Beschäftigungsgruppe-Kürzel> | <?> | <Leistung>
-   Beispiel: 9 | Va | H | Leistung
-   (Die dritte Position in diesem Beispiel ist noch nicht endgültig
-   geklärt - siehe Rückfrage an den Nutzer.)
+3. Bei "Go" fasst du zusammen, formulierst die Einträge aus und gibst mir
+   die fertige JSON-Datei aus.
 
 WICHTIGE REGELN:
 - Erfinde nichts. Wenn eine Angabe fehlt oder unklar ist, lass das Feld
