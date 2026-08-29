@@ -1,0 +1,507 @@
+ANLEITUNG FÜR CLAUDE - HS-BAU FORMULARE PER SPRACHE/CHAT AUSFÜLLEN
+====================================================================
+
+Kontext: Ich (der Nutzer) leite die Firma HS-Bau / Manfred Hauser GmbH in
+Innsbruck. Ich benutze ein digitales Formular-Programm für Regiebericht,
+Bautagesbericht und Stundenzettel. Das Programm zeigt eingescannte
+Papiervorlagen als Hintergrundbild und legt Eingabefelder exakt darüber.
+Jedes Feld hat eine zufällige Feld-ID (z. B. "f_b0bfd31d896e9819bea3c0e2f").
+
+Deine Aufgabe: Ich erzähle dir in normaler Sprache, was an einem Arbeitstag
+passiert ist (Baustelle, Mitarbeiter, Stunden, besondere Vorkommnisse
+usw.). Du ordnest das den passenden Feldern unten zu und gibst mir am Ende
+eine fertige JSON-Datei aus, die ich im Programm über den Knopf
+"Daten laden" einlese.
+
+WICHTIGE REGELN:
+- Erfinde nichts. Wenn eine Angabe fehlt oder unklar ist, lass das Feld
+  einfach weg (nicht raten) oder frag kurz nach.
+- Verwende IMMER die exakten Feld-IDs aus den Listen unten als Schlüssel,
+  nicht die Nummern (die Nummern 1, 2, 3... sind nur zur Orientierung für
+  mich als Menschen, damit ich mit dir über ein bestimmtes Feld reden
+  kann - sie gehören NICHT in die JSON-Ausgabe).
+- Datumsfelder immer im Format JJJJ-MM-TT (z. B. "2026-08-29") ausgeben,
+  nicht im deutschen Format.
+- Häkchen-Felder (Checkboxen) bekommen als Wert true oder false.
+- Bei Regiebericht und Bautagesbericht muss ich im Programm VORHER das
+  passende Formular ausgewählt haben (Knopf "Regiebericht" bzw.
+  "Bautagesbericht" oben), bevor ich deine JSON über "Daten laden"
+  einlese - das Programm füllt immer nur das gerade sichtbare Formular.
+- Beim Stundenzettel bitte NICHT selbst Stunden/Sollzeiten/Differenzen
+  berechnen - das übernimmt das Programm automatisch aus dem, was ich dir
+  zum Stunden-Kurzcode sage. Du trägst nur den Kurzcode ein, den ich dir
+  nenne bzw. der sich aus meiner Beschreibung ergibt.
+
+STUNDENZETTEL-KURZCODES (Spalte "Stunden", Formular-Vorderseite):
+- Normale Zahl = Anzahl gearbeiteter Stunden, z. B. "8"
+- Mehrere Baustellen an einem Tag mit "/" trennen, z. B. "3/3/3"
+- F = Feiertag, U = Urlaub, K = Krank, SW = Wetterschicht (Schlechtwetter)
+- Arzttermin z. B. "4A/5" (4 Stunden gearbeitet, dann Arzttermin, dann
+  nochmal 5 Stunden gearbeitet - genaue Schreibweise so übernehmen, wie
+  ich sie nenne bzw. wie im Programm schon verwendet)
+- Die Spalte "Leistung" ist eine kurze Tätigkeitsbeschreibung
+  (z. B. "Mauerarbeiten", "Aushub"), KEINE Uhrzeit.
+
+AUSGABEFORMAT
+
+Für Regiebericht und Bautagesbericht (flaches Format):
+{
+  "values": {
+    "<Feld-ID 1>": "<Text oder true/false>",
+    "<Feld-ID 2>": "<...>"
+  },
+  "signatures": {}
+}
+(Unterschriften kannst du nicht ausfüllen, "signatures" bleibt leer.)
+
+Für den Stundenzettel (verschachteltes Format, WICHTIG anders als oben!):
+{
+  "template": "stunden",
+  "front": {
+    "values": {
+      "<Feld-ID 1>": "<Text>",
+      "<Feld-ID 2>": "<...>"
+    },
+    "signatures": {}
+  }
+}
+(Nur "front" befüllen - die Seiten "back" und "finanz"/"original" kannst
+du weglassen, die entstehen im Programm automatisch bzw. fülle ich später
+von Hand aus.)
+
+====================================================================
+REGIEBERICHT - Feldliste (119 Felder)
+====================================================================
+Hinweis: Die mit "[optional, meist nicht per Sprache]" markierten Felder
+(Nr. 86-119: Arbeitszeit von/bis und die beiden frei benennbaren
+Aufzahlungsspalten je Arbeitskraft-Zeile) trage ich normalerweise selbst
+ein - bitte nur befüllen, wenn ich sie ausdrücklich erwähne.
+
+1. f_b0bfd31d896e9819bea3c0e2f — Auftraggeber
+2. f_e72d8c7b5d57519bea3c5ae7 — Bauvorhaben
+3. f_6c8e3c763891c19bea3cdb0b — Nr.
+4. f_fcdfe0eef82a519bea3cf7f7 — Datum
+5. f_da2c9694fa04319bea3d9c42 — Erbrachte Leistungen - Zeile 1
+6. f_eb12ed9bc3115819bea3dd406 — Erbrachte Leistungen - Zeile 2
+7. f_3ef4de1f957b6819bea3e1c51 — Erbrachte Leistungen - Zeile 3
+8. f_1d5029916ce1d19bea3e2feb — Erbrachte Leistungen - Zeile 4
+9. f_42f3f8c2ae3d319bea3e933c — Erbrachte Leistungen - Zeile 5
+10. f_f2890b5a55eb919bea3eadc4 — Erbrachte Leistungen - Zeile 6
+11. f_4000c7e0f4d8f19bea3f530c — Eingesetzte Arbeitskräfte - Zeile 1 - Std.
+12. f_2e5baf39a475a819bea3f9ebe — Eingesetzte Arbeitskräfte - Zeile 1 - Beschäftigungsgruppe
+13. f_d859436c0439219bea3fe27c — Eingesetzte Arbeitskräfte - Zeile 1 - Name
+14. f_0c5881f4b42d2819bea400c0d — Eingesetzte Arbeitskräfte - Zeile 2 - Std.
+15. f_ea2ed47c5ef9c819bea405633 — Eingesetzte Arbeitskräfte - Zeile 2 - Beschäftigungsgruppe
+16. f_f3fcf42b15a5419bea407e2a — Eingesetzte Arbeitskräfte - Zeile 2 - Name
+17. f_6cd3fcea03a0d19bea40a875 — Eingesetzte Arbeitskräfte - Zeile 3 - Std.
+18. f_2207697a505c6819bea40bebd — Eingesetzte Arbeitskräfte - Zeile 3 - Beschäftigungsgruppe
+19. f_dee79d20665fa19bea40ea70 — Eingesetzte Arbeitskräfte - Zeile 3 - Name
+20. f_6bc0ff2e40ea619bea410721 — Eingesetzte Arbeitskräfte - Zeile 4 - Std.
+21. f_9d8cdc5157c9a819bea41b84a — Eingesetzte Arbeitskräfte - Zeile 4 - Beschäftigungsgruppe
+22. f_35bbcd87ef2bf19bea41fd58 — Eingesetzte Arbeitskräfte - Zeile 4 - Name
+23. f_0938fd421f7119bea421e36 — Eingesetzte Arbeitskräfte - Zeile 5 - Std.
+24. f_d37cfddfffa6b19bea423c7b — Eingesetzte Arbeitskräfte - Zeile 5 - Beschäftigungsgruppe
+25. f_4ec43b2900ad419bea427a0e — Eingesetzte Arbeitskräfte - Zeile 5 - Name
+26. f_ef0104e57319b819bea42915d — Eingesetzte Arbeitskräfte - Zeile 6 - Std.
+27. f_faa7d0b6c57f419bea42c969 — Eingesetzte Arbeitskräfte - Zeile 6 - Beschäftigungsgruppe
+28. f_3037784b234de819bea42e6a4 — Eingesetzte Arbeitskräfte - Zeile 6 - Name
+29. f_080b158537b07819bea43007d — Eingesetzte Arbeitskräfte - Zeile 7 - Std.
+30. f_a856d920d551e19bea432783 — Eingesetzte Arbeitskräfte - Zeile 7 - Beschäftigungsgruppe
+31. f_22cc1f0523074819bea433c68 — Eingesetzte Arbeitskräfte - Zeile 7 - Name
+32. f_612633d779616819bea436f42 — Eingesetzte Arbeitskräfte - Zeile 8 - Std.
+33. f_8a0a7793c0f55819bea438d76 — Eingesetzte Arbeitskräfte - Zeile 8 - Beschäftigungsgruppe
+34. f_63abc9110ff1c19bea43d314 — Eingesetzte Arbeitskräfte - Zeile 8 - Name
+35. f_2337e3952c53b819bea4403f1 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 1 - Menge
+36. f_dabc573440bbe819bea44333e — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 1 - Einheit
+37. f_f38522141dd48819bea4459ec — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 1 - Bezeichnung
+38. f_11aad2712767e19bea44a2f2 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 2 - Menge
+39. f_77eadf2b8abcb819bea44bc3d — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 2 - Einheit
+40. f_984f91fc1f5f319bea44d8a6 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 2 - Bezeichnung
+41. f_e19df21c71967819bea452b62 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 3 - Menge
+42. f_b65dc99f1f2d5819bea455c8a — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 3 - Einheit
+43. f_ffdde7503bee3819bea456fb4 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 3 - Bezeichnung
+44. f_e6451b5f8a22d819bea45aa83 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 4 - Menge
+45. f_a2998b7602f71819bea45d224 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 4 - Einheit
+46. f_5b74323f5100a19bea463543 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 4 - Bezeichnung
+47. f_cd155269f12f819bea464a42 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 5 - Menge
+48. f_7c0183d4c15119bea466c37 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 5 - Einheit
+49. f_b665cc0ee28a4819bea468e5b — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 5 - Bezeichnung
+50. f_0e374f88a6ca9819bea46aa4a — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 6 - Menge
+51. f_378cbd1fbcc5619bea46bef5 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 6 - Einheit
+52. f_d50eafd96a833819bea46dc2d — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 6 - Bezeichnung
+53. f_047f79cdfa34f819bea471cf1 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 7 - Menge
+54. f_419ca121da3f1819bea47310e — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 7 - Einheit
+55. f_1f8de8b4dc25719bea47934d — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 7 - Bezeichnung
+56. f_4844302caaad6819bea47acdf — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 8 - Menge
+57. f_36476ac31d335819bea47e162 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 8 - Einheit
+58. f_dcd1bf45a5b54819bea481e0d — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - linke Tabelle - Zeile 8 - Bezeichnung
+59. f_bde92aaeff14a819bea484821 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 1 - Menge
+60. f_d6ef41cd9e1ec819bea487c4c — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 1 - Einheit
+61. f_3b5bd6918ba73819bea48a73f — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 1 - Bezeichnung
+62. f_2b45e58de2080819bea4909ea — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 2 - Menge
+63. f_3c81d6593fda819bea493e04 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 2 - Einheit
+64. f_f075e5cf63bbe819bea49625e — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 2 - Bezeichnung
+65. f_2e45edc563702819bea49868a — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 3 - Menge
+66. f_4b35b92a0bbc619bea49b74b — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 3 - Einheit
+67. f_749b2623d680c819bea49d430 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 3 - Bezeichnung
+68. f_61c84abccd94f819bea49f324 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 4 - Menge
+69. f_7e2baed6f191f19bea4a1950 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 4 - Einheit
+70. f_fb663dc90bac9819bea4a3b4f — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 4 - Bezeichnung
+71. f_39e769795571f819bea4a6c74 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 5 - Menge
+72. f_241ec9cd3ff8619bea4a836a — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 5 - Einheit
+73. f_f03a23db871b319bea4ac8d2 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 5 - Bezeichnung
+74. f_3ff6bbd7a477d819bea4ae762 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 6 - Menge
+75. f_0ef7a78276b0c819bea4b28eb — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 6 - Einheit
+76. f_3bbaa6157745819bea4b607a — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 6 - Bezeichnung
+77. f_75d5ba8131437819bea4b9405 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 7 - Menge
+78. f_52196038ecb70819bea4bad38 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 7 - Einheit
+79. f_fa344dbbf109e19bea4bcbce — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 7 - Bezeichnung
+80. f_78cd45a1c078119bea4bfb78 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 8 - Menge
+81. f_0d74871f1b9cc819bea4c2bdf — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 8 - Einheit
+82. f_2d0302b175f5a19bea4c56c2 — Beistellung Bau-/Hilfsstoffe, Geräte, Fremdleistungen usw. - rechte Tabelle - Zeile 8 - Bezeichnung
+83. f_434726c66166b19bea4c98a1 — Unterschrift Auftragnehmer (oder dessen Beauftragter)
+84. f_dd1e6f66b4f8419bea4cf230 — Unterschrift Auftraggeber (oder dessen bevollmächtigter Vertreter)
+85. f_ea6f6ae86cd8a19bea4d4441 — Freitextfeld unter der Überschrift (im Formular ohne eigene Beschriftung)
+86. f_3e0ce012fbfc3819bea4d97b7 — Aufzahlungsspalte 1 - Titel (frei wählbar, z. B. "Überstunden") [optional, meist nicht per Sprache]
+87. f_0d14dfb2ee7ee819bea4df7d1 — Aufzahlungsspalte 2 - Titel (frei wählbar, z. B. "Erschwernis") [optional, meist nicht per Sprache]
+88. f_83fdf761cba29819bea4e125f — Eingesetzte Arbeitskräfte - Zeile 1 - Arbeitszeit von [optional, meist nicht per Sprache]
+89. f_caae1e888ee21819bea4ecba8 — Eingesetzte Arbeitskräfte - Zeile 1 - Arbeitszeit bis [optional, meist nicht per Sprache]
+90. f_796532606dfe219bea4ee492 — Eingesetzte Arbeitskräfte - Zeile 1 - Aufzahlungsspalte 1 - Wert [optional, meist nicht per Sprache]
+91. f_7295d982bd59219bea4eff14 — Eingesetzte Arbeitskräfte - Zeile 1 - Aufzahlungsspalte 2 - Wert [optional, meist nicht per Sprache]
+92. f_916c073539d2619bea4f2f6b — Eingesetzte Arbeitskräfte - Zeile 2 - Arbeitszeit von [optional, meist nicht per Sprache]
+93. f_176af1e926bd0819bea4f51bd — Eingesetzte Arbeitskräfte - Zeile 2 - Arbeitszeit bis [optional, meist nicht per Sprache]
+94. f_fcb66af561be5819bea4f6dba — Eingesetzte Arbeitskräfte - Zeile 2 - Aufzahlungsspalte 1 - Wert [optional, meist nicht per Sprache]
+95. f_5553d17d1e7f619bea4f874f — Eingesetzte Arbeitskräfte - Zeile 2 - Aufzahlungsspalte 2 - Wert [optional, meist nicht per Sprache]
+96. f_bdb4ae28a2828819bea4fa55d — Eingesetzte Arbeitskräfte - Zeile 3 - Arbeitszeit von [optional, meist nicht per Sprache]
+97. f_dff3a26e2952c819bea4fc812 — Eingesetzte Arbeitskräfte - Zeile 3 - Arbeitszeit bis [optional, meist nicht per Sprache]
+98. f_a0e2f5854b91a819bea4fdaa8 — Eingesetzte Arbeitskräfte - Zeile 3 - Aufzahlungsspalte 1 - Wert [optional, meist nicht per Sprache]
+99. f_a71605b00edbf19bea4ff4e2 — Eingesetzte Arbeitskräfte - Zeile 3 - Aufzahlungsspalte 2 - Wert [optional, meist nicht per Sprache]
+100. f_e68eefc2f4384819bea500824 — Eingesetzte Arbeitskräfte - Zeile 4 - Arbeitszeit von [optional, meist nicht per Sprache]
+101. f_f65c076f899bd19bea5026f0 — Eingesetzte Arbeitskräfte - Zeile 4 - Arbeitszeit bis [optional, meist nicht per Sprache]
+102. f_cfe08fbe64de8819bea50431f — Eingesetzte Arbeitskräfte - Zeile 4 - Aufzahlungsspalte 1 - Wert [optional, meist nicht per Sprache]
+103. f_003fa87306789819bea505352 — Eingesetzte Arbeitskräfte - Zeile 4 - Aufzahlungsspalte 2 - Wert [optional, meist nicht per Sprache]
+104. f_8471ae975ddd6819bea506e6b — Eingesetzte Arbeitskräfte - Zeile 5 - Arbeitszeit von [optional, meist nicht per Sprache]
+105. f_2dda5b53283f619bea508330 — Eingesetzte Arbeitskräfte - Zeile 5 - Arbeitszeit bis [optional, meist nicht per Sprache]
+106. f_49e15dc095f9b19bea50a9ad — Eingesetzte Arbeitskräfte - Zeile 5 - Aufzahlungsspalte 1 - Wert [optional, meist nicht per Sprache]
+107. f_c8639b58b15f8819bea50c1f6 — Eingesetzte Arbeitskräfte - Zeile 5 - Aufzahlungsspalte 2 - Wert [optional, meist nicht per Sprache]
+108. f_e10cfcc11cf5519bea50edcc — Eingesetzte Arbeitskräfte - Zeile 6 - Arbeitszeit von [optional, meist nicht per Sprache]
+109. f_13f07c753e1ec19bea510f70 — Eingesetzte Arbeitskräfte - Zeile 6 - Arbeitszeit bis [optional, meist nicht per Sprache]
+110. f_e23930218b93d819bea512150 — Eingesetzte Arbeitskräfte - Zeile 6 - Aufzahlungsspalte 1 - Wert [optional, meist nicht per Sprache]
+111. f_e591b628b105419bea514216 — Eingesetzte Arbeitskräfte - Zeile 6 - Aufzahlungsspalte 2 - Wert [optional, meist nicht per Sprache]
+112. f_b330016931091819bea517b8e — Eingesetzte Arbeitskräfte - Zeile 7 - Arbeitszeit von [optional, meist nicht per Sprache]
+113. f_f82f155d1d12c19bea51b9c3 — Eingesetzte Arbeitskräfte - Zeile 7 - Arbeitszeit bis [optional, meist nicht per Sprache]
+114. f_9d2bffac699c519bea51ce21 — Eingesetzte Arbeitskräfte - Zeile 7 - Aufzahlungsspalte 1 - Wert [optional, meist nicht per Sprache]
+115. f_9b04f5fc005b519bea51e2f9 — Eingesetzte Arbeitskräfte - Zeile 7 - Aufzahlungsspalte 2 - Wert [optional, meist nicht per Sprache]
+116. f_0c322c143a4ae819bea5214a9 — Eingesetzte Arbeitskräfte - Zeile 8 - Arbeitszeit von [optional, meist nicht per Sprache]
+117. f_0f1c83305422819bea522e88 — Eingesetzte Arbeitskräfte - Zeile 8 - Arbeitszeit bis [optional, meist nicht per Sprache]
+118. f_6d0826dc4d10d819bea524f1b — Eingesetzte Arbeitskräfte - Zeile 8 - Aufzahlungsspalte 1 - Wert [optional, meist nicht per Sprache]
+119. f_453c364e5145619bea5263cd — Eingesetzte Arbeitskräfte - Zeile 8 - Aufzahlungsspalte 2 - Wert [optional, meist nicht per Sprache]
+
+====================================================================
+BAUTAGESBERICHT - Feldliste (75 Felder)
+====================================================================
+
+1. f_9904f3333497f19bea55c2cb — Wetter - Sonnig (Häkchen)
+2. f_5613eb156bf1119bea562f27 — Wetter - Bewölkt (Häkchen)
+3. f_16d89fb39fc0119bea564fa8 — Wetter - Regen (Häkchen)
+4. f_61e813856b473819bea56703e — Wetter - Schnee (Häkchen)
+5. f_d4bb8e450c5dc19bea56aa20 — Schlechtwetter - Ja (Häkchen)
+6. f_d5e86cc177573819bea5700d9 — Schlechtwetter - Nein (Häkchen)
+7. f_063ff99134b03819bea57e5f8 — Temperatur MIN.
+8. f_3a637924cdfd19bea582064 — Temperatur MAX.
+9. f_0ffff26746d9e19bea584243 — Bauvorhaben
+10. f_2a565e3f959f619bea588f53 — Nr.
+11. f_f7ceb7a4ce12419bea58cc82 — Datum
+12. f_062c0db76915b819bea59a559 — Leistungsfortschritt, Materiallieferungen - Zeile 1 - linke Spalte (ohne eigene Beschriftung im Formular)
+13. f_cd76f8792875319bea59eb62 — Leistungsfortschritt, Materiallieferungen - Zeile 1
+14. f_411758db0ae26819bea5bc380 — Leistungsfortschritt, Materiallieferungen - Zeile 2 - linke Spalte (ohne eigene Beschriftung im Formular)
+15. f_b153d0feacd2219bea5bea49 — Leistungsfortschritt, Materiallieferungen - Zeile 2
+16. f_891c58f2b151b19bea5c05fa — Leistungsfortschritt, Materiallieferungen - Zeile 3 - linke Spalte (ohne eigene Beschriftung im Formular)
+17. f_657edcba6291619bea5c1b44 — Leistungsfortschritt, Materiallieferungen - Zeile 3
+18. f_3c7251a02147819bea5c32b6 — Leistungsfortschritt, Materiallieferungen - Zeile 4 - linke Spalte (ohne eigene Beschriftung im Formular)
+19. f_52eb2417cf0b0819bea5c5046 — Leistungsfortschritt, Materiallieferungen - Zeile 4
+20. f_84ab7bd46472719bea5c7f5a — Leistungsfortschritt, Materiallieferungen - Zeile 5 - linke Spalte (ohne eigene Beschriftung im Formular)
+21. f_069bd7a1b7c6c19bea5ca74f — Leistungsfortschritt, Materiallieferungen - Zeile 5
+22. f_e20a56c075775819bea5cd5f0 — Leistungsfortschritt, Materiallieferungen - Zeile 6 - linke Spalte (ohne eigene Beschriftung im Formular)
+23. f_50d2a56886acf19bea5cea58 — Leistungsfortschritt, Materiallieferungen - Zeile 6
+24. f_74fe678c4d9ab819bea5d3db8 — Leistungsfortschritt, Materiallieferungen - Zeile 7 - linke Spalte (ohne eigene Beschriftung im Formular)
+25. f_4a4d3cdcc3d8619bea5d60fa — Leistungsfortschritt, Materiallieferungen - Zeile 7
+26. f_3e8084006780319bea5d8f9d — Leistungsfortschritt, Materiallieferungen - Zeile 8 - linke Spalte (ohne eigene Beschriftung im Formular)
+27. f_c2ced36c06a3b19bea5dc6e0 — Leistungsfortschritt, Materiallieferungen - Zeile 8
+28. f_eea5bc25d72ab819bea5e1240 — Leistungsfortschritt, Materiallieferungen - Zeile 9 - linke Spalte (ohne eigene Beschriftung im Formular)
+29. f_f6b5dbb5bd45e19bea5e2eda — Leistungsfortschritt, Materiallieferungen - Zeile 9
+30. f_19df8e039fcb4819bea5e5241 — Leistungsfortschritt, Materiallieferungen - Zeile 10 - linke Spalte (ohne eigene Beschriftung im Formular)
+31. f_0f7615c0386f8819bea5e7308 — Leistungsfortschritt, Materiallieferungen - Zeile 10
+32. f_a736e5633eebe819bea5e8f1e — Leistungsfortschritt, Materiallieferungen - Zeile 11 - linke Spalte (ohne eigene Beschriftung im Formular)
+33. f_e16a90925468719bea5ecf19 — Leistungsfortschritt, Materiallieferungen - Zeile 11
+34. f_383efcfcc554319bea5ee8d3 — Leistungsfortschritt, Materiallieferungen - Zeile 12 - linke Spalte (ohne eigene Beschriftung im Formular)
+35. f_318273d1ace6319bea5f1972 — Leistungsfortschritt, Materiallieferungen - Zeile 12
+36. f_a2ec2356a151519bea5f380f — Leistungsfortschritt, Materiallieferungen - Zeile 13 - linke Spalte (ohne eigene Beschriftung im Formular)
+37. f_e47080ee3d33e819bea5f55dd — Leistungsfortschritt, Materiallieferungen - Zeile 13
+38. f_782e927d6425619bea5f78c7 — Leistungsfortschritt, Materiallieferungen - Zeile 14 - linke Spalte (ohne eigene Beschriftung im Formular)
+39. f_073bad36cbe32819bea5f92a9 — Leistungsfortschritt, Materiallieferungen - Zeile 14
+40. f_43292678784d719bea5fb497 — Leistungsfortschritt, Materiallieferungen - Zeile 15 - linke Spalte (ohne eigene Beschriftung im Formular)
+41. f_fbbd0f7f5f4c519bea5fcd7f — Leistungsfortschritt, Materiallieferungen - Zeile 15
+42. f_c0b208f04cfb19bea5ff2b1 — Leistungsfortschritt, Materiallieferungen - Zeile 16 - linke Spalte (ohne eigene Beschriftung im Formular)
+43. f_6bf1cea1fda9319bea600b0b — Leistungsfortschritt, Materiallieferungen - Zeile 16
+44. f_69fc79857fd4d819bea605a96 — Leistungsfortschritt, Materiallieferungen - Zeile 17 - linke Spalte (ohne eigene Beschriftung im Formular)
+45. f_f9dcc9f7a2ff9819bea607873 — Leistungsfortschritt, Materiallieferungen - Zeile 17
+46. f_6bc8e3f7d037519bea608e37 — Leistungsfortschritt, Materiallieferungen - Zeile 18 - linke Spalte (ohne eigene Beschriftung im Formular)
+47. f_015f9f2697f86819bea60a07b — Leistungsfortschritt, Materiallieferungen - Zeile 18
+48. f_cda8bb4e7fe5a819bea60c2e1 — Leistungsfortschritt, Materiallieferungen - Zeile 19 - linke Spalte (ohne eigene Beschriftung im Formular)
+49. f_1d1393a3c9a319bea60e3aa — Leistungsfortschritt, Materiallieferungen - Zeile 19
+50. f_f0e17c40b479e819bea61244f — Bedenken gegen Weisungen, Bestellungen, Vorleistungen und Ausführungsunterlagen (Häkchen)
+51. f_c1d992585616f819bea6182a6 — Bedenken gegen Weisungen, Bestellungen, Vorleistungen und Ausführungsunterlagen - Zeile 1
+52. f_17fcde4d8851f19bea61c238 — Bedenken gegen Weisungen, Bestellungen, Vorleistungen und Ausführungsunterlagen - Zeile 2
+53. f_2666dfe087f1c19bea61fae6 — Festgestellte Ausführungsfehler (Häkchen)
+54. f_45a248e870a319bea623343 — Festgestellte Ausführungsfehler
+55. f_58ddf87632bd1819bea6272cb — Besondere Vorkommnisse (Erschwernisse, Schäden, Arbeitsunfall, etc.) (Häkchen)
+56. f_f28cc3dfe6fbd19bea628dbe — Besondere Vorkommnisse (Erschwernisse, Schäden, Arbeitsunfall, etc.)
+57. f_c3937ad38428d819bea62d244 — Güte und Funktionsprüfungen (Häkchen)
+58. f_ec524bba9bd4119bea62e934 — Güte und Funktionsprüfungen
+59. f_ade6fd044fb76819bea63275a — Regieleistungen (Häkchen)
+60. f_95512ba9cb7bc819bea636a10 — Angeordnet (Häkchen)
+61. f_a5717d3b8d6fd19bea63a158 — Regieleistungen/Angeordnet - Zusatzfeld (ohne eigene Beschriftung im Formular)
+62. f_7584cdb0a69cd19bea63f91c — Durch Gefahr im Verzug (Häkchen)
+63. f_db78641fd52a19bea6426d0 — Durch Gefahr im Verzug - Zusatzfeld (ohne eigene Beschriftung im Formular)
+64. f_d258d0f9485c3819bea646026 — Regiebericht Nr.
+65. f_e3f881d5b0632819bea64b441 — Ausführungsunterlagen - Vollständig (Häkchen)
+66. f_8e09777f527d719bea64d478 — Ausführungsunterlagen - Unvollständig (Häkchen)
+67. f_84827dd2e77b419bea651b9d — Fehlende Ausführungsunterlagen
+68. f_9d68312fc67dc819bea6599bb — Hausbesuch von - Auftraggeber (Häkchen)
+69. f_55018e99d79d6819bea65ae89 — Hausbesuch von - Bevollmächtigter Vertreter (Häkchen)
+70. f_358ffffbcc48d819bea661a07 — Sonstige Besucher (Statiker, Baukoordinator, etc.)
+71. f_6d775e1bf23e619bea665cdd — Unterschrift Auftraggeber oder dessen Beauftragter
+72. f_31943cd2d962a819bea66da96 — Unterschrift Bauherr oder dessen bevollmächtigter Vertreter
+73. f_65908872e7898819bea679934 — Arbeiterstand (Anzahl)
+74. f_b61730c7ffaa819bea6a6380 — Gerätestand
+75. f_6b4a64d2f1c09819bea6af366 — Gerätestand - Zeile 2 (Fortsetzung)
+
+====================================================================
+STUNDENZETTEL VORDERSEITE - Feldliste (218 Felder)
+====================================================================
+Hinweis: Zeile 1-35 entsprechen den Wochentagen Mo-So, 5 Wochen
+durchlaufend (Zeile 1=Mo/KW1 ... Zeile 35=So/KW5). Welcher Tag welchem
+Kalendertag entspricht, ergibt sich aus Monat+Jahr - das rechnet das
+Programm selbst aus, wenn Monat und Jahr eingetragen sind. Häkchen ohne
+Beschriftung sowie die Felder "Datum" pro Zeile kannst du in der Regel
+weglassen.
+
+1. f_bcaac295866e0819bfa5c595d — Name
+2. f_5ae800158256119bfa5d86b1 — Monat
+3. f_c67a404071e3e819bfa5e1671 — Jahr
+4. f_5ca6578068b35819bfa5e57dd — Freitextfeld ohne erkennbare Beschriftung im Formular
+5. f_b0add654e319d819bfa5ec2b8 — Tag - Zeile 1 (Mo, Kalenderwoche 1 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+6. f_e4684c01dedc19bfa605103 — Tag - Zeile 2 (Di, Kalenderwoche 1 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+7. f_be8bbc19ef975819bfa6068f8 — Tag - Zeile 3 (Mi, Kalenderwoche 1 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+8. f_21071ef7c987619bfa609326 — Tag - Zeile 4 (Do, Kalenderwoche 1 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+9. f_eded0ee4c3c78819bfa60aab8 — Tag - Zeile 5 (Fr, Kalenderwoche 1 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+10. f_9ff5e0a63f2df19bfa6128c5 — Tag - Zeile 6 (Sa, Kalenderwoche 1 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+11. f_7e59041883a6e19bfa6144f9 — Tag - Zeile 7 (So, Kalenderwoche 1 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+12. f_b2c4aca6d071a19bfa6156b8 — Tag - Zeile 8 (Mo, Kalenderwoche 2 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+13. f_386cc7e9e2126819bfa616df6 — Tag - Zeile 9 (Di, Kalenderwoche 2 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+14. f_ab498243c358a819bfa6191ca — Tag - Zeile 10 (Mi, Kalenderwoche 2 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+15. f_410a9da45f236819bfa61a904 — Tag - Zeile 11 (Do, Kalenderwoche 2 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+16. f_662e3118dab79819bfa61d44f — Tag - Zeile 12 (Fr, Kalenderwoche 2 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+17. f_7b7c3eb8b1031819bfa61f3ab — Tag - Zeile 13 (Sa, Kalenderwoche 2 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+18. f_ab2dd96cffb0f19bfa623caf — Tag - Zeile 14 (So, Kalenderwoche 2 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+19. f_9faf189ffd2e919bfa62531f — Tag - Zeile 15 (Mo, Kalenderwoche 3 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+20. f_5e5752d5ab12819bfa62720a — Tag - Zeile 16 (Di, Kalenderwoche 3 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+21. f_8256b6875d384819bfa628d9d — Tag - Zeile 17 (Mi, Kalenderwoche 3 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+22. f_6aa2d56d46be3819bfa62aabd — Tag - Zeile 18 (Do, Kalenderwoche 3 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+23. f_b0d72cb04676719bfa62c547 — Tag - Zeile 19 (Fr, Kalenderwoche 3 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+24. f_19ede78730e69819bfa62e591 — Tag - Zeile 20 (Sa, Kalenderwoche 3 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+25. f_b437c03a1abf2819bfa630c3d — Tag - Zeile 21 (So, Kalenderwoche 3 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+26. f_de5d3ae70e97319bfa633096 — Tag - Zeile 22 (Mo, Kalenderwoche 4 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+27. f_d15dcb766e09519bfa6345fb — Tag - Zeile 23 (Di, Kalenderwoche 4 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+28. f_9a92092b25fe1819bfa636325 — Tag - Zeile 24 (Mi, Kalenderwoche 4 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+29. f_47157a19b53b0819bfa637a82 — Tag - Zeile 25 (Do, Kalenderwoche 4 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+30. f_d2fce81ef7ebf819bfa63904c — Tag - Zeile 26 (Fr, Kalenderwoche 4 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+31. f_a87ddc7b28097819bfa63a377 — Tag - Zeile 27 (Sa, Kalenderwoche 4 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+32. f_7319401330923819bfa63c1dc — Tag - Zeile 28 (So, Kalenderwoche 4 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+33. f_3de765cd0728119bfa63d691 — Tag - Zeile 29 (Mo, Kalenderwoche 5 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+34. f_07059893f7347819bfa63eab6 — Tag - Zeile 30 (Di, Kalenderwoche 5 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+35. f_77dc169a7ded6819bfa64103f — Tag - Zeile 31 (Mi, Kalenderwoche 5 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+36. f_7533460bd5e0e19bfa6427bc — Tag - Zeile 32 (Do, Kalenderwoche 5 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+37. f_95d7c12e7121a819bfa64441f — Tag - Zeile 33 (Fr, Kalenderwoche 5 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+38. f_4d20b35b8888519bfa646f76 — Tag - Zeile 34 (Sa, Kalenderwoche 5 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+39. f_3a0e1bc5f20bb19bfa649393 — Tag - Zeile 35 (So, Kalenderwoche 5 im Formular) - Datum (Tag des Monats, wird bei Monat+Jahr meist automatisch befüllt)
+40. f_464e5062c186c819bfa665af3 — Tag - Zeile 1 (Mo, Kalenderwoche 1 im Formular) - Bauvorhaben/Baustelle
+41. f_7c754e0d3d7f2819bfa66d327 — Tag - Zeile 1 (Mo, Kalenderwoche 1 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+42. f_ee41f35d22034819bfa676a9c — Tag - Zeile 1 (Mo, Kalenderwoche 1 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+43. f_b890685549384819bfa67bba7 — Tag - Zeile 1 (Mo, Kalenderwoche 1 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+44. f_e7283363f3065819bfa682a8a — Tag - Zeile 2 (Di, Kalenderwoche 1 im Formular) - Bauvorhaben/Baustelle
+45. f_ed8519647adb6819bfa684de1 — Tag - Zeile 2 (Di, Kalenderwoche 1 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+46. f_2b1ab8436f2e519bfa687061 — Tag - Zeile 2 (Di, Kalenderwoche 1 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+47. f_7aed3778e5ea319bfa688e1f — Tag - Zeile 2 (Di, Kalenderwoche 1 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+48. f_0ca7d4baa0e6c819bfa6a185d — Tag - Zeile 3 (Mi, Kalenderwoche 1 im Formular) - Bauvorhaben/Baustelle
+49. f_f0bb5d0de30bd19bfa6a31eb — Tag - Zeile 3 (Mi, Kalenderwoche 1 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+50. f_e0e8b4342b3f519bfa6a731f — Tag - Zeile 3 (Mi, Kalenderwoche 1 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+51. f_ea57d201f2316819bfa6a8bfa — Tag - Zeile 3 (Mi, Kalenderwoche 1 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+52. f_12d18a30ddd2c19bfa6aacec — Tag - Zeile 4 (Do, Kalenderwoche 1 im Formular) - Bauvorhaben/Baustelle
+53. f_5af1f944efba619bfa6adf5d — Tag - Zeile 4 (Do, Kalenderwoche 1 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+54. f_18aac0a1152fa19bfa6b0a0c — Tag - Zeile 4 (Do, Kalenderwoche 1 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+55. f_940779acb8c2c19bfa6b289e — Tag - Zeile 4 (Do, Kalenderwoche 1 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+56. f_3b94396e738c219bfa6b44a6 — Tag - Zeile 5 (Fr, Kalenderwoche 1 im Formular) - Bauvorhaben/Baustelle
+57. f_8643bdda3b3a3819bfa6b6494 — Tag - Zeile 5 (Fr, Kalenderwoche 1 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+58. f_575f2ef9e5e14819bfa6b9186 — Tag - Zeile 5 (Fr, Kalenderwoche 1 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+59. f_31a6ddc1744cf19bfa6babac — Tag - Zeile 5 (Fr, Kalenderwoche 1 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+60. f_f2965f28df3ec19bfa6bef44 — Tag - Zeile 6 (Sa, Kalenderwoche 1 im Formular) - Bauvorhaben/Baustelle
+61. f_b40902ee73c3419bfa6c18a4 — Tag - Zeile 6 (Sa, Kalenderwoche 1 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+62. f_d9a8893e6fef319bfa6c5ba4 — Tag - Zeile 6 (Sa, Kalenderwoche 1 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+63. f_acb8f78232956819bfa6c8a26 — Tag - Zeile 6 (Sa, Kalenderwoche 1 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+64. f_7fc0e015a148119bfa6ca3e4 — Tag - Zeile 7 (So, Kalenderwoche 1 im Formular) - Bauvorhaben/Baustelle
+65. f_1ca6c19fbd7f519bfa6cc089 — Tag - Zeile 7 (So, Kalenderwoche 1 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+66. f_72b8dc23bd983819bfa6ce780 — Tag - Zeile 7 (So, Kalenderwoche 1 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+67. f_d7b829734c07b819bfa6d0bb3 — Tag - Zeile 7 (So, Kalenderwoche 1 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+68. f_89a554594be77819bfa6d5e26 — Tag - Zeile 8 (Mo, Kalenderwoche 2 im Formular) - Bauvorhaben/Baustelle
+69. f_f064c95cf336b19bfa6d7193 — Tag - Zeile 8 (Mo, Kalenderwoche 2 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+70. f_5d8e66489f8f219bfa6d8997 — Tag - Zeile 8 (Mo, Kalenderwoche 2 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+71. f_99cc94684cdb3819bfa6dbd05 — Tag - Zeile 8 (Mo, Kalenderwoche 2 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+72. f_6bd6e15f28e2f19bfa6ddd89 — Tag - Zeile 9 (Di, Kalenderwoche 2 im Formular) - Bauvorhaben/Baustelle
+73. f_962e84c86911d19bfa6df775 — Tag - Zeile 9 (Di, Kalenderwoche 2 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+74. f_06fce1f609f5719bfa6e1a14 — Tag - Zeile 9 (Di, Kalenderwoche 2 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+75. f_d5e0968a6577b819bfa75359f — Tag - Zeile 9 (Di, Kalenderwoche 2 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+76. f_897e3cb4c444e19bfa755d0b — Tag - Zeile 10 (Mi, Kalenderwoche 2 im Formular) - Bauvorhaben/Baustelle
+77. f_1e27ce857295a819bfa75710f — Tag - Zeile 10 (Mi, Kalenderwoche 2 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+78. f_bc8a4e57a7ef9819bfa75860f — Tag - Zeile 10 (Mi, Kalenderwoche 2 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+79. f_7c7a8fbdaebc2819bfa75bb7b — Tag - Zeile 10 (Mi, Kalenderwoche 2 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+80. f_b895faf0cab6f819bfa75dc2d — Tag - Zeile 11 (Do, Kalenderwoche 2 im Formular) - Bauvorhaben/Baustelle
+81. f_cd472813507e0819bfa75f25f — Tag - Zeile 11 (Do, Kalenderwoche 2 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+82. f_e2d0272e059e2819bfa763a13 — Tag - Zeile 11 (Do, Kalenderwoche 2 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+83. f_ffe05fa0ee8ed819bfa7655b5 — Tag - Zeile 11 (Do, Kalenderwoche 2 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+84. f_ea343fee08938819bfa767c88 — Tag - Zeile 12 (Fr, Kalenderwoche 2 im Formular) - Bauvorhaben/Baustelle
+85. f_3b01845dabdd819bfa76a44a — Tag - Zeile 12 (Fr, Kalenderwoche 2 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+86. f_74170d4a45bcd819bfa76c66a — Tag - Zeile 12 (Fr, Kalenderwoche 2 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+87. f_bbed9fe9f662d19bfa76df2f — Tag - Zeile 12 (Fr, Kalenderwoche 2 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+88. f_0dfe75840901e819bfa77113f — Tag - Zeile 13 (Sa, Kalenderwoche 2 im Formular) - Bauvorhaben/Baustelle
+89. f_78ce579dbbcdf19bfa772b06 — Tag - Zeile 13 (Sa, Kalenderwoche 2 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+90. f_b5e39381a7163819bfa778226 — Tag - Zeile 13 (Sa, Kalenderwoche 2 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+91. f_a22414de136cf19bfa77a560 — Tag - Zeile 13 (Sa, Kalenderwoche 2 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+92. f_3cfb96567835819bfa77cfa7 — Tag - Zeile 14 (So, Kalenderwoche 2 im Formular) - Bauvorhaben/Baustelle
+93. f_441a69b58b48b819bfa7805b9 — Tag - Zeile 14 (So, Kalenderwoche 2 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+94. f_2fea10ae17a65819bfa78191a — Tag - Zeile 14 (So, Kalenderwoche 2 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+95. f_a5af039cbe9ee819bfa7836d5 — Tag - Zeile 14 (So, Kalenderwoche 2 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+96. f_ae7864487a64e19bfa7853d0 — Tag - Zeile 15 (Mo, Kalenderwoche 3 im Formular) - Bauvorhaben/Baustelle
+97. f_5aae96a2f3e96819bfa787239 — Tag - Zeile 15 (Mo, Kalenderwoche 3 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+98. f_5a03395dab63919bfa788d01 — Tag - Zeile 15 (Mo, Kalenderwoche 3 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+99. f_1569222b891b2819bfa78b035 — Tag - Zeile 15 (Mo, Kalenderwoche 3 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+100. f_ed0e1544c85319bfa7953e1 — Tag - Zeile 16 (Di, Kalenderwoche 3 im Formular) - Bauvorhaben/Baustelle
+101. f_e003f430c97ea819bfa7980ef — Tag - Zeile 16 (Di, Kalenderwoche 3 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+102. f_9fdefd25a635d819bfa799fcf — Tag - Zeile 16 (Di, Kalenderwoche 3 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+103. f_9fe8fbc06b9a3819bfa79c663 — Tag - Zeile 16 (Di, Kalenderwoche 3 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+104. f_0fab781f3afd8819bfa79e5ca — Tag - Zeile 17 (Mi, Kalenderwoche 3 im Formular) - Bauvorhaben/Baustelle
+105. f_a9e4a8734ec71819bfa79ff68 — Tag - Zeile 17 (Mi, Kalenderwoche 3 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+106. f_0c06535493a06819bfa7a2c3b — Tag - Zeile 17 (Mi, Kalenderwoche 3 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+107. f_16cb65665399619bfa7a4865 — Tag - Zeile 17 (Mi, Kalenderwoche 3 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+108. f_9af4df0073c8a19bfa7a70c3 — Tag - Zeile 18 (Do, Kalenderwoche 3 im Formular) - Bauvorhaben/Baustelle
+109. f_cec3d885f849b19bfa7a8655 — Tag - Zeile 18 (Do, Kalenderwoche 3 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+110. f_fa89bd5d7d21e19bfa7aa33d — Tag - Zeile 18 (Do, Kalenderwoche 3 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+111. f_7628cc84c5668819bfa7aceb7 — Tag - Zeile 18 (Do, Kalenderwoche 3 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+112. f_c008e89953be1819bfa7b0c77 — Tag - Zeile 19 (Fr, Kalenderwoche 3 im Formular) - Bauvorhaben/Baustelle
+113. f_311c810e79fc619bfa7b25b1 — Tag - Zeile 19 (Fr, Kalenderwoche 3 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+114. f_dae86457f8ea8819bfa7b409b — Tag - Zeile 19 (Fr, Kalenderwoche 3 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+115. f_f0fdf23612c5419bfa7b5673 — Tag - Zeile 19 (Fr, Kalenderwoche 3 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+116. f_b29fbf311478c819bfa7b7403 — Tag - Zeile 20 (Sa, Kalenderwoche 3 im Formular) - Bauvorhaben/Baustelle
+117. f_8c63c39c035f0819bfa7b93ab — Tag - Zeile 20 (Sa, Kalenderwoche 3 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+118. f_08acf46ca12f3819bfa7bb209 — Tag - Zeile 20 (Sa, Kalenderwoche 3 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+119. f_a3e9f64e4d07b19bfa7bd40d — Tag - Zeile 20 (Sa, Kalenderwoche 3 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+120. f_2fbf9709f581419bfa7bfbfb — Tag - Zeile 21 (So, Kalenderwoche 3 im Formular) - Bauvorhaben/Baustelle
+121. f_ee0566a2120b6819bfa7c292c — Tag - Zeile 21 (So, Kalenderwoche 3 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+122. f_c4e3f1879743b19bfa7c47c3 — Tag - Zeile 21 (So, Kalenderwoche 3 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+123. f_c9db81c67a07419bfa7c688d — Tag - Zeile 21 (So, Kalenderwoche 3 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+124. f_af48df44e153519bfa7c83d5 — Tag - Zeile 22 (Mo, Kalenderwoche 4 im Formular) - Bauvorhaben/Baustelle
+125. f_7833643d4013b819bfa7ca7e5 — Tag - Zeile 22 (Mo, Kalenderwoche 4 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+126. f_8a4caaba6ef4c19bfa7cbea5 — Tag - Zeile 22 (Mo, Kalenderwoche 4 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+127. f_06e037e93f00e19bfa7cd9bc — Tag - Zeile 22 (Mo, Kalenderwoche 4 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+128. f_e94b66cbcf7b9819bfa7cf094 — Tag - Zeile 23 (Di, Kalenderwoche 4 im Formular) - Bauvorhaben/Baustelle
+129. f_9dbe84e42b44519bfa7d0cff — Tag - Zeile 23 (Di, Kalenderwoche 4 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+130. f_bc588b915aa7c19bfa7d2d9c — Tag - Zeile 23 (Di, Kalenderwoche 4 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+131. f_8456d54b6195c19bfa7d52a4 — Tag - Zeile 23 (Di, Kalenderwoche 4 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+132. f_13dafe57a979519bfa7d8b08 — Tag - Zeile 24 (Mi, Kalenderwoche 4 im Formular) - Bauvorhaben/Baustelle
+133. f_f8e1fededb3c19bfa7dbed8 — Tag - Zeile 24 (Mi, Kalenderwoche 4 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+134. f_9802a2e673af9819bfa7ddba6 — Tag - Zeile 24 (Mi, Kalenderwoche 4 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+135. f_7ce1ea38050ca819bfa7e1b34 — Tag - Zeile 24 (Mi, Kalenderwoche 4 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+136. f_c8b6ba58ab01d19bfa7e3ee7 — Tag - Zeile 25 (Do, Kalenderwoche 4 im Formular) - Bauvorhaben/Baustelle
+137. f_523cc5ccd79f6819bfa7e653e — Tag - Zeile 25 (Do, Kalenderwoche 4 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+138. f_b73f545b6acd3819bfa7e7f64 — Tag - Zeile 25 (Do, Kalenderwoche 4 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+139. f_d8bf2e7b799a819bfa7e9d23 — Tag - Zeile 25 (Do, Kalenderwoche 4 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+140. f_4f49764192772819bfa7eb948 — Tag - Zeile 26 (Fr, Kalenderwoche 4 im Formular) - Bauvorhaben/Baustelle
+141. f_37457f4166d9219bfa7ed1d2 — Tag - Zeile 26 (Fr, Kalenderwoche 4 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+142. f_ec040f281074419bfa7ef034 — Tag - Zeile 26 (Fr, Kalenderwoche 4 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+143. f_d7aab619d757d19bfa7f083d — Tag - Zeile 26 (Fr, Kalenderwoche 4 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+144. f_b8705707bde7a819bfa7f25d9 — Tag - Zeile 27 (Sa, Kalenderwoche 4 im Formular) - Bauvorhaben/Baustelle
+145. f_cd60b34574cb319bfa7f4b2b — Tag - Zeile 27 (Sa, Kalenderwoche 4 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+146. f_2422a0a264fcb19bfa7f6531 — Tag - Zeile 27 (Sa, Kalenderwoche 4 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+147. f_406f7b525a383819bfa7f8b1a — Tag - Zeile 27 (Sa, Kalenderwoche 4 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+148. f_cb4a555e0f79319bfa7fd9e9 — Tag - Zeile 28 (So, Kalenderwoche 4 im Formular) - Bauvorhaben/Baustelle
+149. f_cc4b2a8edc82419bfa7ff468 — Tag - Zeile 28 (So, Kalenderwoche 4 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+150. f_2cab3c5754806819bfa80094f — Tag - Zeile 28 (So, Kalenderwoche 4 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+151. f_ad8ce89ad91c719bfa801cdb — Tag - Zeile 28 (So, Kalenderwoche 4 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+152. f_90ba5a233b9ca819bfa803e0a — Tag - Zeile 29 (Mo, Kalenderwoche 5 im Formular) - Bauvorhaben/Baustelle
+153. f_7821668a2f951819bfa8057a7 — Tag - Zeile 29 (Mo, Kalenderwoche 5 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+154. f_c7355e5f5c2d4819bfa8077c8 — Tag - Zeile 29 (Mo, Kalenderwoche 5 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+155. f_28a4cb2f6158819bfa808ed5 — Tag - Zeile 29 (Mo, Kalenderwoche 5 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+156. f_2ab2ad8a469e719bfa80a9cd — Tag - Zeile 30 (Di, Kalenderwoche 5 im Formular) - Bauvorhaben/Baustelle
+157. f_235e7842903fc819bfa80d1ef — Tag - Zeile 30 (Di, Kalenderwoche 5 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+158. f_b480037ad9a49819bfa80e8c4 — Tag - Zeile 30 (Di, Kalenderwoche 5 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+159. f_463bc3a3cbe6b19bfa810442 — Tag - Zeile 30 (Di, Kalenderwoche 5 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+160. f_20ad05a42d78619bfa813bb3 — Tag - Zeile 31 (Mi, Kalenderwoche 5 im Formular) - Bauvorhaben/Baustelle
+161. f_bc0b8bb53afde19bfa8153f4 — Tag - Zeile 31 (Mi, Kalenderwoche 5 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+162. f_df95a88666d1d19bfa818188 — Tag - Zeile 31 (Mi, Kalenderwoche 5 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+163. f_f56b032dea23c819bfa81b45c — Tag - Zeile 31 (Mi, Kalenderwoche 5 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+164. f_db689de32c46119bfa81edd5 — Tag - Zeile 32 (Do, Kalenderwoche 5 im Formular) - Bauvorhaben/Baustelle
+165. f_41b556df6dbe4819bfa82061f — Tag - Zeile 32 (Do, Kalenderwoche 5 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+166. f_9da5000ef10c9819bfa8221fe — Tag - Zeile 32 (Do, Kalenderwoche 5 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+167. f_cbefbe2fff0da19bfa824172 — Tag - Zeile 32 (Do, Kalenderwoche 5 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+168. f_b6806fc195f5e819bfa825cd4 — Tag - Zeile 33 (Fr, Kalenderwoche 5 im Formular) - Bauvorhaben/Baustelle
+169. f_afdd03a565d9a19bfa827e69 — Tag - Zeile 33 (Fr, Kalenderwoche 5 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+170. f_760a2edeae9c7819bfa8299fd — Tag - Zeile 33 (Fr, Kalenderwoche 5 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+171. f_38c885c23f889819bfa82aeff — Tag - Zeile 33 (Fr, Kalenderwoche 5 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+172. f_6fd5ca422e8c619bfa82c786 — Tag - Zeile 34 (Sa, Kalenderwoche 5 im Formular) - Bauvorhaben/Baustelle
+173. f_6c559a7691fcc19bfa82e242 — Tag - Zeile 34 (Sa, Kalenderwoche 5 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+174. f_8a722113e4e1f819bfa82fc29 — Tag - Zeile 34 (Sa, Kalenderwoche 5 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+175. f_137857eabf3f7819bfa8316ea — Tag - Zeile 34 (Sa, Kalenderwoche 5 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+176. f_699901e12677319bfa83387e — Tag - Zeile 35 (So, Kalenderwoche 5 im Formular) - Bauvorhaben/Baustelle
+177. f_ee877728cc38919bfa8354c0 — Tag - Zeile 35 (So, Kalenderwoche 5 im Formular) - Stunden (Kurzcode-Eingabe, z. B. "8", "3/3/3", "U", "K", "SW", "4A/5")
+178. f_0903e31c3bacc19bfa8376b4 — Tag - Zeile 35 (So, Kalenderwoche 5 im Formular) - Leistung (Tätigkeitsbeschreibung, z. B. "Mauerarbeiten", "Aushub")
+179. f_a0c1ec8e8a16f19bfa839634 — Tag - Zeile 35 (So, Kalenderwoche 5 im Formular) - Kfz-Kennzeichen (nur falls an diesem Tag ein anderes Fahrzeug als das Standardfahrzeug genutzt wurde)
+180. f_34e36d3a426cc19bfa83cf67 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+181. f_0cb2b13120f5319bfa840856 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+182. f_52fd92d558a5e819bfa8476e9 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+183. f_c6b06331fedfc819bfa85094c — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+184. f_adee7673479b19bfa85256e — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+185. f_11eda0bae0dc3819bfa85397a — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+186. f_2dff9458a9ed9819bfa855c12 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+187. f_65b178b346a4a19bfa85b86d — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+188. f_5a39f624ee7de19bfa85d31d — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+189. f_038792781e067819bfa85ea50 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+190. f_bf2227cd38de9819bfa861229 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+191. f_1eb3b1442cb51819bfa863e8f — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+192. f_bc97543a0d24f819bfa866571 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+193. f_d3d706e3e765419bfa86ac9b — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+194. f_6c3bb606f7a6919bfa86c641 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+195. f_a333fa39be2a619bfa86dc7d — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+196. f_ea4a764a84bbb19bfa86f8fd — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+197. f_8c80d38bf2f6f819bfa871ef1 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+198. f_ad910b96b73a219bfa873401 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+199. f_2830201243d15819bfa876a21 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+200. f_3cbccf723b4c5819bfa878e29 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+201. f_13e2380eddba4819bfa87c071 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+202. f_ac01a906be93a19bfa87e202 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+203. f_6d5b5ba5712ae819bfa87f931 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+204. f_98fbe0b342e54819bfa8815e1 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+205. f_eba9223c13c7b819bfa88399f — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+206. f_fb5a491011641819bfa88603b — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+207. f_b0a4e140af04519bfa887a5c — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+208. f_f7a10178bf19f19bfa889fd3 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+209. f_18630cbecd9e719bfa88bb22 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+210. f_ff32d021e15419bfa88f3af — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+211. f_fb1a1238977a619bfa8912cd — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+212. f_dc54d9b0f83319bfa892d64 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+213. f_eb4021981df319bfa89481f — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+214. f_eba621b96584419bfa8966c7 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+215. f_ed94e5dae5cb619bfa898408 — Häkchen ohne erkennbare Beschriftung im Formular (vom Programm nicht ausgewertet, frei verwendbar)
+216. f_4d90293ca94bd819bfa9055e6 — Kennzeichen PKW (Standardfahrzeug für den Monat)
+217. f_12f84449d33b9819bfa908fc4 — km-Stand
+218. f_d52703149e83a19bfa90afbc — Freitextfeld ohne erkennbare Beschriftung im Formular

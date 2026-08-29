@@ -22,10 +22,13 @@ Programm für die HS-Bau-Formulare, unabhängig von der Materialliste
 - `vorlagen/` – dieselben Bilder zusätzlich als komprimierte
   Referenz-JPEGs (nur zum Anschauen, nicht vom Programm genutzt)
 - `feldbeschreibungen_regiebericht.json`, `feldbeschreibungen_bautagesbericht.json`,
-  `feldbeschreibungen_stundenzettel_vorne.json`,
-  `feldbeschreibungen_stundenzettel_hinten.json`,
-  `feldbeschreibungen_stundenzettel_original.json` – Zuordnung
-  Feld-ID → Bedeutung in Klartext (siehe Abschnitt "Ausfüllen per Chat/Sprache")
+  `feldbeschreibungen_stundenzettel_vorne.json` – Zuordnung Feld-ID →
+  Bedeutung in Klartext, als Rohdaten (siehe Abschnitt "Ausfüllen per
+  Chat/Sprache")
+- `ausfuellhilfe_claude.txt` – **fertiger Text zum Kopieren**: einfach den
+  ganzen Inhalt in einen neuen/normalen Claude-Chat einfügen, danach
+  kennt dieser Chat alle Feld-Bedeutungen und kann direkt Berichte
+  entgegennehmen (siehe Abschnitt "Ausfüllen per Chat/Sprache")
 
 ## Das Programm (`FORMULARE_anschauen_RegieBautagesberichtStunden_Verknuepfung.html`)
 
@@ -78,34 +81,35 @@ gespeichert, sobald die WKO die Daten veröffentlicht hat.
 
 Die Feld-IDs in den Layout-JSONs sind zufällige Kürzel (z. B.
 `f_b0bfd31d896e9819bea3c0e2f`) und für sich genommen nicht
-menschenlesbar. Die `feldbeschreibungen_*.json`-Dateien übersetzen jede
-Feld-ID in eine Klartext-Bedeutung (z. B. "Auftraggeber" oder "Tag 5 -
-Stunden"). Damit kann in einem Claude-Chat der Tagesablauf erzählt/diktiert
-werden, und daraus wird eine Daten-JSON im Format
-`{"values": {"<Feld-ID>": "<Wert>", ...}, "signatures": {}}` erzeugt – also
-genau das Format, das "Daten speichern"/"Daten laden" im Programm selbst
-verwendet.
+menschenlesbar. `ausfuellhilfe_claude.txt` übersetzt jede Feld-ID von
+Regiebericht, Bautagesbericht und Stundenzettel-Vorderseite in eine
+Klartext-Bedeutung (z. B. "Auftraggeber" oder "Tag 5 - Stunden") und
+erklärt einem Claude-Chat, wie daraus eine Daten-JSON entsteht.
 
 Ablauf:
 
-1. Im Chat die `feldbeschreibungen_*.json` des gewünschten Formulars sowie
-   die zugehörige `layout_*.json` bereitstellen (oder auf das Repo
-   verweisen).
+1. Den kompletten Inhalt von `ausfuellhilfe_claude.txt` in einen
+   (beliebigen, auch neuen) Claude-Chat einfügen.
 2. Den Tag/die Baustelle in eigenen Worten beschreiben.
-3. Claude formuliert daraus die Daten-JSON passend zu den Feld-IDs.
-4. Die JSON-Datei im Programm über "Daten laden" einlesen.
+3. Claude formuliert daraus eine Daten-JSON passend zu den Feld-IDs.
+4. Vorher im Programm das passende Formular auswählen (Regiebericht /
+   Bautagesbericht), dann die JSON-Datei über "Daten laden" einlesen.
 
-Hinweise dazu:
+Absichtlich nicht abgedeckt:
 
+- Die Stundenzettel-Rückseite (Fahrtzeit-Nachweis) und die
+  "Original"/Finanzkopie sind nicht enthalten – die Rückseite wird von
+  Hand ausgefüllt, die Original-Kopie befüllt sich automatisch aus der
+  Vorderseite. Die Rohdaten dazu (`feldbeschreibungen_stundenzettel_hinten.json` /
+  `_original.json`) wurden entfernt, da nicht benötigt; bei Bedarf können
+  sie erneut erstellt werden.
+- Im Regiebericht sind die Felder 86–119 (Arbeitszeit von/bis je
+  Arbeitskraft-Zeile sowie die beiden frei benennbaren
+  Aufzahlungsspalten) als "optional, meist nicht per Sprache" markiert,
+  da diese normalerweise von Hand eingetragen werden.
 - Bei den Stundenzettel-Kurzcodes (Spalte "Stunden") gilt weiterhin die
   bestehende Syntax (z. B. `8`, `3/3/3`, `U`, `K`, `SW`, `4A/5`) – die wird
   vom Programm selbst berechnet, nicht von Claude.
-- Die Seiten "Original"/Finanzkopie des Stundenzettels sowie die
-  Differenz-Ansicht werden vom Programm automatisch aus der Vorderseite
-  berechnet und müssen normalerweise nicht separat diktiert werden.
-- Bei der Stundenzettel-Rückseite (Fahrtzeit-Nachweis) sind zwei
-  Spalten pro Fahrtzeit-Abschnitt aus dem Scan nicht zweifelsfrei zu
-  unterscheiden – im Zweifel nachfragen, was genau in welche Spalte soll.
 
 ## Hinweis
 
