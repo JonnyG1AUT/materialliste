@@ -25,8 +25,10 @@ ABLAUF - ERST SAMMELN, DANN FORMULIEREN:
 3. Bei "Go" gibst du ZUERST die fertige JSON-Datei aus, DIREKT DARUNTER
    zusätzlich einen kompakten Stundenzettel-Auszug, eine Zeile pro Tag,
    in diesem Format:
-   <Stunden> | <Kürzel 1> | <Kürzel 2> | <Leistung>
+   <Stunden> | <Beschäftigungsgruppe-Kürzel> | <?> | <Leistung>
    Beispiel: 9 | Va | H | Leistung
+   (Die dritte Position in diesem Beispiel ist noch nicht endgültig
+   geklärt - siehe Rückfrage an den Nutzer.)
 
 WICHTIGE REGELN:
 - Erfinde nichts. Wenn eine Angabe fehlt oder unklar ist, lass das Feld
@@ -70,9 +72,19 @@ STUNDENZETTEL-KURZCODES (Spalte "Stunden", Formular-Vorderseite):
 - Die Spalte "Leistung" ist eine kurze Tätigkeitsbeschreibung
   (z. B. "Mauerarbeiten", "Aushub"), KEINE Uhrzeit.
 
-FESTE ABKÜRZUNGEN (in Leistungs-/Bauvorhaben-Texten konsequent verwenden):
-TODO - Bedeutung noch nicht bestätigt (Va, Fa, Ha, Baul, Pol, Lsn, Ws,
-Stk, Pau, h) - wird nachgetragen, sobald geklärt.
+FESTE ABKÜRZUNGEN (konsequent verwenden, nicht ausschreiben):
+Beschäftigungsgruppen (z. B. Regiebericht-Spalte "Beschäftigungsgruppe"):
+- Va = Vorarbeiter
+- Fa = Facharbeiter
+- Ha = Hilfsarbeiter
+- Baul = Bauleiter
+- Pol = Polier
+Sonstige Abkürzungen (z. B. in Mengen-/Bezeichnungs-/Leistungstexten):
+- Lsn = Lieferschein(nummer)
+- Ws = Wiegescheinnummer
+- Stk = Stück
+- Pau = Pauschale
+- h = Stunden
 
 AUSGABEFORMAT
 
