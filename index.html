@@ -117,6 +117,7 @@
     border-radius:10px;
     border:1px solid rgba(255,255,255,.18);
     background:rgba(255,255,255,.95);
+    color:var(--text);
   }
 
   .desktop-nav { display:none; }
@@ -284,6 +285,7 @@
   }
   .sheet-backdrop.show { opacity:1; pointer-events:auto; }
 
+  .cart-scroll { overflow-y:auto; flex:1 1 auto; min-height:0; }
   .cart-summary { padding:10px 16px 0; display:grid; gap:8px; }
   .cart-summary input, .cart-summary textarea { width:100%; }
   .cart-summary textarea { resize:vertical; min-height:44px; }
@@ -295,6 +297,13 @@
   }
   .cart-item.urgent { color:var(--urgent); }
   .cart-item small { color:var(--muted); font-weight:normal; }
+  .cart-item-qty { display:flex; align-items:center; gap:8px; }
+  .remove-line-btn {
+    background:var(--surface-alt); border:1px solid var(--border); color:var(--muted);
+    border-radius:50%; width:24px; height:24px; font-size:15px; line-height:1;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .remove-line-btn:hover { background:var(--urgent-soft); border-color:var(--urgent); color:var(--urgent); }
   .cart-item-date { grid-column:1 / -1; margin-top:2px; }
   .cart-item-date label { display:block; font-size:10.5px; color:var(--muted); font-weight:700; margin-bottom:2px; }
   .cart-item-date input { padding:6px 8px; font-size:13px; }
@@ -449,12 +458,14 @@
         <h2>Auswahl<span class="badge zero" id="cartCount" style="position:static;margin-left:8px;">0</span></h2>
         <button class="sheet-close" id="cartCloseBtn" type="button" aria-label="Schließen">✕</button>
       </div>
-      <div class="cart-summary">
-        <input type="text" id="orderProject" placeholder="Bauvorhaben / Ansprechpartner">
-        <input type="date" id="orderDate">
-        <textarea id="orderNote" placeholder="Anmerkung zur Bestellung (optional)"></textarea>
+      <div class="cart-scroll">
+        <div class="cart-summary">
+          <input type="text" id="orderProject" placeholder="Bauvorhaben / Ansprechpartner">
+          <input type="date" id="orderDate">
+          <textarea id="orderNote" placeholder="Anmerkung zur Bestellung (optional)"></textarea>
+        </div>
+        <div id="cartItems"></div>
       </div>
-      <div id="cartItems"></div>
       <div class="cart-actions">
         <button class="btn primary" id="openOrderBtn" type="button">Bestellung zusammenfassen</button>
         <button class="btn" id="saveOrderBtn" type="button">Bestellung speichern</button>
@@ -1097,10 +1108,10 @@ function renderCart() {
     return;
   }
 
-  const rowsHTML = (arr, showDate) => arr.map(x => `
-    <div class="cart-item ${x.urgent ? "urgent" : ""}" data-id="${escAttr(x.item.id)}">
+  const rowsHTML = (arr, showDate, type) => arr.map(x => `
+    <div class="cart-item ${x.urgent ? "urgent" : ""}" data-id="${escAttr(x.item.id)}" data-type="${type}">
       <div><b>${x.urgent ? "❗ " : ""}${esc(x.item.name)}</b></div>
-      <div><b>${esc(x.qty)} ${esc(x.unit)}</b></div>
+      <div class="cart-item-qty"><b>${esc(x.qty)} ${esc(x.unit)}</b><button type="button" class="remove-line-btn" data-remove title="Position entfernen">×</button></div>
       ${showDate ? `
       <div class="cart-item-date">
         <label>Benötigt bis (leer = ${orderMeta.date ? esc(formatDateDE(orderMeta.date)) : "Standarddatum"})</label>
@@ -1110,14 +1121,32 @@ function renderCart() {
   ).join("");
 
   let html = "";
-  if (orderList.length) html += `<div class="cart-group-title">Bestellung</div>` + rowsHTML(orderList, true);
-  if (takeList.length) html += `<div class="cart-group-title">Mitnehmen</div>` + rowsHTML(takeList, false);
+  if (orderList.length) html += `<div class="cart-group-title">Bestellung</div>` + rowsHTML(orderList, true, "order");
+  if (takeList.length) html += `<div class="cart-group-title">Mitnehmen</div>` + rowsHTML(takeList, false, "take");
   box.innerHTML = html;
 
   box.querySelectorAll(".cart-item[data-id]").forEach(row => {
     const input = row.querySelector(".needed-date-input");
     if (input) input.addEventListener("change", () => setNeededDate(row.dataset.id, input.value));
+
+    const removeBtn = row.querySelector("[data-remove]");
+    if (removeBtn) removeBtn.onclick = () => removeCartLine(row.dataset.id, row.dataset.type);
   });
+}
+
+function removeCartLine(id, type) {
+  const o = cart[id];
+  if (!o) return;
+
+  if (type === "order") o.orderQty = "";
+  else o.takeQty = "";
+
+  if (!rowHasQty(o) && !o.urgent && !o.neededDate) delete cart[id];
+
+  saveJSON(cartKey(activeSiteId), cart);
+  renderCategoryView();
+  renderSearch();
+  renderCart();
 }
 
 function formatDateDE(iso) {
