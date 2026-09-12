@@ -3569,9 +3569,10 @@ function updateToolbarForTemplate(){
 // Die Grenzen sind über die Feldgeometrie erkannt (nicht über Feld-IDs oder
 // die Reihenfolge im Layout), damit ein im Editor verschobenes/neu
 // angelegtes Layout mit ähnlicher Spaltenbreite weiterhin funktioniert.
-const REGIE_LEISTUNG_MAXLEN = 123;
+const REGIE_LEISTUNG_MAXLEN = 115;
 const BAU_LEISTUNG_MAXLEN = 102;
-const STUNDEN_LEISTUNG_MAXLEN = 34;
+const STUNDEN_LEISTUNG_MAXLEN = 32;
+const STUNDEN_BAUVORHABEN_MAXLEN = 32;
 
 function setFieldMaxLength(id, max){
   const el = document.getElementById(id);
@@ -3603,6 +3604,9 @@ function applyStundenLeistungLimit(){
   const fm = getFrontMap();
   for (const id of (fm.leistungIds || [])){
     setFieldMaxLength(id, STUNDEN_LEISTUNG_MAXLEN);
+  }
+  for (const id of (fm.bauIds || [])){
+    setFieldMaxLength(id, STUNDEN_BAUVORHABEN_MAXLEN);
   }
 }
 
