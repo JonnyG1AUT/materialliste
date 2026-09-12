@@ -2111,9 +2111,30 @@ function emptyPageData(){
 }
 
 function ensureBackLayoutComplete(layout){
-  // Rückseiten-Layout unverändert verwenden. Keine automatisch erzeugten Felder,
-  // weil diese sonst in die falsche Spalte geraten können.
-  return layout;
+  const copy = JSON.parse(JSON.stringify(layout || {fields:[]}));
+  copy.fields = Array.isArray(copy.fields) ? copy.fields : [];
+  // Stammdaten-Felder (Kennzeichen/Fahrer + Kopiersymbole) nachrüsten, falls
+  // ein älteres, im Browser gespeichertes Rückseiten-Layout sie noch nicht
+  // kennt - sonst blieben sie nach einem Programm-Update für Nutzer mit
+  // bereits gespeichertem Layout unsichtbar. Feste Positionen im bisher
+  // ungenutzten oberen Bereich (top < 210), kollidiert nicht mit der
+  // Fahrtzeit-Tabelle oder deren Felderkennung.
+  const stammdatenDefaults = [
+    { id: "back_stamm_kennzeichen_1", type: "text", sticky: false, left: 64,  top: 8,   width: 140, height: 20 },
+    { id: "back_stamm_fahrer_1",      type: "text", sticky: false, left: 214, top: 8,   width: 300, height: 20 },
+    { id: "back_stamm_kennzeichen_2", type: "text", sticky: false, left: 64,  top: 38,  width: 140, height: 20 },
+    { id: "back_stamm_fahrer_2",      type: "text", sticky: false, left: 214, top: 38,  width: 300, height: 20 },
+    { id: "back_stamm_kennzeichen_3", type: "text", sticky: false, left: 64,  top: 68,  width: 140, height: 20 },
+    { id: "back_stamm_fahrer_3",      type: "text", sticky: false, left: 214, top: 68,  width: 300, height: 20 },
+    { id: "back_stamm_symbol_oben",   type: "text", sticky: false, left: 64,  top: 100, width: 200, height: 20 },
+    { id: "back_stamm_symbol_rechts", type: "text", sticky: false, left: 280, top: 100, width: 234, height: 20 },
+  ];
+  for (const f of stammdatenDefaults){
+    if (!copy.fields.some(existing => existing.id === f.id)){
+      copy.fields.push(f);
+    }
+  }
+  return copy;
 }
 
 const AUTO_DIFF_SUM_ID = "auto_diff_summe";
