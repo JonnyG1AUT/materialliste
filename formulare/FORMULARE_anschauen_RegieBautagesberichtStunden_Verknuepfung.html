@@ -238,6 +238,13 @@ body.layout-on .field{
   background:rgba(43,124,255,.08) !important;
 }
 
+/* Optische Warnung bei unrealistischen Stunden-Eingaben (negativ oder > 24h
+   an einem Tag) - rein visuell, verändert keine Berechnung. */
+.field.hours-warning{
+  outline:2px solid #c62828 !important;
+  outline-offset:1px;
+}
+
 .field input,
 .field textarea{
   width:100%;
@@ -723,6 +730,19 @@ const TEMPLATES = {
   let diffOverrides = new Set();
   let autoSyncBusy = false;
   let differenceRows = [];
+
+  // Merkt sich, welche Stunden-Felder (Vorne) bzw. Person-Felder (Hinten)
+  // ihr "F" automatisch wegen eines erkannten Feiertags bekommen haben -
+  // nur diese dürfen bei einem späteren Monats-/Jahreswechsel, wenn der Tag
+  // dann kein Feiertag mehr ist, wieder automatisch geleert werden. Manuell
+  // eingetragene Werte (auch ein von Hand getipptes "F") bleiben unangetastet.
+  let autoHolidayFrontIds = new Set();
+  let autoHolidayBackIds = new Set();
+
+  // Sichert den Text, der beim Setzen eines Strichs (U/F/K/SU) in Baustelle/
+  // Leistung/Kfz überschrieben wird, damit er beim Zurücknehmen des Kürzels
+  // wiederhergestellt werden kann, statt verloren zu gehen.
+  const dashedValueBackup = new Map();
 
   const uid = () => "f_" + Math.random().toString(16).slice(2) + Date.now().toString(16);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -1612,26 +1632,102 @@ function saveData(){
   downloadJSON(data, "stundenzettel" + (name ? "_" + name : "") + ".json");
 }
 
+// ===== AUTOMATISCHE SPEICHERUNG (ohne Datei-Download) =====
+// Sichert laufend in localStorage, unabhängig vom Knopf "Daten speichern",
+// damit bei einem Absturz/versehentlichen Schließen/Neuladen nichts verloren
+// geht. Nutzt bewusst dieselben storageDataKey-Plätze wie saveData(), damit
+// beim nächsten "Daten speichern" die zuletzt automatisch gesicherten Werte
+// einfach überschrieben werden.
+let autosaveTimer = null;
+function scheduleAutosave(){
+  if (autosaveTimer) clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(performAutosave, 800);
+}
+function performAutosave(){
+  try {
+    if (currentTemplate.key !== "stunden"){
+      const data = {
+        version: 1,
+        template: currentTemplate.key,
+        timestamp: new Date().toISOString(),
+        ...collectCurrentPageData()
+      };
+      storeLocal(currentTemplate.storageDataKey, data);
+      return;
+    }
+
+    if (["front","back","finanz","diff"].includes(currentSide)){
+      stundenCache[currentSide] = collectCurrentPageData();
+    }
+
+    const data = {
+      version: 2,
+      template: "stunden",
+      timestamp: new Date().toISOString(),
+      front:  stundenCache.front,
+      back:   stundenCache.back,
+      finanz: stundenCache.finanz,
+      diff:   stundenCache.diff,
+      auto: {
+        rulesVersion: 10,
+        originalOverrides: [...originalOverrides],
+        diffOverrides: [...diffOverrides]
+      }
+    };
+    storeLocal(currentTemplate.storageDataKey, data);
+  } catch (err) {
+    console.warn("Automatisches Speichern fehlgeschlagen:", err);
+  }
+}
+overlay.addEventListener("input", scheduleAutosave);
+
+// Beim Programmstart die zuletzt automatisch gesicherten Werte in die
+// Zwischenspeicher laden (OHNE das DOM zu verändern - das übernimmt die
+// bereits bestehende Logik beim ersten Anzeigen des jeweiligen Formulars).
+function restoreAutosavedData(){
+  try {
+    const regieAuto = loadLocal(TEMPLATES.regie.storageDataKey);
+    if (regieAuto && regieAuto.values){
+      templateDataCache.regie = { values: { ...regieAuto.values }, signatures: { ...(regieAuto.signatures || {}) } };
+    }
+    const bauAuto = loadLocal(TEMPLATES.bau.storageDataKey);
+    if (bauAuto && bauAuto.values){
+      templateDataCache.bau = { values: { ...bauAuto.values }, signatures: { ...(bauAuto.signatures || {}) } };
+    }
+    const stundenAuto = loadLocal(TEMPLATES.stunden.storageDataKey);
+    if (stundenAuto && (stundenAuto.front || stundenAuto.back || stundenAuto.finanz || stundenAuto.diff)){
+      stundenCache.front  = normalizePage(stundenAuto.front);
+      stundenCache.back   = normalizePage(stundenAuto.back);
+      stundenCache.finanz = normalizePage(stundenAuto.finanz || stundenAuto.original);
+      stundenCache.diff   = normalizePage(stundenAuto.diff);
+      const sameRules = Number(stundenAuto.auto?.rulesVersion) === 10;
+      originalOverrides = new Set(sameRules && Array.isArray(stundenAuto.auto?.originalOverrides) ? stundenAuto.auto.originalOverrides : []);
+      diffOverrides = new Set(sameRules && Array.isArray(stundenAuto.auto?.diffOverrides) ? stundenAuto.auto.diffOverrides : []);
+    }
+  } catch (err) {
+    console.warn("Automatische Wiederherstellung fehlgeschlagen:", err);
+  }
+}
 
 
 
+// Auch von restoreAutosavedData() beim Programmstart genutzt.
+function normalizePage(page){
+  if (!page || typeof page !== "object") return { values:{}, signatures:{} };
+  if (page.values && typeof page.values === "object") {
+    return {
+      values: page.values || {},
+      signatures: page.signatures || {}
+    };
+  }
+  // Sehr alte Stundenzettel konnten nur ein flaches Werteobjekt enthalten.
+  return { values: page, signatures:{} };
+}
 
 async function loadDataObject(data){
   if (!data || typeof data !== "object") {
     throw new Error("Ungültige Datendatei");
   }
-
-  const normalizePage = (page) => {
-    if (!page || typeof page !== "object") return { values:{}, signatures:{} };
-    if (page.values && typeof page.values === "object") {
-      return {
-        values: page.values || {},
-        signatures: page.signatures || {}
-      };
-    }
-    // Sehr alte Stundenzettel konnten nur ein flaches Werteobjekt enthalten.
-    return { values: page, signatures:{} };
-  };
 
   const isStunden = data.template === "stunden" || data.front || data.back || data.finanz || data.original || data.diff;
 
@@ -2232,9 +2328,16 @@ function setRowDash(pageData, ids, index, on){
   const id = ids?.[index];
   if (!id) return;
   if (on){
+    // Ursprünglichen Text nur beim Übergang in den Strich-Zustand sichern,
+    // sonst würde ein wiederholter Aufruf (z. B. bei jeder weiteren Eingabe)
+    // versehentlich den Strich selbst als "Originaltext" wegspeichern.
+    if (pageData.values[id] !== AUTO_DASH){
+      dashedValueBackup.set(id, pageData.values[id] ?? "");
+    }
     pageData.values[id] = AUTO_DASH;
   } else if (pageData.values[id] === AUTO_DASH){
-    pageData.values[id] = "";
+    pageData.values[id] = dashedValueBackup.has(id) ? dashedValueBackup.get(id) : "";
+    dashedValueBackup.delete(id);
   }
 }
 
@@ -3106,6 +3209,10 @@ function syncFrontToOriginal(skipVisibleFrontCollect = false){
 
     const frontData = stundenCache.front || emptyPageData();
     const originalData = stundenCache.finanz || emptyPageData();
+    // Vor dem Neuaufbau merken, was zuletzt in der Differenz-Seite stand -
+    // sonst geht ein manuell überschriebener Differenzwert verloren, weil
+    // diffData gleich darauf frisch aus der Vorderseite geklont wird.
+    const previousDiffData = stundenCache.diff || emptyPageData();
     const diffData = JSON.parse(JSON.stringify(frontData || emptyPageData()));
     const fm = getFrontMap();
     const om = getOriginalMap();
@@ -3143,8 +3250,20 @@ function syncFrontToOriginal(skipVisibleFrontCollect = false){
       if (holiday && !String(vhText).trim()){
         vhText = "F";
         frontData.values[fm.hourIds[i]] = "F";
+        autoHolidayFrontIds.add(fm.hourIds[i]);
         if (currentTemplate.key === "stunden" && currentSide === "front"){
           setVisibleFieldValue(fm.hourIds[i], "F");
+        }
+      } else if (!holiday && autoHolidayFrontIds.has(fm.hourIds[i]) && String(vhText).trim().toUpperCase() === "F"){
+        // War an dieser Zeile zuvor automatisch ein Feiertag eingetragen (z. B.
+        // vor einem Monatswechsel) und gilt das jetzt nicht mehr, wird das
+        // automatisch gesetzte F wieder entfernt. Ein von Hand eingetragenes F
+        // bleibt unangetastet, weil es nie in autoHolidayFrontIds landet.
+        vhText = "";
+        frontData.values[fm.hourIds[i]] = "";
+        autoHolidayFrontIds.delete(fm.hourIds[i]);
+        if (currentTemplate.key === "stunden" && currentSide === "front"){
+          setVisibleFieldValue(fm.hourIds[i], "");
         }
       }
 
@@ -3189,8 +3308,15 @@ function syncFrontToOriginal(skipVisibleFrontCollect = false){
 
       // Differenz: gleiche Vorderseite, Stunden werden durch die berechnete Differenz ersetzt.
       const diffHourId = fm.hourIds?.[i];
-      if (diffHourId && !diffOverrides.has(diffHourId)){
-        diffData.values[diffHourId] = result.diff ?? "";
+      if (diffHourId){
+        if (!diffOverrides.has(diffHourId)){
+          diffData.values[diffHourId] = result.diff ?? "";
+        } else {
+          // Manuell überschriebener Wert: den zuletzt eingetragenen Text
+          // übernehmen, statt ihn durch den frisch geklonten Vorderseiten-
+          // Rohwert (z. B. den Stunden-Kurzcode) zu ersetzen.
+          diffData.values[diffHourId] = previousDiffData.values?.[diffHourId] ?? "";
+        }
       }
       setRowDash(diffData, fm.bauIds, i, dashRow);
       setRowDash(diffData, fm.leistungIds, i, dashRow);
@@ -3205,7 +3331,19 @@ function syncFrontToOriginal(skipVisibleFrontCollect = false){
 
       if (holiday){
         const backPersonId = bm.personIds?.[i];
-        if (backPersonId) backData.values[backPersonId] = "F";
+        if (backPersonId){
+          backData.values[backPersonId] = "F";
+          autoHolidayBackIds.add(backPersonId);
+        }
+      } else {
+        const backPersonId = bm.personIds?.[i];
+        if (backPersonId && autoHolidayBackIds.has(backPersonId) &&
+            String(backData.values[backPersonId] ?? "").trim().toUpperCase() === "F"){
+          // Gleiche Logik wie vorne: nur ein automatisch gesetztes F wieder
+          // entfernen, wenn der Tag inzwischen kein Feiertag mehr ist.
+          backData.values[backPersonId] = "";
+          autoHolidayBackIds.delete(backPersonId);
+        }
       }
     }
 
@@ -3331,6 +3469,10 @@ overlay.addEventListener("input", (e) => {
       originalOverrides.delete(om.hourIds[hourIndex]);
       originalOverrides.delete(om.worktimeIds[hourIndex]);
       diffOverrides.delete(fm.hourIds[hourIndex]);
+      // Manuelle Eingabe - ein eventuell automatisch gesetztes Feiertags-F
+      // gilt ab jetzt als vom Nutzer stammend und wird nicht mehr automatisch entfernt.
+      autoHolidayFrontIds.delete(fm.hourIds[hourIndex]);
+      markUnrealisticHours(field, field.querySelector("input, textarea")?.value ?? "");
     }
     if (dateIndex >= 0){
       originalOverrides.delete(om.dateIds[dateIndex]);
@@ -3421,6 +3563,79 @@ function updateToolbarForTemplate(){
   updateStundenCalcPanel();
 }
 
+// ===== ZEICHENLIMITS =====
+// Verhindert, dass Texte in den freien Leistungs-/Beschreibungszeilen so
+// lang werden, dass sie im gedruckten Formular/PDF abgeschnitten würden.
+// Die Grenzen sind über die Feldgeometrie erkannt (nicht über Feld-IDs oder
+// die Reihenfolge im Layout), damit ein im Editor verschobenes/neu
+// angelegtes Layout mit ähnlicher Spaltenbreite weiterhin funktioniert.
+const REGIE_LEISTUNG_MAXLEN = 123;
+const BAU_LEISTUNG_MAXLEN = 102;
+const STUNDEN_LEISTUNG_MAXLEN = 34;
+
+function setFieldMaxLength(id, max){
+  const el = document.getElementById(id);
+  const inp = el?.querySelector("input, textarea");
+  if (inp) inp.maxLength = max;
+}
+
+function applyKnownCharacterLimits(key){
+  if (key !== "regie" && key !== "bau") return;
+  for (const el of overlay.querySelectorAll(".field")){
+    if (el.dataset.type !== "text") continue;
+    const inp = el.querySelector("input, textarea");
+    if (!inp) continue;
+    const left = parseFloat(el.style.left);
+    const top = parseFloat(el.style.top);
+    const width = parseFloat(el.style.width);
+
+    if (key === "regie" && left <= 65 && top >= 300 && top <= 460 && width >= 700){
+      // "Erbrachte Leistungen"-Zeilen
+      inp.maxLength = REGIE_LEISTUNG_MAXLEN;
+    } else if (key === "bau" && left >= 180 && left <= 200 && width >= 580){
+      // rechte, breite Spalte von "Leistungsfortschritt, Materiallieferungen"
+      inp.maxLength = BAU_LEISTUNG_MAXLEN;
+    }
+  }
+}
+
+function applyStundenLeistungLimit(){
+  const fm = getFrontMap();
+  for (const id of (fm.leistungIds || [])){
+    setFieldMaxLength(id, STUNDEN_LEISTUNG_MAXLEN);
+  }
+}
+
+// ===== STUNDEN-EINGABEPRÜFUNG (rein visueller Hinweis) =====
+// Warnt bei negativen oder unrealistisch hohen Tageswerten (z. B. "30"),
+// weil die Uhrzeit-Anzeige bei mehr als 24 Stunden wieder von vorne
+// beginnen würde. Nutzt bewusst die bestehende, ungeänderte Parse-Funktion
+// parseWorkedHoursForSum() nur zum Auslesen der Stundenzahl - es wird
+// dadurch kein Wert verändert und keine Berechnung angepasst, nur die
+// Feld-Umrandung eingefärbt.
+function markUnrealisticHours(fieldEl, rawValue){
+  if (!fieldEl) return;
+  const total = parseWorkedHoursForSum(rawValue);
+  const unrealistic = Number.isFinite(total) && (total < 0 || total > 24);
+  fieldEl.classList.toggle("hours-warning", unrealistic);
+  const inp = fieldEl.querySelector("input, textarea");
+  if (inp){
+    inp.title = unrealistic
+      ? `Ungewöhnlicher Wert (${total} Std. an einem Tag) - bitte prüfen.`
+      : "";
+  }
+}
+
+function markAllUnrealisticHours(){
+  const fm = getFrontMap();
+  for (const id of (fm.hourIds || [])){
+    const el = document.getElementById(id);
+    if (!el) continue;
+    const inp = el.querySelector("input, textarea");
+    markUnrealisticHours(el, inp ? inp.value : "");
+  }
+}
+
 function setTemplateKey(key){
   const t = TEMPLATES[key];
   if (!t) return;
@@ -3428,10 +3643,18 @@ function setTemplateKey(key){
   // Aktuell sichtbare Eingaben sichern, BEVOR zu einem anderen Formular
   // gewechselt wird - sonst gehen sie beim Wechsel verloren. Beim
   // Stundenzettel übernimmt das die bereits vorhandene Seiten-Logik.
-  if (currentTemplate.key === "stunden"){
-    persistCurrentStundenSide();
-  } else if (currentTemplate.key === "regie" || currentTemplate.key === "bau"){
-    templateDataCache[currentTemplate.key] = collectCurrentPageData();
+  // Nur ausführen, wenn TATSÄCHLICH gewechselt wird: der allererste Aufruf
+  // beim Programmstart "wechselt" nominell zu currentTemplate.key selbst
+  // (Regiebericht ist der Startwert) - würde hier trotzdem gesichert, würde
+  // eine gerade erst per restoreAutosavedData() wiederhergestellte, aber
+  // noch nicht ins DOM geschriebene Eingabe sofort wieder mit einer leeren
+  // Seite überschrieben.
+  if (key !== currentTemplate.key){
+    if (currentTemplate.key === "stunden"){
+      persistCurrentStundenSide();
+    } else if (currentTemplate.key === "regie" || currentTemplate.key === "bau"){
+      templateDataCache[currentTemplate.key] = collectCurrentPageData();
+    }
   }
 
   currentTemplate = t;
@@ -3476,6 +3699,7 @@ function setTemplateKey(key){
 
   if (layoutZumLaden){
     applyLayout(layoutZumLaden);
+    applyKnownCharacterLimits(key);
     // Zwischengespeicherte Eingaben aus dieser Sitzung wiederherstellen,
     // falls vorher schon mal etwas in dieses Formular eingetragen wurde.
     if (templateDataCache[key]){
@@ -3507,6 +3731,12 @@ function loadStundenLayout(side, skipPersist = false){
   const layout = getStundenLayout(side);
   if (layout && Array.isArray(layout.fields)){
     applyLayout(layout);
+    if (side === "front" || side === "diff"){
+      applyStundenLeistungLimit();
+    }
+    if (side === "front"){
+      markAllUnrealisticHours();
+    }
   } else {
     bgState = { rot: 0, x: 0, y: 0 };
     applyBg();
@@ -3623,6 +3853,7 @@ function loadStundenLayout(side, skipPersist = false){
   // ---------- Neu / Löschen ----------
   // Neuer Bericht: Werte löschen, Sticky behalten
   on("newReport","click", () => {
+    if (!confirm("Neuer Bericht: Alle eingegebenen Werte dieser Seite werden gelöscht (Baustelle/Auftraggeber bleiben erhalten). Fortfahren?")) return;
     if (currentTemplate.key === "stunden"){
       // Stunden: Front, Back und Finanz leeren, Layout bleibt
       stundenCache.front  = { values:{}, signatures:{} };
@@ -3631,6 +3862,9 @@ function loadStundenLayout(side, skipPersist = false){
       stundenCache.diff   = { values:{}, signatures:{} };
       originalOverrides = new Set();
       diffOverrides = new Set();
+      autoHolidayFrontIds = new Set();
+      autoHolidayBackIds = new Set();
+      dashedValueBackup.clear();
       differenceRows = [];
       closeDifferencePanel();
       applyDataToCurrentPage(stundenCache[currentSide]);
@@ -3642,6 +3876,7 @@ function loadStundenLayout(side, skipPersist = false){
 
   // Neue Baustelle: alles leer (auch Sticky)
   on("newSite","click", () => {
+    if (!confirm("Neue Baustelle: Wirklich ALLES löschen, auch Baustelle/Auftraggeber? Das kann nicht rückgängig gemacht werden.")) return;
     if (currentTemplate.key === "stunden"){
       stundenCache.front  = { values:{}, signatures:{} };
       stundenCache.back   = { values:{}, signatures:{} };
@@ -3649,6 +3884,9 @@ function loadStundenLayout(side, skipPersist = false){
       stundenCache.diff   = { values:{}, signatures:{} };
       originalOverrides = new Set();
       diffOverrides = new Set();
+      autoHolidayFrontIds = new Set();
+      autoHolidayBackIds = new Set();
+      dashedValueBackup.clear();
       differenceRows = [];
       closeDifferencePanel();
       applyDataToCurrentPage(stundenCache[currentSide]);
@@ -4134,6 +4372,7 @@ on("printPdf2","click", () => { printNow(); });
   window.addEventListener("resize", fitToViewport);
   window.addEventListener("orientationchange", fitToViewport);
 
+  restoreAutosavedData();
   setTemplateKey("regie");
 
 })();
