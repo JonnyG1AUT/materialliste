@@ -3659,7 +3659,6 @@ function updateToolbarForTemplate(){
 // die Reihenfolge im Layout), damit ein im Editor verschobenes/neu
 // angelegtes Layout mit ähnlicher Spaltenbreite weiterhin funktioniert.
 const REGIE_LEISTUNG_MAXLEN = 115;
-const BAU_LEISTUNG_MAXLEN = 102;
 const STUNDEN_LEISTUNG_MAXLEN = 32;
 const STUNDEN_BAUVORHABEN_MAXLEN = 32;
 
@@ -3670,7 +3669,9 @@ function setFieldMaxLength(id, max){
 }
 
 function applyKnownCharacterLimits(key){
-  if (key !== "regie" && key !== "bau") return;
+  // Nur Regiebericht bekommt ein Zeichenlimit. Der Bautagesbericht soll
+  // laut Nutzer ausdrücklich KEIN Limit haben.
+  if (key !== "regie") return;
   for (const el of overlay.querySelectorAll(".field")){
     if (el.dataset.type !== "text") continue;
     const inp = el.querySelector("input, textarea");
@@ -3679,12 +3680,9 @@ function applyKnownCharacterLimits(key){
     const top = parseFloat(el.style.top);
     const width = parseFloat(el.style.width);
 
-    if (key === "regie" && left <= 65 && top >= 300 && top <= 460 && width >= 700){
+    if (left <= 65 && top >= 300 && top <= 460 && width >= 700){
       // "Erbrachte Leistungen"-Zeilen
       inp.maxLength = REGIE_LEISTUNG_MAXLEN;
-    } else if (key === "bau" && left >= 180 && left <= 200 && width >= 580){
-      // rechte, breite Spalte von "Leistungsfortschritt, Materiallieferungen"
-      inp.maxLength = BAU_LEISTUNG_MAXLEN;
     }
   }
 }
